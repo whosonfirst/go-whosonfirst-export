@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
+	"github.com/tidwall/sjson"
 	_ "log"
+	"time"
 )
 
 type Feature struct {
@@ -16,6 +18,40 @@ type Feature struct {
 }
 
 func ExportFeature(feature []byte) ([]byte, error) {
+
+	var err error
+
+	feature, err = PrepareFeature(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	feature, err = FormatFeature(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return feature, nil
+}
+
+func PrepareFeature(feature []byte) ([]byte, error) {
+
+	var err error
+
+	now := int32(time.Now().Unix())
+
+	feature, err = sjson.SetBytes(feature, "properties.wof:lastmodified", now)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return feature, nil
+}
+
+func FormatFeature(feature []byte) ([]byte, error) {
 
 	// see also:
 	// https://github.com/tidwall/pretty/issues/2
