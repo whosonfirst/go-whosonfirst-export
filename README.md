@@ -12,6 +12,12 @@ This is an experimental package to format Who's On First documents in Go. It is 
 
 If you are reading this that means that should _absolutely not_ use this for anything production-related yet. No.
 
+## To investigate
+
+### Using this package in (from) the Python packages
+
+* https://www.nathanvangheem.com/posts/2017/06/03/embedding-golang-in-python-with-groupcache.html
+
 ## See also
 
 * https://github.com/tidwall/pretty/issues/2
