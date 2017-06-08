@@ -29,33 +29,36 @@ func ExportFeature(feature []byte) ([]byte, error) {
 	var f Feature
 	json.Unmarshal(feature, &f)
 
+	// this has the side-effect of ensuring that all the keys in the
+	// properties dictionary are sorted automagically
+
 	feature, err := json.Marshal(f)
 
 	if err != nil {
 		return nil, err
 	}
 
-	// get the geometry.
+	// get the geometry (that will be mutated)
 
-	res := gjson.GetBytes(feature, "geometry")
+	geom_m := gjson.GetBytes(feature, "geometry")
 
 	// sanity checks
 
-	if res.Index == 0 || len(res.Raw) == 0 || res.Raw[0] != '{' || res.Raw[len(res.Raw)-1] != '}' {
+	if geom_m.Index == 0 || len(geom_m.Raw) == 0 || geom_m.Raw[0] != '{' || geom_m.Raw[len(geom_m.Raw)-1] != '}' {
 		// probably a generic geometry, make it ugly
 		return pretty.Ugly(feature), nil
 	}
 
 	// make an ugly copy of just the geometry segment
-	geom := pretty.Ugly(feature[res.Index : res.Index+len(res.Raw)])
+	geom := pretty.Ugly(feature[geom_m.Index : geom_m.Index+len(geom_m.Raw)])
 
 	// now for the tricky part.
 
 	// empty the geometry object.
 	// Note that this mutates the original feature.
 
-	for i := 1; i < len(res.Raw)-1; i++ {
-		feature[res.Index+i] = ' '
+	for i := 1; i < len(geom_m.Raw)-1; i++ {
+		feature[geom_m.Index+i] = ' '
 	}
 
 	// make the json pretty
@@ -64,15 +67,15 @@ func ExportFeature(feature []byte) ([]byte, error) {
 
 	// find the new location of the geometry
 
-	res = gjson.GetBytes(feature, "geometry")
+	geom_m = gjson.GetBytes(feature, "geometry")
 
 	// allocate the space for the final json.
 
 	final := make([]byte, len(feature)+len(geom)-2)
 
-	copy(final, feature[:res.Index])
-	copy(final[res.Index:], geom)
-	copy(final[res.Index+len(geom):], feature[res.Index+len(res.Raw):])
+	copy(final, feature[:geom_m.Index])
+	copy(final[geom_m.Index:], geom)
+	copy(final[geom_m.Index+len(geom):], feature[geom_m.Index+len(geom_m.Raw):])
 
 	return final, nil
 }
