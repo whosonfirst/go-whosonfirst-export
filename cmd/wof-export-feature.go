@@ -27,7 +27,12 @@ func main() {
 			log.Fatal(err)
 		}
 
-		pretty := export.ExportGeoJSON(body)
+		pretty, err := export.ExportFeature(body)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		fmt.Printf("%s", pretty)
 
 	}
