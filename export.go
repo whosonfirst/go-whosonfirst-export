@@ -42,6 +42,17 @@ func PrepareFeature(feature []byte) ([]byte, error) {
 
 	now := int32(time.Now().Unix())
 
+	created := gjson.GetBytes(feature, "properties.wof:created")
+
+	if !created.Exists() {
+
+		feature, err = sjson.SetBytes(feature, "properties.wof:created", now)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	feature, err = sjson.SetBytes(feature, "properties.wof:lastmodified", now)
 
 	if err != nil {
