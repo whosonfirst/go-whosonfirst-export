@@ -5,18 +5,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
 	"math/rand"
 	"reflect"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/buger/jsonparser"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/mailru/easyjson/jlexer"
-	fflib "github.com/pquerna/ffjson/fflib/v1"
 )
 
 // TestRandomData is a fuzzing test that throws random data at the Parse
@@ -154,7 +148,7 @@ func TestTimeResult(t *testing.T) {
 func TestParseAny(t *testing.T) {
 	assert(t, Parse("100").Float() == 100)
 	assert(t, Parse("true").Bool())
-	assert(t, Parse("valse").Bool() == false)
+	assert(t, Parse("false").Bool() == false)
 }
 
 func TestManyVariousPathCounts(t *testing.T) {
@@ -229,6 +223,24 @@ func TestBasic(t *testing.T) {
 		t.Fatalf("expected %v, got %v", `["Brett","Elliotte"]`, mtok.String())
 	}
 }
+
+func TestIsArrayIsObject(t *testing.T) {
+	mtok := get(basicJSON, "loggy")
+	assert(t, mtok.IsObject())
+	assert(t, !mtok.IsArray())
+
+	mtok = get(basicJSON, "loggy.programmers")
+	assert(t, !mtok.IsObject())
+	assert(t, mtok.IsArray())
+
+	mtok = get(basicJSON, `loggy.programmers.#[tag="good"]#.firstName`)
+	assert(t, mtok.IsArray())
+
+	mtok = get(basicJSON, `loggy.programmers.0.firstName`)
+	assert(t, !mtok.IsObject())
+	assert(t, !mtok.IsArray())
+}
+
 func TestPlus53BitInts(t *testing.T) {
 	json := `{"IdentityData":{"GameInstanceId":634866135153775564}}`
 	value := Get(json, "IdentityData.GameInstanceId")
@@ -274,7 +286,17 @@ func TestPlus53BitInts(t *testing.T) {
 	// flip the number to the negative sign.
 	assert(t, Get(json, "overflow_int64").Int() == -9223372036854775808)
 }
-
+func TestIssue38(t *testing.T) {
+	// These should not fail, even though the unicode is invalid.
+	Get(`["S3O PEDRO DO BUTI\udf93"]`, "0")
+	Get(`["S3O PEDRO DO BUTI\udf93asdf"]`, "0")
+	Get(`["S3O PEDRO DO BUTI\udf93\u"]`, "0")
+	Get(`["S3O PEDRO DO BUTI\udf93\u1"]`, "0")
+	Get(`["S3O PEDRO DO BUTI\udf93\u13"]`, "0")
+	Get(`["S3O PEDRO DO BUTI\udf93\u134"]`, "0")
+	Get(`["S3O PEDRO DO BUTI\udf93\u1345"]`, "0")
+	Get(`["S3O PEDRO DO BUTI\udf93\u1345asd"]`, "0")
+}
 func TestTypes(t *testing.T) {
 	assert(t, (Result{Type: String}).Type.String() == "String")
 	assert(t, (Result{Type: Number}).Type.String() == "Number")
@@ -381,6 +403,10 @@ func TestBasic2(t *testing.T) {
 	if mtok.String() != "aaaa" {
 		t.Fatalf("expected %v, got %v", "aaaa", mtok.String())
 	}
+	mtok = get(basicJSON, `loggy.programmers.#[firstName !% "Bre*"].email`)
+	if mtok.String() != "bbbb" {
+		t.Fatalf("expected %v, got %v", "bbbb", mtok.String())
+	}
 	mtok = get(basicJSON, `loggy.programmers.#[firstName == "Brett"].email`)
 	if mtok.String() != "aaaa" {
 		t.Fatalf("expected %v, got %v", "aaaa", mtok.String())
@@ -457,7 +483,8 @@ func TestBasic4(t *testing.T) {
 	}
 	token = get(basicJSON, "arr.#")
 	if token.String() != "6" {
-		t.Fatal("expecting '6'", "got", token.String())
+		fmt.Printf("%#v\n", token)
+		t.Fatal("expecting 6", "got", token.String())
 	}
 	token = get(basicJSON, "arr.3.hello")
 	if token.String() != "world" {
@@ -948,80 +975,82 @@ func TestUnmarshal(t *testing.T) {
 	assert(t, str == Get(complicatedJSON, "LeftOut").String())
 }
 
-func testvalid(json string, expect bool) {
+func testvalid(t *testing.T, json string, expect bool) {
+	t.Helper()
 	_, ok := validpayload([]byte(json), 0)
 	if ok != expect {
-		panic("mismatch")
+		t.Fatal("mismatch")
 	}
 }
 
 func TestValidBasic(t *testing.T) {
-	testvalid("0", true)
-	testvalid("00", false)
-	testvalid("-00", false)
-	testvalid("-.", false)
-	testvalid("0.0", true)
-	testvalid("10.0", true)
-	testvalid("10e1", true)
-	testvalid("10EE", false)
-	testvalid("10E-", false)
-	testvalid("10E+", false)
-	testvalid("10E123", true)
-	testvalid("10E-123", true)
-	testvalid("10E-0123", true)
-	testvalid("", false)
-	testvalid(" ", false)
-	testvalid("{}", true)
-	testvalid("{", false)
-	testvalid("-", false)
-	testvalid("-1", true)
-	testvalid("-1.", false)
-	testvalid("-1.0", true)
-	testvalid(" -1.0", true)
-	testvalid(" -1.0 ", true)
-	testvalid("-1.0 ", true)
-	testvalid("-1.0 i", false)
-	testvalid("-1.0 i", false)
-	testvalid("true", true)
-	testvalid(" true", true)
-	testvalid(" true ", true)
-	testvalid(" True ", false)
-	testvalid(" tru", false)
-	testvalid("false", true)
-	testvalid(" false", true)
-	testvalid(" false ", true)
-	testvalid(" False ", false)
-	testvalid(" fals", false)
-	testvalid("null", true)
-	testvalid(" null", true)
-	testvalid(" null ", true)
-	testvalid(" Null ", false)
-	testvalid(" nul", false)
-	testvalid(" []", true)
-	testvalid(" [true]", true)
-	testvalid(" [ true, null ]", true)
-	testvalid(" [ true,]", false)
-	testvalid(`{"hello":"world"}`, true)
-	testvalid(`{ "hello": "world" }`, true)
-	testvalid(`{ "hello": "world", }`, false)
-	testvalid(`{"a":"b",}`, false)
-	testvalid(`{"a":"b","a"}`, false)
-	testvalid(`{"a":"b","a":}`, false)
-	testvalid(`{"a":"b","a":1}`, true)
-	testvalid(`{"a":"b","a": 1, "c":{"hi":"there"} }`, true)
-	testvalid(`{"a":"b","a": 1, "c":{"hi":"there", "easy":["going",{"mixed":"bag"}]} }`, true)
-	testvalid(`""`, true)
-	testvalid(`"`, false)
-	testvalid(`"\n"`, true)
-	testvalid(`"\"`, false)
-	testvalid(`"\\"`, true)
-	testvalid(`"a\\b"`, true)
-	testvalid(`"a\\b\\\"a"`, true)
-	testvalid(`"a\\b\\\uFFAAa"`, true)
-	testvalid(`"a\\b\\\uFFAZa"`, false)
-	testvalid(`"a\\b\\\uFFA"`, false)
-	testvalid(string(complicatedJSON), true)
-	testvalid(string(exampleJSON), true)
+	testvalid(t, "0", true)
+	testvalid(t, "00", false)
+	testvalid(t, "-00", false)
+	testvalid(t, "-.", false)
+	testvalid(t, "0.0", true)
+	testvalid(t, "10.0", true)
+	testvalid(t, "10e1", true)
+	testvalid(t, "10EE", false)
+	testvalid(t, "10E-", false)
+	testvalid(t, "10E+", false)
+	testvalid(t, "10E123", true)
+	testvalid(t, "10E-123", true)
+	testvalid(t, "10E-0123", true)
+	testvalid(t, "", false)
+	testvalid(t, " ", false)
+	testvalid(t, "{}", true)
+	testvalid(t, "{", false)
+	testvalid(t, "-", false)
+	testvalid(t, "-1", true)
+	testvalid(t, "-1.", false)
+	testvalid(t, "-1.0", true)
+	testvalid(t, " -1.0", true)
+	testvalid(t, " -1.0 ", true)
+	testvalid(t, "-1.0 ", true)
+	testvalid(t, "-1.0 i", false)
+	testvalid(t, "-1.0 i", false)
+	testvalid(t, "true", true)
+	testvalid(t, " true", true)
+	testvalid(t, " true ", true)
+	testvalid(t, " True ", false)
+	testvalid(t, " tru", false)
+	testvalid(t, "false", true)
+	testvalid(t, " false", true)
+	testvalid(t, " false ", true)
+	testvalid(t, " False ", false)
+	testvalid(t, " fals", false)
+	testvalid(t, "null", true)
+	testvalid(t, " null", true)
+	testvalid(t, " null ", true)
+	testvalid(t, " Null ", false)
+	testvalid(t, " nul", false)
+	testvalid(t, " []", true)
+	testvalid(t, " [true]", true)
+	testvalid(t, " [ true, null ]", true)
+	testvalid(t, " [ true,]", false)
+	testvalid(t, `{"hello":"world"}`, true)
+	testvalid(t, `{ "hello": "world" }`, true)
+	testvalid(t, `{ "hello": "world", }`, false)
+	testvalid(t, `{"a":"b",}`, false)
+	testvalid(t, `{"a":"b","a"}`, false)
+	testvalid(t, `{"a":"b","a":}`, false)
+	testvalid(t, `{"a":"b","a":1}`, true)
+	testvalid(t, `{"a":"b",2"1":2}`, false)
+	testvalid(t, `{"a":"b","a": 1, "c":{"hi":"there"} }`, true)
+	testvalid(t, `{"a":"b","a": 1, "c":{"hi":"there", "easy":["going",{"mixed":"bag"}]} }`, true)
+	testvalid(t, `""`, true)
+	testvalid(t, `"`, false)
+	testvalid(t, `"\n"`, true)
+	testvalid(t, `"\"`, false)
+	testvalid(t, `"\\"`, true)
+	testvalid(t, `"a\\b"`, true)
+	testvalid(t, `"a\\b\\\"a"`, true)
+	testvalid(t, `"a\\b\\\uFFAAa"`, true)
+	testvalid(t, `"a\\b\\\uFFAZa"`, false)
+	testvalid(t, `"a\\b\\\uFFA"`, false)
+	testvalid(t, string(complicatedJSON), true)
+	testvalid(t, string(exampleJSON), true)
 }
 
 var jsonchars = []string{"{", "[", ",", ":", "}", "]", "1", "0", "true", "false", "null", `""`, `"\""`, `"a"`}
@@ -1051,576 +1080,354 @@ func TestValidRandom(t *testing.T) {
 	}
 }
 
-type BenchStruct struct {
-	Widget struct {
-		Window struct {
-			Name string `json:"name"`
-		} `json:"window"`
-		Image struct {
-			HOffset int `json:"hOffset"`
-		} `json:"image"`
-		Text struct {
-			OnMouseUp string `json:"onMouseUp"`
-		} `json:"text"`
-	} `json:"widget"`
-}
-
-var benchPaths = []string{
-	"widget.window.name",
-	"widget.image.hOffset",
-	"widget.text.onMouseUp",
-}
-
-var benchManyPaths = []string{
-	"widget.window.name",
-	"widget.image.hOffset",
-	"widget.text.onMouseUp",
-	"widget.window.title",
-	"widget.image.alignment",
-	"widget.text.style",
-	"widget.window.height",
-	"widget.image.src",
-	"widget.text.data",
-	"widget.text.size",
-}
-
-func BenchmarkGJSONGet(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			if Get(exampleJSON, benchPaths[j]).Type == Null {
-				t.Fatal("did not find the value")
-			}
-		}
+func TestGetMany47(t *testing.T) {
+	json := `{"bar": {"id": 99, "mybar": "my mybar" }, "foo": {"myfoo": [605]}}`
+	paths := []string{"foo.myfoo", "bar.id", "bar.mybar", "bar.mybarx"}
+	expected := []string{"[605]", "99", "my mybar", ""}
+	results := GetMany(json, paths...)
+	if len(expected) != len(results) {
+		t.Fatalf("expected %v, got %v", len(expected), len(results))
 	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-func BenchmarkGJSONGetMany4Paths(t *testing.B) {
-	benchmarkGJSONGetManyN(t, 4)
-}
-func BenchmarkGJSONGetMany8Paths(t *testing.B) {
-	benchmarkGJSONGetManyN(t, 8)
-}
-func BenchmarkGJSONGetMany16Paths(t *testing.B) {
-	benchmarkGJSONGetManyN(t, 16)
-}
-func BenchmarkGJSONGetMany32Paths(t *testing.B) {
-	benchmarkGJSONGetManyN(t, 32)
-}
-func BenchmarkGJSONGetMany64Paths(t *testing.B) {
-	benchmarkGJSONGetManyN(t, 64)
-}
-func BenchmarkGJSONGetMany128Paths(t *testing.B) {
-	benchmarkGJSONGetManyN(t, 128)
-}
-func benchmarkGJSONGetManyN(t *testing.B, n int) {
-	var paths []string
-	for len(paths) < n {
-		paths = append(paths, benchManyPaths...)
-	}
-	paths = paths[:n]
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		results := GetMany(exampleJSON, paths...)
-		if len(results) == 0 {
-			t.Fatal("did not find the value")
+	for i, path := range paths {
+		if results[i].String() != expected[i] {
+			t.Fatalf("expected '%v', got '%v' for path '%v'", expected[i], results[i].String(), path)
 		}
-		for j := 0; j < len(results); j++ {
-			if results[j].Type == Null {
-				t.Fatal("did not find the value")
-			}
-		}
-	}
-	t.N *= len(paths) // because we are running against 3 paths
-}
-
-func BenchmarkGJSONUnmarshalMap(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			parts := strings.Split(benchPaths[j], ".")
-			m, _ := Parse(exampleJSON).Value().(map[string]interface{})
-			var v interface{}
-			for len(parts) > 0 {
-				part := parts[0]
-				if len(parts) > 1 {
-					m = m[part].(map[string]interface{})
-					if m == nil {
-						t.Fatal("did not find the value")
-					}
-				} else {
-					v = m[part]
-					if v == nil {
-						t.Fatal("did not find the value")
-					}
-				}
-				parts = parts[1:]
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-
-func BenchmarkGJSONUnmarshalStruct(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			var s BenchStruct
-			if err := Unmarshal([]byte(exampleJSON), &s); err != nil {
-				t.Fatal(err)
-			}
-			switch benchPaths[j] {
-			case "widget.window.name":
-				if s.Widget.Window.Name == "" {
-					t.Fatal("did not find the value")
-				}
-			case "widget.image.hOffset":
-				if s.Widget.Image.HOffset == 0 {
-					t.Fatal("did not find the value")
-				}
-			case "widget.text.onMouseUp":
-				if s.Widget.Text.OnMouseUp == "" {
-					t.Fatal("did not find the value")
-				}
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-
-func BenchmarkJSONUnmarshalMap(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			parts := strings.Split(benchPaths[j], ".")
-			var m map[string]interface{}
-			if err := json.Unmarshal([]byte(exampleJSON), &m); err != nil {
-				t.Fatal(err)
-			}
-			var v interface{}
-			for len(parts) > 0 {
-				part := parts[0]
-				if len(parts) > 1 {
-					m = m[part].(map[string]interface{})
-					if m == nil {
-						t.Fatal("did not find the value")
-					}
-				} else {
-					v = m[part]
-					if v == nil {
-						t.Fatal("did not find the value")
-					}
-				}
-				parts = parts[1:]
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-
-func BenchmarkJSONUnmarshalStruct(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			var s BenchStruct
-			if err := json.Unmarshal([]byte(exampleJSON), &s); err != nil {
-				t.Fatal(err)
-			}
-			switch benchPaths[j] {
-			case "widget.window.name":
-				if s.Widget.Window.Name == "" {
-					t.Fatal("did not find the value")
-				}
-			case "widget.image.hOffset":
-				if s.Widget.Image.HOffset == 0 {
-					t.Fatal("did not find the value")
-				}
-			case "widget.text.onMouseUp":
-				if s.Widget.Text.OnMouseUp == "" {
-					t.Fatal("did not find the value")
-				}
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-
-func BenchmarkJSONDecoder(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			dec := json.NewDecoder(bytes.NewBuffer([]byte(exampleJSON)))
-			var found bool
-		outer:
-			for {
-				tok, err := dec.Token()
-				if err != nil {
-					if err == io.EOF {
-						break
-					}
-					t.Fatal(err)
-				}
-				switch v := tok.(type) {
-				case string:
-					if found {
-						// break out once we find the value.
-						break outer
-					}
-					switch benchPaths[j] {
-					case "widget.window.name":
-						if v == "name" {
-							found = true
-						}
-					case "widget.image.hOffset":
-						if v == "hOffset" {
-							found = true
-						}
-					case "widget.text.onMouseUp":
-						if v == "onMouseUp" {
-							found = true
-						}
-					}
-				}
-			}
-			if !found {
-				t.Fatal("field not found")
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-
-func BenchmarkFFJSONLexer(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			l := fflib.NewFFLexer([]byte(exampleJSON))
-			var found bool
-		outer:
-			for {
-				t := l.Scan()
-				if t == fflib.FFTok_eof {
-					break
-				}
-				if t == fflib.FFTok_string {
-					b, _ := l.CaptureField(t)
-					v := string(b)
-					if found {
-						// break out once we find the value.
-						break outer
-					}
-					switch benchPaths[j] {
-					case "widget.window.name":
-						if v == "\"name\"" {
-							found = true
-						}
-					case "widget.image.hOffset":
-						if v == "\"hOffset\"" {
-							found = true
-						}
-					case "widget.text.onMouseUp":
-						if v == "\"onMouseUp\"" {
-							found = true
-						}
-					}
-				}
-			}
-			if !found {
-				t.Fatal("field not found")
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-
-func skipCC(l *jlexer.Lexer, n int) {
-	for i := 0; i < n; i++ {
-		l.Skip()
-		l.WantColon()
-		l.Skip()
-		l.WantComma()
-	}
-}
-func skipGroup(l *jlexer.Lexer, n int) {
-	l.WantColon()
-	l.Delim('{')
-	skipCC(l, n)
-	l.Delim('}')
-	l.WantComma()
-}
-func easyJSONWindowName(t *testing.B, l *jlexer.Lexer) {
-	if l.String() == "window" {
-		l.WantColon()
-		l.Delim('{')
-		skipCC(l, 1)
-		if l.String() == "name" {
-			l.WantColon()
-			if l.String() == "" {
-				t.Fatal("did not find the value")
-			}
-		}
-	}
-}
-func easyJSONImageHOffset(t *testing.B, l *jlexer.Lexer) {
-	if l.String() == "image" {
-		l.WantColon()
-		l.Delim('{')
-		skipCC(l, 1)
-		if l.String() == "hOffset" {
-			l.WantColon()
-			if l.Int() == 0 {
-				t.Fatal("did not find the value")
-			}
-		}
-	}
-}
-func easyJSONTextOnMouseUp(t *testing.B, l *jlexer.Lexer) {
-	if l.String() == "text" {
-		l.WantColon()
-		l.Delim('{')
-		skipCC(l, 5)
-		if l.String() == "onMouseUp" {
-			l.WantColon()
-			if l.String() == "" {
-				t.Fatal("did not find the value")
-			}
-		}
-	}
-}
-func easyJSONWidget(t *testing.B, l *jlexer.Lexer, j int) {
-	l.WantColon()
-	l.Delim('{')
-	switch benchPaths[j] {
-	case "widget.window.name":
-		skipCC(l, 1)
-		easyJSONWindowName(t, l)
-	case "widget.image.hOffset":
-		skipCC(l, 1)
-		if l.String() == "window" {
-			skipGroup(l, 4)
-		}
-		easyJSONImageHOffset(t, l)
-	case "widget.text.onMouseUp":
-		skipCC(l, 1)
-		if l.String() == "window" {
-			skipGroup(l, 4)
-		}
-		if l.String() == "image" {
-			skipGroup(l, 4)
-		}
-		easyJSONTextOnMouseUp(t, l)
-	}
-}
-func BenchmarkEasyJSONLexer(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			l := &jlexer.Lexer{Data: []byte(exampleJSON)}
-			l.Delim('{')
-			if l.String() == "widget" {
-				easyJSONWidget(t, l, j)
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-
-func BenchmarkJSONParserGet(t *testing.B) {
-	data := []byte(exampleJSON)
-	keys := make([][]string, 0, len(benchPaths))
-	for i := 0; i < len(benchPaths); i++ {
-		keys = append(keys, strings.Split(benchPaths[i], "."))
-	}
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j, k := range keys {
-			if j == 1 {
-				// "widget.image.hOffset" is a number
-				v, _ := jsonparser.GetInt(data, k...)
-				if v == 0 {
-					t.Fatal("did not find the value")
-				}
-			} else {
-				// "widget.window.name",
-				// "widget.text.onMouseUp",
-				v, _ := jsonparser.GetString(data, k...)
-				if v == "" {
-					t.Fatal("did not find the value")
-				}
-			}
-		}
-	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
-}
-func jsoniterWindowName(t *testing.B, iter *jsoniter.Iterator) {
-	var v string
-	for {
-		key := iter.ReadObject()
-		if key != "window" {
-			iter.Skip()
-			continue
-		}
-		for {
-			key := iter.ReadObject()
-			if key != "name" {
-				iter.Skip()
-				continue
-			}
-			v = iter.ReadString()
-			break
-		}
-		break
-	}
-	if v == "" {
-		t.Fatal("did not find the value")
 	}
 }
 
-func jsoniterTextOnMouseUp(t *testing.B, iter *jsoniter.Iterator) {
-	var v string
-	for {
-		key := iter.ReadObject()
-		if key != "text" {
-			iter.Skip()
-			continue
-		}
-		for {
-			key := iter.ReadObject()
-			if key != "onMouseUp" {
-				iter.Skip()
-				continue
-			}
-			v = iter.ReadString()
-			break
-		}
-		break
+func TestGetMany48(t *testing.T) {
+	json := `{"bar": {"id": 99, "xyz": "my xyz"}, "foo": {"myfoo": [605]}}`
+	paths := []string{"foo.myfoo", "bar.id", "bar.xyz", "bar.abc"}
+	expected := []string{"[605]", "99", "my xyz", ""}
+	results := GetMany(json, paths...)
+	if len(expected) != len(results) {
+		t.Fatalf("expected %v, got %v", len(expected), len(results))
 	}
-	if v == "" {
-		t.Fatal("did not find the value")
-	}
-}
-func jsoniterImageOffset(t *testing.B, iter *jsoniter.Iterator) {
-	var v int
-	for {
-		key := iter.ReadObject()
-		if key != "image" {
-			iter.Skip()
-			continue
+	for i, path := range paths {
+		if results[i].String() != expected[i] {
+			t.Fatalf("expected '%v', got '%v' for path '%v'", expected[i], results[i].String(), path)
 		}
-		for {
-			key := iter.ReadObject()
-			if key != "hOffset" {
-				iter.Skip()
-				continue
-			}
-			v = iter.ReadInt()
-			break
-		}
-		break
-	}
-	if v == 0 {
-		t.Fatal("did not find the value")
-	}
-}
-func jsoniterWidget(t *testing.B, iter *jsoniter.Iterator, j int) {
-	for {
-		key := iter.ReadObject()
-		if key != "widget" {
-			iter.Skip()
-			continue
-		}
-		switch benchPaths[j] {
-		case "widget.window.name":
-			jsoniterWindowName(t, iter)
-		case "widget.image.hOffset":
-			jsoniterImageOffset(t, iter)
-		case "widget.text.onMouseUp":
-			jsoniterTextOnMouseUp(t, iter)
-		}
-		break
 	}
 }
 
-func BenchmarkJSONIterator(t *testing.B) {
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		for j := 0; j < len(benchPaths); j++ {
-			iter := jsoniter.ParseString(exampleJSON)
-			jsoniterWidget(t, iter, j)
+func TestResultRawForLiteral(t *testing.T) {
+	for _, lit := range []string{"null", "true", "false"} {
+		result := Parse(lit)
+		if result.Raw != lit {
+			t.Fatalf("expected '%v', got '%v'", lit, result.Raw)
 		}
 	}
-	t.N *= len(benchPaths) // because we are running against 3 paths
 }
 
-var massiveJSON = func() string {
-	var buf bytes.Buffer
-	buf.WriteString("[")
-	for i := 0; i < 100; i++ {
+func TestNullArray(t *testing.T) {
+	n := len(Get(`{"data":null}`, "data").Array())
+	if n != 0 {
+		t.Fatalf("expected '%v', got '%v'", 0, n)
+	}
+	n = len(Get(`{}`, "data").Array())
+	if n != 0 {
+		t.Fatalf("expected '%v', got '%v'", 0, n)
+	}
+	n = len(Get(`{"data":[]}`, "data").Array())
+	if n != 0 {
+		t.Fatalf("expected '%v', got '%v'", 0, n)
+	}
+	n = len(Get(`{"data":[null]}`, "data").Array())
+	if n != 1 {
+		t.Fatalf("expected '%v', got '%v'", 1, n)
+	}
+}
+
+func TestRandomGetMany(t *testing.T) {
+	start := time.Now()
+	for time.Since(start) < time.Second*3 {
+		testRandomGetMany(t)
+	}
+}
+func testRandomGetMany(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	json, keys := randomJSON()
+	for _, key := range keys {
+		r := Get(json, key)
+		if !r.Exists() {
+			t.Fatal("should exist")
+		}
+	}
+	rkeysi := rand.Perm(len(keys))
+	rkeysn := 1 + rand.Int()%32
+	if len(rkeysi) > rkeysn {
+		rkeysi = rkeysi[:rkeysn]
+	}
+	var rkeys []string
+	for i := 0; i < len(rkeysi); i++ {
+		rkeys = append(rkeys, keys[rkeysi[i]])
+	}
+	mres1 := GetMany(json, rkeys...)
+	var mres2 []Result
+	for _, rkey := range rkeys {
+		mres2 = append(mres2, Get(json, rkey))
+	}
+	if len(mres1) != len(mres2) {
+		t.Fatalf("expected %d, got %d", len(mres2), len(mres1))
+	}
+	for i := 0; i < len(mres1); i++ {
+		mres1[i].Index = 0
+		mres2[i].Index = 0
+		v1 := fmt.Sprintf("%#v", mres1[i])
+		v2 := fmt.Sprintf("%#v", mres2[i])
+		if v1 != v2 {
+			t.Fatalf("\nexpected %s\n"+
+				"     got %s", v2, v1)
+		}
+	}
+}
+
+func TestIssue54(t *testing.T) {
+	var r []Result
+	json := `{"MarketName":null,"Nounce":6115}`
+	r = GetMany(json, "Nounce", "Buys", "Sells", "Fills")
+	if strings.Replace(fmt.Sprintf("%v", r), " ", "", -1) != "[6115]" {
+		t.Fatalf("expected '%v', got '%v'", "[6115]", strings.Replace(fmt.Sprintf("%v", r), " ", "", -1))
+	}
+	r = GetMany(json, "Nounce", "Buys", "Sells")
+	if strings.Replace(fmt.Sprintf("%v", r), " ", "", -1) != "[6115]" {
+		t.Fatalf("expected '%v', got '%v'", "[6115]", strings.Replace(fmt.Sprintf("%v", r), " ", "", -1))
+	}
+	r = GetMany(json, "Nounce")
+	if strings.Replace(fmt.Sprintf("%v", r), " ", "", -1) != "[6115]" {
+		t.Fatalf("expected '%v', got '%v'", "[6115]", strings.Replace(fmt.Sprintf("%v", r), " ", "", -1))
+	}
+}
+
+func randomString() string {
+	var key string
+	N := 1 + rand.Int()%16
+	for i := 0; i < N; i++ {
+		r := rand.Int() % 62
+		if r < 10 {
+			key += string(byte('0' + r))
+		} else if r-10 < 26 {
+			key += string(byte('a' + r - 10))
+		} else {
+			key += string(byte('A' + r - 10 - 26))
+		}
+	}
+	return `"` + key + `"`
+}
+func randomBool() string {
+	switch rand.Int() % 2 {
+	default:
+		return "false"
+	case 1:
+		return "true"
+	}
+}
+func randomNumber() string {
+	return strconv.FormatInt(int64(rand.Int()%1000000), 10)
+}
+
+func randomObjectOrArray(keys []string, prefix string, array bool, depth int) (string, []string) {
+	N := 5 + rand.Int()%5
+	var json string
+	if array {
+		json = "["
+	} else {
+		json = "{"
+	}
+	for i := 0; i < N; i++ {
 		if i > 0 {
-			buf.WriteByte(',')
+			json += ","
 		}
-		buf.WriteString(exampleJSON)
-	}
-	buf.WriteString("]")
-	return buf.String()
-}()
+		var pkey string
+		if array {
+			pkey = prefix + "." + strconv.FormatInt(int64(i), 10)
+		} else {
+			key := randomString()
+			pkey = prefix + "." + key[1:len(key)-1]
+			json += key + `:`
+		}
+		keys = append(keys, pkey[1:])
+		var kind int
+		if depth == 5 {
+			kind = rand.Int() % 4
+		} else {
+			kind = rand.Int() % 6
+		}
+		switch kind {
+		case 0:
+			json += randomString()
+		case 1:
+			json += randomBool()
+		case 2:
+			json += "null"
+		case 3:
+			json += randomNumber()
+		case 4:
+			var njson string
+			njson, keys = randomObjectOrArray(keys, pkey, true, depth+1)
+			json += njson
+		case 5:
+			var njson string
+			njson, keys = randomObjectOrArray(keys, pkey, false, depth+1)
+			json += njson
+		}
 
-func BenchmarkConvertNone(t *testing.B) {
-	json := massiveJSON
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		Get(json, "50.widget.text.onMouseUp")
+	}
+	if array {
+		json += "]"
+	} else {
+		json += "}"
+	}
+	return json, keys
+}
+
+func randomJSON() (json string, keys []string) {
+	return randomObjectOrArray(nil, "", false, 0)
+}
+
+func TestIssue55(t *testing.T) {
+	json := `{"one": {"two": 2, "three": 3}, "four": 4, "five": 5}`
+	results := GetMany(json, "four", "five", "one.two", "one.six")
+	expected := []string{"4", "5", "2", ""}
+	for i, r := range results {
+		if r.String() != expected[i] {
+			t.Fatalf("expected %v, got %v", expected[i], r.String())
+		}
 	}
 }
-func BenchmarkConvertGet(t *testing.B) {
-	data := []byte(massiveJSON)
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		Get(string(data), "50.widget.text.onMouseUp")
+func TestIssue58(t *testing.T) {
+	json := `{"data":[{"uid": 1},{"uid": 2}]}`
+	res := Get(json, `data.#[uid!=1]`).Raw
+	if res != `{"uid": 2}` {
+		t.Fatalf("expected '%v', got '%v'", `{"uid": 1}`, res)
 	}
 }
-func BenchmarkConvertGetBytes(t *testing.B) {
-	data := []byte(massiveJSON)
-	t.ReportAllocs()
-	t.ResetTimer()
-	for i := 0; i < t.N; i++ {
-		GetBytes(data, "50.widget.text.onMouseUp")
+
+func TestObjectGrouping(t *testing.T) {
+	json := `
+[
+	true,
+	{"name":"tom"},
+	false,
+	{"name":"janet"},
+	null
+]
+`
+	res := Get(json, "#.name")
+	if res.String() != `["tom","janet"]` {
+		t.Fatalf("expected '%v', got '%v'", `["tom","janet"]`, res.String())
 	}
 }
-func BenchmarkParseUintNumParser(t *testing.B) {
-	var s = "634866135153775564"
-	for i := 0; i < t.N; i++ {
-		parseUint(s)
+
+func TestJSONLines(t *testing.T) {
+	json := `
+true
+false
+{"name":"tom"}
+[1,2,3,4,5]
+{"name":"janet"}
+null
+12930.1203
+	`
+	paths := []string{"..#", "..0", "..2.name", "..#.name", "..6", "..7"}
+	ress := []string{"7", "true", "tom", `["tom","janet"]`, "12930.1203", ""}
+	for i, path := range paths {
+		res := Get(json, path)
+		if res.String() != ress[i] {
+			t.Fatalf("expected '%v', got '%v'", ress[i], res.String())
+		}
+	}
+
+	json = `
+{"name": "Gilbert", "wins": [["straight", "7♣"], ["one pair", "10♥"]]}
+{"name": "Alexa", "wins": [["two pair", "4♠"], ["two pair", "9♠"]]}
+{"name": "May", "wins": []}
+{"name": "Deloise", "wins": [["three of a kind", "5♣"]]}
+`
+
+	var i int
+	lines := strings.Split(strings.TrimSpace(json), "\n")
+	ForEachLine(json, func(line Result) bool {
+		if line.Raw != lines[i] {
+			t.Fatalf("expected '%v', got '%v'", lines[i], line.Raw)
+		}
+		i++
+		return true
+	})
+	if i != 4 {
+		t.Fatalf("expected '%v', got '%v'", 4, i)
+	}
+
+}
+
+func TestNumUint64String(t *testing.T) {
+	i := 9007199254740993 //2^53 + 1
+	j := fmt.Sprintf(`{"data":  [  %d, "hello" ] }`, i)
+	res := Get(j, "data.0")
+	if res.String() != "9007199254740993" {
+		t.Fatalf("expected '%v', got '%v'", "9007199254740993", res.String())
 	}
 }
-func BenchmarkStdlibParseUintNumParser(t *testing.B) {
-	var s = "634866135153775564"
-	for i := 0; i < t.N; i++ {
-		strconv.ParseUint(s, 10, 64)
+
+func TestNumInt64String(t *testing.T) {
+	i := -9007199254740993
+	j := fmt.Sprintf(`{"data":[ "hello", %d ]}`, i)
+	res := Get(j, "data.1")
+	if res.String() != "-9007199254740993" {
+		t.Fatalf("expected '%v', got '%v'", "-9007199254740993", res.String())
 	}
 }
-func BenchmarkParseIntNumParser(t *testing.B) {
-	var s = "-634866135153775564"
-	for i := 0; i < t.N; i++ {
-		parseInt(s)
+
+func TestNumBigString(t *testing.T) {
+	i := "900719925474099301239109123101" // very big
+	j := fmt.Sprintf(`{"data":[ "hello", "%s" ]}`, i)
+	res := Get(j, "data.1")
+	if res.String() != "900719925474099301239109123101" {
+		t.Fatalf("expected '%v', got '%v'", "900719925474099301239109123101", res.String())
 	}
 }
-func BenchmarkStdlibParseIntNumParser(t *testing.B) {
-	var s = "-634866135153775564"
-	for i := 0; i < t.N; i++ {
-		strconv.ParseInt(s, 10, 64)
+
+func TestNumFloatString(t *testing.T) {
+	i := -9007199254740993
+	j := fmt.Sprintf(`{"data":[ "hello", %d ]}`, i) //No quotes around value!!
+	res := Get(j, "data.1")
+	if res.String() != "-9007199254740993" {
+		t.Fatalf("expected '%v', got '%v'", "-9007199254740993", res.String())
 	}
+}
+
+func TestDuplicateKeys(t *testing.T) {
+	// this is vaild json according to the JSON spec
+	var json = `{"name": "Alex","name": "Peter"}`
+	if Parse(json).Get("name").String() !=
+		Parse(json).Map()["name"].String() {
+		t.Fatalf("expected '%v', got '%v'",
+			Parse(json).Get("name").String(),
+			Parse(json).Map()["name"].String(),
+		)
+	}
+	if !Valid(json) {
+		t.Fatal("should be valid")
+	}
+}
+
+func TestArrayValues(t *testing.T) {
+	var json = `{"array": ["PERSON1","PERSON2",0],}`
+	values := Get(json, "array").Array()
+	var output string
+	for i, val := range values {
+		if i > 0 {
+			output += "\n"
+		}
+		output += fmt.Sprintf("%#v", val)
+	}
+	expect := strings.Join([]string{
+		`gjson.Result{Type:3, Raw:"\"PERSON1\"", Str:"PERSON1", Num:0, Index:0}`,
+		`gjson.Result{Type:3, Raw:"\"PERSON2\"", Str:"PERSON2", Num:0, Index:0}`,
+		`gjson.Result{Type:2, Raw:"0", Str:"", Num:0, Index:0}`,
+	}, "\n")
+	if output != expect {
+		t.Fatalf("expected '%v', got '%v'", expect, output)
+	}
+
 }
