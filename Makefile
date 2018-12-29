@@ -11,18 +11,20 @@ self:   prep
 	if test ! -d src; then rm -rf src; fi
 	mkdir -p src/github.com/whosonfirst/go-whosonfirst-export
 	cp export.go src/github.com/whosonfirst/go-whosonfirst-export/
-	cp -r vendor/src/* src/
+	cp -r vendor/* src/
 
-deps:   
+deps:   rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/gjson"
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/pretty"
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/sjson"
-	# @GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-uri"
+	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-artisanal-integers"
+	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-brooklynintegers-api"
+	rm -rf src/github.com/aaronland/go-brooklynintegers-api/vendor/github.com/tidwall
+	rm -rf src/github.com/aaronland/go-brooklynintegers-api/vendor/github.com/aaronland/go-artisanal-integers
 
-vendor-deps: rmdeps deps
-	if test ! -d vendor; then mkdir vendor; fi
-	if test -d vendor/src; then rm -rf vendor/src; fi
-	cp -r src vendor/src
+vendor-deps: deps
+	if test -d vendor; then rm -rf vendor; fi
+	cp -r src vendor
 	find vendor -name '.git' -print -type d -exec rm -rf {} +
 	rm -rf src
 

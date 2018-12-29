@@ -2,7 +2,8 @@ package export
 
 import (
 	"encoding/json"
-	"errors"
+	"github.com/aaronland/go-artisanal-integers"
+	brooklyn_integers "github.com/aaronland/go-brooklynintegers-api"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
 	"github.com/tidwall/sjson"
@@ -19,13 +20,17 @@ type Feature struct {
 }
 
 type ExportOptions struct {
-	Strict bool
+	Strict        bool
+	IntegerClient artisanalinteger.Client
 }
 
 func DefaultExportOptions() (*ExportOptions, error) {
 
+	bi_client := brooklyn_integers.NewAPIClient()
+
 	opts := ExportOptions{
-		Strict: true,
+		Strict:        true,
+		IntegerClient: bi_client,
 	}
 
 	return &opts, nil
@@ -84,38 +89,35 @@ func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 		return nil, err
 	}
 
+	var wof_id int64
+
+	rsp := gjson.GetBytes(feature, "properties.wof:id")
+
+	if rsp.Exists() {
+
+		wof_id = rsp.Int()
+
+	} else {
+
+		i, err := opts.IntegerClient.NextInt()
+
+		if err != nil {
+			return nil, err
+		}
+
+		wof_id = i
+	}
+
 	id := gjson.GetBytes(feature, "id")
 
 	if !id.Exists() {
 
-		wofid := gjson.GetBytes(feature, "properties.wof:id")
+		feature, err = sjson.SetBytes(feature, "id", wof_id)
 
-		if wofid.Exists() {
-
-			feature, err = sjson.SetBytes(feature, "id", wofid)
-
-			if err != nil {
-				return nil, err
-			}
-
-		} else {
-
-			if opts.Strict {
-				return nil, errors.New("Missing wof:id")
-			}
-
-			feature, err = sjson.SetBytes(feature, "id", -1)
-
-			if err != nil {
-				return nil, err
-			}
-
-			feature, err = sjson.SetBytes(feature, "properties.wof:id", -1)
-
-			if err != nil {
-				return nil, err
-			}
+		if err != nil {
+			return nil, err
 		}
+
 	}
 
 	return feature, nil
