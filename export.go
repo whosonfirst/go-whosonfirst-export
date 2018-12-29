@@ -106,6 +106,12 @@ func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 		}
 
 		wof_id = i
+
+		feature, err = sjson.SetBytes(feature, "properties.wof:id", wof_id)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	id := gjson.GetBytes(feature, "id")
