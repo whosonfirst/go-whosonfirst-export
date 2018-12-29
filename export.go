@@ -1,12 +1,17 @@
 package export
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/aaronland/go-artisanal-integers"
 	brooklyn_integers "github.com/aaronland/go-brooklynintegers-api"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
 	"github.com/tidwall/sjson"
+	"github.com/whosonfirst/go-whosonfirst-uri"	
+	"github.com/whosonfirst/go-whosonfirst-readwrite/writer"
+	"io/ioutil"
 	_ "log"
 	"time"
 )
@@ -36,6 +41,17 @@ func DefaultExportOptions() (*ExportOptions, error) {
 	return &opts, nil
 }
 
+func ExportFeatureToWriter(feature interface{}, wr writer.Writer, opts *ExportOptions) (string, error) {
+
+	body, err := json.Marshal(feature)
+
+	if err != nil {
+		return "", err
+	}
+
+	return ExportToWriter(body, wr, opts)
+}
+
 func ExportFeature(feature interface{}, opts *ExportOptions) ([]byte, error) {
 
 	body, err := json.Marshal(feature)
@@ -45,6 +61,40 @@ func ExportFeature(feature interface{}, opts *ExportOptions) ([]byte, error) {
 	}
 
 	return Export(body, opts)
+}
+
+func ExportToWriter(body []byte, wr writer.Writer, opts *ExportOptions) (string, error) {
+
+	pretty, err := Export(body, opts)
+
+	if err != nil {
+		return "", err
+	}
+
+	rsp := gjson.GetBytes(pretty, "properties.wof:id")
+
+	if !rsp.Exists() {
+		return "", errors.New("Missing wof:id")
+	}
+
+	wof_id := rsp.Int()
+
+	path, err := uri.Id2RelPath(wof_id)
+
+	if err != nil {
+		return "", err
+	}
+
+	r := bytes.NewReader(pretty)
+	fh := ioutil.NopCloser(r)
+
+	err = wr.Write(path, fh)
+
+	if err != nil {
+		return "", err
+	}
+
+	return wr.URI(path), nil
 }
 
 func Export(feature []byte, opts *ExportOptions) ([]byte, error) {

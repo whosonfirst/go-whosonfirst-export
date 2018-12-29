@@ -19,6 +19,9 @@ deps:   rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/sjson"
 	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-artisanal-integers"
 	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-brooklynintegers-api"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-readwrite/..."
+	mv src/github.com/whosonfirst/go-whosonfirst-readwrite/vendor/github.com/whosonfirst/go-whosonfirst-uri src/github.com/whosonfirst/
+	mv src/github.com/whosonfirst/go-whosonfirst-readwrite/vendor/github.com/whosonfirst/go-whosonfirst-sources src/github.com/whosonfirst/
 	rm -rf src/github.com/aaronland/go-brooklynintegers-api/vendor/github.com/tidwall
 	rm -rf src/github.com/aaronland/go-brooklynintegers-api/vendor/github.com/aaronland/go-artisanal-integers
 
