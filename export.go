@@ -41,12 +41,12 @@ func DefaultExportOptions() (*ExportOptions, error) {
 	return &opts, nil
 }
 
-func ExportFeatureToWriter(feature interface{}, wr writer.Writer, opts *ExportOptions) (string, error) {
+func ExportFeatureToWriter(feature interface{}, wr writer.Writer, opts *ExportOptions) (int64, string, error) {
 
 	body, err := json.Marshal(feature)
 
 	if err != nil {
-		return "", err
+		return -1, "", err
 	}
 
 	return ExportToWriter(body, wr, opts)
@@ -63,18 +63,18 @@ func ExportFeature(feature interface{}, opts *ExportOptions) ([]byte, error) {
 	return Export(body, opts)
 }
 
-func ExportToWriter(body []byte, wr writer.Writer, opts *ExportOptions) (string, error) {
+func ExportToWriter(body []byte, wr writer.Writer, opts *ExportOptions) (int64, string, error) {
 
 	pretty, err := Export(body, opts)
 
 	if err != nil {
-		return "", err
+		return -1, "", err
 	}
 
 	rsp := gjson.GetBytes(pretty, "properties.wof:id")
 
 	if !rsp.Exists() {
-		return "", errors.New("Missing wof:id")
+		return -1, "", errors.New("Missing wof:id")
 	}
 
 	wof_id := rsp.Int()
@@ -82,7 +82,7 @@ func ExportToWriter(body []byte, wr writer.Writer, opts *ExportOptions) (string,
 	path, err := uri.Id2RelPath(wof_id)
 
 	if err != nil {
-		return "", err
+		return -1, "", err
 	}
 
 	r := bytes.NewReader(pretty)
@@ -91,10 +91,10 @@ func ExportToWriter(body []byte, wr writer.Writer, opts *ExportOptions) (string,
 	err = wr.Write(path, fh)
 
 	if err != nil {
-		return "", err
+		return -1, "", err
 	}
-
-	return wr.URI(path), nil
+	
+	return wof_id, wr.URI(path), nil
 }
 
 func Export(feature []byte, opts *ExportOptions) ([]byte, error) {
