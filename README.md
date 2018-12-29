@@ -10,14 +10,6 @@ Too soon. Move along.
 
 This is an experimental package to format Who's On First documents in Go. It is meant to be a port of the [py-mapzen-whosonfirst-geojson](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package and _mmmmmmmaybe_ some or all of the [py-mapzen-whosonfirst-export](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package.
 
-If you are reading this that means that you should _absolutely not_ use this for anything production-related yet. No.
-
-## To investigate
-
-### Using this package in (from) the Python packages
-
-* https://www.nathanvangheem.com/posts/2017/06/03/embedding-golang-in-python-with-groupcache.html
-
 ## See also
 
 * https://github.com/tidwall/pretty

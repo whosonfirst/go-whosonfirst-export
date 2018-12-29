@@ -2,6 +2,7 @@ package export
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
 	"github.com/tidwall/sjson"
@@ -13,21 +14,45 @@ type Feature struct {
 	Type       string      `json:"type"`
 	Id         int64       `json:"id"`
 	Properties interface{} `json:"properties"`
-	Bbox       interface{} `json:"bbox"`
+	Bbox       interface{} `json:"bbox,omitempty"`
 	Geometry   interface{} `json:"geometry"`
 }
 
-func ExportFeature(feature []byte) ([]byte, error) {
+type ExportOptions struct {
+	Strict bool
+}
 
-	var err error
+func DefaultExportOptions() (*ExportOptions, error) {
 
-	feature, err = PrepareFeature(feature)
+	opts := ExportOptions{
+		Strict: true,
+	}
+
+	return &opts, nil
+}
+
+func ExportFeature(feature interface{}, opts *ExportOptions) ([]byte, error) {
+
+	body, err := json.Marshal(feature)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = FormatFeature(feature)
+	return Export(body, opts)
+}
+
+func Export(feature []byte, opts *ExportOptions) ([]byte, error) {
+
+	var err error
+
+	feature, err = Prepare(feature, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	feature, err = Format(feature, opts)
 
 	if err != nil {
 		return nil, err
@@ -36,7 +61,7 @@ func ExportFeature(feature []byte) ([]byte, error) {
 	return feature, nil
 }
 
-func PrepareFeature(feature []byte) ([]byte, error) {
+func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 
 	var err error
 
@@ -59,10 +84,44 @@ func PrepareFeature(feature []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	id := gjson.GetBytes(feature, "id")
+
+	if !id.Exists() {
+
+		wofid := gjson.GetBytes(feature, "properties.wof:id")
+
+		if wofid.Exists() {
+
+			feature, err = sjson.SetBytes(feature, "id", wofid)
+
+			if err != nil {
+				return nil, err
+			}
+
+		} else {
+
+			if opts.Strict {
+				return nil, errors.New("Missing wof:id")
+			}
+
+			feature, err = sjson.SetBytes(feature, "id", -1)
+
+			if err != nil {
+				return nil, err
+			}
+
+			feature, err = sjson.SetBytes(feature, "properties.wof:id", -1)
+
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	return feature, nil
 }
 
-func FormatFeature(feature []byte) ([]byte, error) {
+func Format(feature []byte, opts *ExportOptions) ([]byte, error) {
 
 	// see also:
 	// https://github.com/tidwall/pretty/issues/2

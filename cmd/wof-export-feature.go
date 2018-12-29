@@ -27,7 +27,13 @@ func main() {
 			log.Fatal(err)
 		}
 
-		pretty, err := export.ExportFeature(body)
+		opts, err := export.DefaultExportOptions()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pretty, err := export.Export(body, opts)
 
 		if err != nil {
 			log.Fatal(err)
