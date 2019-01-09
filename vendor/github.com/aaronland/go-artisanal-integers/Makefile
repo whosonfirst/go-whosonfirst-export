@@ -12,13 +12,13 @@ self:   prep
 	cp -r server src/github.com/aaronland/go-artisanal-integers/
 	cp -r service src/github.com/aaronland/go-artisanal-integers/
 	cp -r utils src/github.com/aaronland/go-artisanal-integers/
-	cp -r vendor/* src/
+	# cp -r vendor/* src/
 
 rmdeps:
 	if test -d src; then rm -rf src; fi 
 
 deps:
-	@GOPATH=$(shell pwd) go get "github.com/whosonfirst/algnhsa"
+	# @GOPATH=$(shell pwd) go get "github.com/whosonfirst/algnhsa"
 
 vendor-deps: rmdeps deps
 	if test ! -d src; then mkdir src; fi

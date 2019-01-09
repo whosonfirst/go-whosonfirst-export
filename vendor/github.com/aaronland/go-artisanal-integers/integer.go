@@ -23,3 +23,7 @@ type Server interface {
 type Client interface {
 	NextInt() (int64, error)
 }
+
+type Integer struct {
+	Integer int64 `json:"integer"`
+}

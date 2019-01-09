@@ -19,10 +19,6 @@ func NewArtisanalServer(proto string, u *url.URL, args ...interface{}) (artisana
 
 		svr, err = NewHTTPServer(u, args...)
 
-	case "LAMBDA":
-
-		svr, err = NewLambdaServer(u, args...)
-
 	case "TCP":
 
 		svr, err = NewTCPServer(u, args...)
