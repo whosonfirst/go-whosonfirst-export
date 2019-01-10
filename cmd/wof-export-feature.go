@@ -16,6 +16,12 @@ func main() {
 	use_exporter := flag.Bool("exporter", false, "...")
 	flag.Parse()
 
+	opts, err := options.NewDefaultOptions()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	for _, path := range flag.Args() {
 
 		fh, err := os.Open(path)
@@ -24,13 +30,9 @@ func main() {
 			log.Fatal(err)
 		}
 
+		defer fh.Close()
+
 		body, err := ioutil.ReadAll(fh)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		opts, err := options.NewDefaultOptions()
 
 		if err != nil {
 			log.Fatal(err)
