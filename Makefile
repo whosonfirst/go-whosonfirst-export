@@ -11,6 +11,8 @@ self:   prep
 	if test ! -d src; then rm -rf src; fi
 	mkdir -p src/github.com/whosonfirst/go-whosonfirst-export
 	cp export.go src/github.com/whosonfirst/go-whosonfirst-export/
+	cp -r exporter src/github.com/whosonfirst/go-whosonfirst-export/
+	cp -r options src/github.com/whosonfirst/go-whosonfirst-export/
 	cp -r properties src/github.com/whosonfirst/go-whosonfirst-export/
 	cp -r uid src/github.com/whosonfirst/go-whosonfirst-export/
 	cp -r vendor/* src/
@@ -32,8 +34,11 @@ vendor-deps: deps
 
 fmt:
 	go fmt cmd/*.go
-	go fmt export.go
+	go fmt *.go
+	go fmt exporter/*.go
+	go fmt options/*.go
 	go fmt properties/*.go
+	go fmt uid/*.go
 
 bin:	self
 	@GOPATH=$(GOPATH) go build -o bin/wof-export-feature cmd/wof-export-feature.go

@@ -6,7 +6,7 @@ import (
 
 type ArtisanalUIDProvider struct {
 	Provider
-	client artisanalinteger.Client	
+	client artisanalinteger.Client
 }
 
 func NewArtisanalUIDProvider(client artisanalinteger.Client) (Provider, error) {

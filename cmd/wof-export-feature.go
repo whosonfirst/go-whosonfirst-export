@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/whosonfirst/go-whosonfirst-export"
+	"github.com/whosonfirst/go-whosonfirst-export/exporter"
+	"github.com/whosonfirst/go-whosonfirst-export/options"
 	"io/ioutil"
 	"log"
 	"os"
@@ -11,6 +13,7 @@ import (
 
 func main() {
 
+	use_exporter := flag.Bool("exporter", false, "...")
 	flag.Parse()
 
 	for _, path := range flag.Args() {
@@ -27,25 +30,36 @@ func main() {
 			log.Fatal(err)
 		}
 
-		opts, err := export.DefaultExportOptions()
+		opts, err := options.NewDefaultOptions()
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		ex, err := export.NewExporter(opts)
+		if !*use_exporter {
 
-		if err != nil {
-			log.Fatal(err)
+			err = export.Export(body, opts, os.Stdout)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+		} else {
+
+			ex, err := exporter.NewWhosOnFirstExporter(opts)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			pretty, err := ex.Export(body)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Printf("%s", pretty)
 		}
-
-		pretty, err := ex.Export(body)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Printf("%s", pretty)
 
 	}
 

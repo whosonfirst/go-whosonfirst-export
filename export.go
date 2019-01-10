@@ -1,12 +1,13 @@
 package export
 
 import (
+	"bytes"
 	"encoding/json"
-	brooklyn_integers "github.com/aaronland/go-brooklynintegers-api"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
+	"github.com/whosonfirst/go-whosonfirst-export/options"
 	"github.com/whosonfirst/go-whosonfirst-export/properties"
-	"github.com/whosonfirst/go-whosonfirst-export/uid"
+	"io"
 )
 
 type Feature struct {
@@ -17,85 +18,29 @@ type Feature struct {
 	Geometry   interface{} `json:"geometry"`
 }
 
-type Exporter interface {
-	Export([]byte) ([]byte, error)
-	ExportFeature(interface{}) ([]byte, error)
-}
-
-type Options interface {
-	UIDProvider() uid.Provider
-}
-
-type ExportOptions struct {
-	Options
-	uid_provider uid.Provider
-}
-
-func DefaultExportOptions() (Options, error) {
-
-	bi_client := brooklyn_integers.NewAPIClient()
-	provider, err := uid.NewArtisanalUIDProvider(bi_client)
-
-	if err != nil {
-		return nil, err
-	}
-
-	opts := ExportOptions{
-		uid_provider: provider,
-	}
-
-	return &opts, nil
-}
-
-func (o *ExportOptions) UIDProvider() uid.Provider {
-	return o.uid_provider
-}
-
-type FeatureExporter struct {
-	Exporter
-	options Options
-}
-
-func NewExporter(opts Options) (Exporter, error) {
-
-	ex := FeatureExporter{
-		options: opts,
-	}
-
-	return &ex, nil
-}
-
-func (ex *FeatureExporter) ExportFeature(feature interface{}) ([]byte, error) {
-
-	body, err := json.Marshal(feature)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ex.Export(body)
-}
-
-func (ex *FeatureExporter) Export(feature []byte) ([]byte, error) {
+func Export(feature []byte, opts options.Options, wr io.Writer) error {
 
 	var err error
 
-	feature, err = Prepare(feature, ex.options)
+	feature, err = Prepare(feature, opts)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	feature, err = Format(feature, ex.options)
+	feature, err = Format(feature, opts)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return feature, nil
+	r := bytes.NewReader(feature)
+	_, err = io.Copy(wr, r)
+
+	return err
 }
 
-func Prepare(feature []byte, opts Options) ([]byte, error) {
+func Prepare(feature []byte, opts options.Options) ([]byte, error) {
 
 	var err error
 
@@ -150,7 +95,7 @@ func Prepare(feature []byte, opts Options) ([]byte, error) {
 	return feature, nil
 }
 
-func Format(feature []byte, opts Options) ([]byte, error) {
+func Format(feature []byte, opts options.Options) ([]byte, error) {
 
 	// see also:
 	// https://github.com/tidwall/pretty/issues/2
