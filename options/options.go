@@ -6,4 +6,8 @@ import (
 
 type Options interface {
 	UIDProvider() uid.Provider
+
+	// mmmmmmmmaybe? (20190110/thisisaaronland)
+	// Get(string) (interface{}, bool)
+	// Set(string, interface{}) error
 }
