@@ -105,17 +105,6 @@ func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 		return nil, err
 	}
 	
-	feature, err = properties.EnsureCreated(feature)
-
-	if err != nil {
-		return nil, err
-	}
-
-	feature, err = properties.EnsureLastModified(feature)
-
-	if err != nil {
-		return nil, err
-	}
 
 	feature, err = properties.EnsureParentId(feature)
 
@@ -141,6 +130,12 @@ func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 		return nil, err
 	}
 
+	feature, err = properties.EnsureTimestamps(feature)
+
+	if err != nil {
+		return nil, err
+	}
+	
 	return feature, nil
 }
 
