@@ -1,12 +1,11 @@
 package properties
 
 import (
-	"time"
 	"github.com/tidwall/sjson"
-	"github.com/whosonfirst/go-whosonfirst-export"	// this was cause a circular import...
+	"time"
 )
 
-func EnsureLastModified(feature []byte, opts *export.ExportOptions) ([]byte, error) {
+func EnsureLastModified(feature []byte) ([]byte, error) {
 
 	var err error
 

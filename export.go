@@ -6,9 +6,7 @@ import (
 	brooklyn_integers "github.com/aaronland/go-brooklynintegers-api"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
-	"github.com/tidwall/sjson"
-	"sync"
-	"time"
+	"github.com/whosonfirst/go-whosonfirst-export/properties"
 )
 
 type Feature struct {
@@ -89,43 +87,43 @@ func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 
 	var err error
 
-	feature, err = prepareCreated(feature, opts)
+	feature, err = properties.EnsureCreated(feature)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = prepareLastModified(feature, opts)
+	feature, err = properties.EnsureLastModified(feature)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = prepareWOFId(feature, opts)
+	feature, err = properties.EnsureWOFId(feature, opts.IntegerClient)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = prepareParentId(feature, opts)
+	feature, err = properties.EnsureParentId(feature)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = prepareBelongsTo(feature, opts)
+	feature, err = properties.EnsureBelongsTo(feature)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = prepareSupersedes(feature, opts)
+	feature, err = properties.EnsureSupersedes(feature)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = prepareSupersededBy(feature, opts)
+	feature, err = properties.EnsureSupersededBy(feature)
 
 	if err != nil {
 		return nil, err
@@ -197,152 +195,4 @@ func Format(feature []byte, opts *ExportOptions) ([]byte, error) {
 	copy(final[geom_m.Index+len(geom):], feature[geom_m.Index+len(geom_m.Raw):])
 
 	return final, nil
-}
-
-func prepareCreated(feature []byte, opts *ExportOptions) ([]byte, error) {
-
-	var err error
-
-	now := int32(time.Now().Unix())
-
-	created := gjson.GetBytes(feature, "properties.wof:created")
-
-	if !created.Exists() {
-
-		feature, err = sjson.SetBytes(feature, "properties.wof:created", now)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return feature, nil
-}
-
-func prepareLastModified(feature []byte, opts *ExportOptions) ([]byte, error) {
-
-	var err error
-
-	now := int32(time.Now().Unix())
-
-	feature, err = sjson.SetBytes(feature, "properties.wof:lastmodified", now)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return feature, nil
-}
-
-func prepareWOFId(feature []byte, opts *ExportOptions) ([]byte, error) {
-
-	var err error
-
-	var wof_id int64
-
-	rsp := gjson.GetBytes(feature, "properties.wof:id")
-
-	if rsp.Exists() {
-
-		wof_id = rsp.Int()
-
-	} else {
-
-		i, err := opts.IntegerClient.NextInt()
-
-		if err != nil {
-			return nil, err
-		}
-
-		wof_id = i
-
-		feature, err = sjson.SetBytes(feature, "properties.wof:id", wof_id)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	id := gjson.GetBytes(feature, "id")
-
-	if !id.Exists() {
-
-		feature, err = sjson.SetBytes(feature, "id", wof_id)
-
-		if err != nil {
-			return nil, err
-		}
-
-	}
-
-	return feature, nil
-}
-
-func prepareParentId(feature []byte, opts *ExportOptions) ([]byte, error) {
-
-	rsp := gjson.GetBytes(feature, "properties.wof:parent_id")
-
-	if rsp.Exists() {
-		return feature, nil
-	}
-
-	return sjson.SetBytes(feature, "properties.wof:parent_id", -1)
-}
-
-func prepareBelongsTo(feature []byte, opts *ExportOptions) ([]byte, error) {
-
-	belongsto := make([]int64, 0)
-
-	rsp := gjson.GetBytes(feature, "properties.wof:hierarchy")
-
-	if rsp.Exists() {
-
-		s := new(sync.Map)
-
-		for _, h := range rsp.Array() {
-
-			for _, i := range h.Map() {
-				id := i.Int()
-				s.Store(id, true)
-			}
-		}
-
-		s.Range(func(k interface{}, v interface{}) bool {
-			id := k.(int64)
-
-			if id > 0 {
-				belongsto = append(belongsto, id)
-			}
-
-			return true
-		})
-	}
-
-	return sjson.SetBytes(feature, "properties.wof:belongsto", belongsto)
-}
-
-func prepareSupersedes(feature []byte, opts *ExportOptions) ([]byte, error) {
-
-	supersedes := make([]int64, 0)
-
-	rsp := gjson.GetBytes(feature, "properties.wof:supersedes")
-
-	if rsp.Exists() {
-		return feature, nil
-	}
-
-	return sjson.SetBytes(feature, "properties.wof:supersedes", supersedes)
-}
-
-func prepareSupersededBy(feature []byte, opts *ExportOptions) ([]byte, error) {
-
-	superseded_by := make([]int64, 0)
-
-	rsp := gjson.GetBytes(feature, "properties.wof:superseded_by")
-
-	if rsp.Exists() {
-		return feature, nil
-	}
-
-	return sjson.SetBytes(feature, "properties.wof:superseded_by", superseded_by)
 }
