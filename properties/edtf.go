@@ -34,7 +34,7 @@ func EnsureInception(feature []byte) ([]byte, error) {
 		return feature, nil
 	}
 
-	return sjson.SetBytes(feature, path, "X")
+	return sjson.SetBytes(feature, path, "uuuu")
 }
 
 func EnsureCessation(feature []byte) ([]byte, error) {
@@ -47,5 +47,5 @@ func EnsureCessation(feature []byte) ([]byte, error) {
 		return feature, nil
 	}
 
-	return sjson.SetBytes(feature, path, "X")
+	return sjson.SetBytes(feature, path, "uuuu")
 }
