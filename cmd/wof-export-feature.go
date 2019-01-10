@@ -33,7 +33,13 @@ func main() {
 			log.Fatal(err)
 		}
 
-		pretty, err := export.Export(body, opts)
+		ex, err := export.NewExporter(opts)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pretty, err := ex.Export(body)
 
 		if err != nil {
 			log.Fatal(err)

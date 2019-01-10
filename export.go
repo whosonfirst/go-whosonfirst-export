@@ -1,18 +1,12 @@
 package export
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
 	"github.com/aaronland/go-artisanal-integers"
 	brooklyn_integers "github.com/aaronland/go-brooklynintegers-api"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
 	"github.com/tidwall/sjson"
-	"github.com/whosonfirst/go-whosonfirst-readwrite/writer"
-	"github.com/whosonfirst/go-whosonfirst-uri"
-	"io/ioutil"
-	_ "log"
 	"sync"
 	"time"
 )
@@ -42,18 +36,26 @@ func DefaultExportOptions() (*ExportOptions, error) {
 	return &opts, nil
 }
 
-func ExportFeatureToWriter(feature interface{}, wr writer.Writer, opts *ExportOptions) (int64, string, error) {
-
-	body, err := json.Marshal(feature)
-
-	if err != nil {
-		return -1, "", err
-	}
-
-	return ExportToWriter(body, wr, opts)
+type Exporter interface {
+	Export([]byte) ([]byte, error)
+	ExportFeature(interface{}) ([]byte, error)
 }
 
-func ExportFeature(feature interface{}, opts *ExportOptions) ([]byte, error) {
+type FeatureExporter struct {
+	Exporter
+	options *ExportOptions
+}
+
+func NewExporter(opts *ExportOptions) (Exporter, error) {
+
+	ex := FeatureExporter{
+		options: opts,
+	}
+
+	return &ex, nil
+}
+
+func (ex *FeatureExporter) ExportFeature(feature interface{}) ([]byte, error) {
 
 	body, err := json.Marshal(feature)
 
@@ -61,57 +63,20 @@ func ExportFeature(feature interface{}, opts *ExportOptions) ([]byte, error) {
 		return nil, err
 	}
 
-	return Export(body, opts)
+	return ex.Export(body)
 }
 
-// export to a go-whosonfirst-readwrite/writer.Writer not an io.Writer
-// (20190109/thisisaaronland)
-
-func ExportToWriter(body []byte, wr writer.Writer, opts *ExportOptions) (int64, string, error) {
-
-	pretty, err := Export(body, opts)
-
-	if err != nil {
-		return -1, "", err
-	}
-
-	rsp := gjson.GetBytes(pretty, "properties.wof:id")
-
-	if !rsp.Exists() {
-		return -1, "", errors.New("Missing wof:id")
-	}
-
-	wof_id := rsp.Int()
-
-	path, err := uri.Id2RelPath(wof_id)
-
-	if err != nil {
-		return -1, "", err
-	}
-
-	r := bytes.NewReader(pretty)
-	fh := ioutil.NopCloser(r)
-
-	err = wr.Write(path, fh)
-
-	if err != nil {
-		return -1, "", err
-	}
-
-	return wof_id, wr.URI(path), nil
-}
-
-func Export(feature []byte, opts *ExportOptions) ([]byte, error) {
+func (ex *FeatureExporter) Export(feature []byte) ([]byte, error) {
 
 	var err error
 
-	feature, err = Prepare(feature, opts)
+	feature, err = Prepare(feature, ex.options)
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = Format(feature, opts)
+	feature, err = Format(feature, ex.options)
 
 	if err != nil {
 		return nil, err
