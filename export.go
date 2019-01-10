@@ -87,6 +87,24 @@ func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 
 	var err error
 
+	feature, err = properties.EnsureWOFId(feature, opts.IntegerClient)
+
+	if err != nil {
+		return nil, err
+	}
+	
+	feature, err = properties.EnsureRequired(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	feature, err = properties.EnsureEDTF(feature)
+
+	if err != nil {
+		return nil, err
+	}
+	
 	feature, err = properties.EnsureCreated(feature)
 
 	if err != nil {
@@ -94,12 +112,6 @@ func Prepare(feature []byte, opts *ExportOptions) ([]byte, error) {
 	}
 
 	feature, err = properties.EnsureLastModified(feature)
-
-	if err != nil {
-		return nil, err
-	}
-
-	feature, err = properties.EnsureWOFId(feature, opts.IntegerClient)
 
 	if err != nil {
 		return nil, err
