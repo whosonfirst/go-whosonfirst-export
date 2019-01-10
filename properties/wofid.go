@@ -1,12 +1,12 @@
 package properties
 
 import (
-	"github.com/aaronland/go-artisanal-integers"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"github.com/whosonfirst/go-whosonfirst-export/uid"
 )
 
-func EnsureWOFId(feature []byte, client artisanalinteger.Client) ([]byte, error) {
+func EnsureWOFId(feature []byte, provider uid.Provider) ([]byte, error) {
 
 	var err error
 
@@ -20,7 +20,7 @@ func EnsureWOFId(feature []byte, client artisanalinteger.Client) ([]byte, error)
 
 	} else {
 
-		i, err := client.NextInt()
+		i, err := provider.UID()
 
 		if err != nil {
 			return nil, err

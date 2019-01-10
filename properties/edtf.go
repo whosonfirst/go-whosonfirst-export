@@ -1,6 +1,6 @@
 package properties
 
-import(
+import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
@@ -8,7 +8,7 @@ import(
 func EnsureEDTF(feature []byte) ([]byte, error) {
 
 	var err error
-	
+
 	feature, err = EnsureInception(feature)
 
 	if err != nil {
@@ -27,25 +27,25 @@ func EnsureEDTF(feature []byte) ([]byte, error) {
 func EnsureInception(feature []byte) ([]byte, error) {
 
 	path := "properties.edtf:inception"
-	
+
 	rsp := gjson.GetBytes(feature, path)
 
 	if rsp.Exists() {
 		return feature, nil
 	}
 
-	return sjson.SetBytes(feature, path, "X")	
+	return sjson.SetBytes(feature, path, "X")
 }
 
 func EnsureCessation(feature []byte) ([]byte, error) {
 
 	path := "properties.edtf:cessation"
-	
+
 	rsp := gjson.GetBytes(feature, path)
 
 	if rsp.Exists() {
 		return feature, nil
 	}
 
-	return sjson.SetBytes(feature, path, "X")	
+	return sjson.SetBytes(feature, path, "X")
 }

@@ -12,6 +12,7 @@ self:   prep
 	mkdir -p src/github.com/whosonfirst/go-whosonfirst-export
 	cp export.go src/github.com/whosonfirst/go-whosonfirst-export/
 	cp -r properties src/github.com/whosonfirst/go-whosonfirst-export/
+	cp -r uid src/github.com/whosonfirst/go-whosonfirst-export/
 	cp -r vendor/* src/
 
 deps:   rmdeps
