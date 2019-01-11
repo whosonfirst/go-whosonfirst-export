@@ -1,5 +1,7 @@
 package properties
 
+import ()
+
 func EnsureRequired(feature []byte) ([]byte, error) {
 
 	var err error
@@ -15,6 +17,36 @@ func EnsureRequired(feature []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	feature, err = EnsureGeom(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return feature, nil
+}
+
+func EnsureGeom(feature []byte) ([]byte, error) {
+
+	var err error
+
+	feature, err = EnsureSrcGeom(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	feature, err = EnsureGeomHash(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// TO DO
+	// geom:latitude
+	// geom:longitude
+	// geom:bbox
 
 	return feature, nil
 }
