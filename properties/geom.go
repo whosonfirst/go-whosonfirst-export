@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	_ "github.com/go-spatial/geom"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
