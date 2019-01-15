@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"github.com/paulmach/orb/geojson"
+	"github.com/paulmach/orb/planar"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
@@ -40,4 +42,39 @@ func EnsureGeomHash(feature []byte) ([]byte, error) {
 	geom_hash := hex.EncodeToString(hash[:])
 
 	return sjson.SetBytes(feature, "wof:geomhash", geom_hash)
+}
+
+func EnsureGeomProperties(feature []byte) ([]byte, error) {
+
+	var err error
+
+	f, err := geojson.UnmarshalFeature(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// bbox := f.BBox
+
+	centroid, area := planar.CentroidArea(f.Geometry)
+
+	feature, err = sjson.SetBytes(feature, "geom:latitude", centroid.Y())
+
+	if err != nil {
+		return nil, err
+	}
+
+	feature, err = sjson.SetBytes(feature, "geom:longitude", centroid.X())
+
+	if err != nil {
+		return nil, err
+	}
+
+	feature, err = sjson.SetBytes(feature, "geom:area", area)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return feature, nil
 }

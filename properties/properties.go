@@ -43,9 +43,13 @@ func EnsureGeom(feature []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	feature, err = EnsureGeomProperties(feature)
+
+	if err != nil {
+		return nil, err
+	}
+	
 	// TO DO
-	// geom:latitude
-	// geom:longitude
 	// geom:bbox
 
 	return feature, nil
