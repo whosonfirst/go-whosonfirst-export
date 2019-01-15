@@ -5,10 +5,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/planar"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	_ "log"
 )
 
 func EnsureSrcGeom(feature []byte) ([]byte, error) {
@@ -44,7 +46,10 @@ func EnsureGeomHash(feature []byte) ([]byte, error) {
 	return sjson.SetBytes(feature, "wof:geomhash", geom_hash)
 }
 
-func EnsureGeomProperties(feature []byte) ([]byte, error) {
+func EnsureGeomCoords(feature []byte) ([]byte, error) {
+
+	// https://github.com/paulmach/orb/blob/master/geojson/feature.go
+	// https://github.com/paulmach/orb/blob/master/planar/area.go
 
 	var err error
 
@@ -54,23 +59,35 @@ func EnsureGeomProperties(feature []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	// bbox := f.BBox
-
 	centroid, area := planar.CentroidArea(f.Geometry)
 
-	feature, err = sjson.SetBytes(feature, "geom:latitude", centroid.Y())
+	feature, err = sjson.SetBytes(feature, "properties.geom:latitude", centroid.Y())
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = sjson.SetBytes(feature, "geom:longitude", centroid.X())
+	feature, err = sjson.SetBytes(feature, "properties.geom:longitude", centroid.X())
 
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = sjson.SetBytes(feature, "geom:area", area)
+	feature, err = sjson.SetBytes(feature, "properties.geom:area", area)
+
+	if err != nil {
+		return nil, err
+	}
+
+	bbox := f.BBox
+	bounds := bbox.Bound()
+
+	min := bounds.Min
+	max := bounds.Max
+
+	str_bbox := fmt.Sprintf("%.06f,%.06f,%.06f,%.06f", min.X(), min.Y(), max.X(), max.Y())
+
+	feature, err = sjson.SetBytes(feature, "properties.geom:bbox", str_bbox)
 
 	if err != nil {
 		return nil, err
