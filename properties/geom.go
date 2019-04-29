@@ -15,7 +15,7 @@ import (
 
 func EnsureSrcGeom(feature []byte) ([]byte, error) {
 
-	path := "src:geom"
+	path := "properties.src:geom"
 
 	rsp := gjson.GetBytes(feature, path)
 
@@ -43,7 +43,7 @@ func EnsureGeomHash(feature []byte) ([]byte, error) {
 	hash := md5.Sum(enc)
 	geom_hash := hex.EncodeToString(hash[:])
 
-	return sjson.SetBytes(feature, "wof:geomhash", geom_hash)
+	return sjson.SetBytes(feature, "properties.wof:geomhash", geom_hash)
 }
 
 func EnsureGeomCoords(feature []byte) ([]byte, error) {
