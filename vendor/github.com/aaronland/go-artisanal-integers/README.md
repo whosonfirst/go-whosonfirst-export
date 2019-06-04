@@ -2,23 +2,18 @@
 
 No, really.
 
-## Caveats
-
-This is absolutely _not_ ready for use yet. Proceed with caution.
 
 ## Install
 
 You will need to have both `Go` and the `make` programs installed on your computer. Assuming you do just type:
 
 ```
-make bin
+make tools
 ```
 
 All of this package's dependencies are bundled with the code in the `vendor` directory.
 
 ## Usage
-
-Everything is in flux. This will be updated soon.
 
 ## Interfaces
 
