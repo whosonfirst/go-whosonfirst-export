@@ -45,9 +45,14 @@ func main() {
 
 _Error handling removed for the sake of brevity._
 
+## To do
+
+This package needs to hold hands with the `go-whosonfirst-validate` package.
+
 ## See also
 
 * https://github.com/tidwall/pretty
 * https://github.com/tidwall/gjson
 * https://github.com/tidwall/pretty/issues/2
 * https://gist.github.com/tidwall/ca6ca1dd0cb780f0be4d134f8e4eb7bc
+* https://github.com/whosonfirst/go-whosonfirst-validate
