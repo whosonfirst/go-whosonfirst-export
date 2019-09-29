@@ -3,11 +3,11 @@ package export
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/tidwall/gjson"
-	"github.com/tidwall/pretty"
+	"io"
+
+	format "github.com/tomtaylor/go-whosonfirst-format"
 	"github.com/whosonfirst/go-whosonfirst-export/options"
 	"github.com/whosonfirst/go-whosonfirst-export/properties"
-	"io"
 )
 
 type Feature struct {
@@ -96,66 +96,7 @@ func Prepare(feature []byte, opts options.Options) ([]byte, error) {
 }
 
 func Format(feature []byte, opts options.Options) ([]byte, error) {
-
-	// see also:
-	// https://github.com/tidwall/pretty/issues/2
-	// https://gist.github.com/tidwall/ca6ca1dd0cb780f0be4d134f8e4eb7bc
-
-	// the first thing we need to do is ensure that top-level keys
-	// are sorted properly (see Feature definition above) specifically
-	// so that the bbox and geometry properties are at the end of the
-	// file
-
-	var f Feature
+	var f format.Feature
 	json.Unmarshal(feature, &f)
-
-	// this has the side-effect of ensuring that all the keys in the
-	// properties dictionary are sorted automagically
-
-	feature, err := json.Marshal(f)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// get the geometry (that will be mutated)
-
-	geom_m := gjson.GetBytes(feature, "geometry")
-
-	// sanity checks
-
-	if geom_m.Index == 0 || len(geom_m.Raw) == 0 || geom_m.Raw[0] != '{' || geom_m.Raw[len(geom_m.Raw)-1] != '}' {
-		// probably a generic geometry, make it ugly
-		return pretty.Ugly(feature), nil
-	}
-
-	// make an ugly copy of just the geometry segment
-	geom := pretty.Ugly(feature[geom_m.Index : geom_m.Index+len(geom_m.Raw)])
-
-	// now for the tricky part.
-
-	// empty the geometry object.
-	// Note that this mutates the original feature.
-
-	for i := 1; i < len(geom_m.Raw)-1; i++ {
-		feature[geom_m.Index+i] = ' '
-	}
-
-	// make the json pretty
-
-	feature = pretty.Pretty(feature)
-
-	// find the new location of the geometry
-
-	geom_m = gjson.GetBytes(feature, "geometry")
-
-	// allocate the space for the final json.
-
-	final := make([]byte, len(feature)+len(geom)-2)
-
-	copy(final, feature[:geom_m.Index])
-	copy(final[geom_m.Index:], geom)
-	copy(final[geom_m.Index+len(geom):], feature[geom_m.Index+len(geom_m.Raw):])
-
-	return final, nil
+	return format.FormatFeature(&f)
 }
