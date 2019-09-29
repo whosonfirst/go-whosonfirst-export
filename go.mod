@@ -6,7 +6,7 @@ require (
 	github.com/paulmach/orb v0.1.5
 	github.com/tidwall/gjson v1.3.2
 	github.com/tidwall/sjson v1.0.4
-	github.com/tomtaylor/go-whosonfirst-format v0.1.0
+	github.com/tomtaylor/go-whosonfirst-format v0.2.0
 
 )
 
