@@ -1,44 +1,21 @@
-# github.com/aaronland/go-artisanal-integers v0.1.0
+# github.com/aaronland/go-artisanal-integers v0.1.1
 github.com/aaronland/go-artisanal-integers
-github.com/aaronland/go-artisanal-integers/client
-github.com/aaronland/go-artisanal-integers/server
-github.com/aaronland/go-artisanal-integers/service
-github.com/aaronland/go-artisanal-integers/application
-github.com/aaronland/go-artisanal-integers/engine
-github.com/aaronland/go-artisanal-integers/http
-github.com/aaronland/go-artisanal-integers/utils
-# github.com/aaronland/go-brooklynintegers-api v1.0.1
+# github.com/aaronland/go-brooklynintegers-api v1.1.0
 github.com/aaronland/go-brooklynintegers-api
-# github.com/davecgh/go-spew v1.1.0
-github.com/davecgh/go-spew/spew
-# github.com/gogo/protobuf v1.2.1
-github.com/gogo/protobuf/proto
-# github.com/paulmach/orb v0.1.3
+# github.com/aaronland/go-roster v0.0.1
+github.com/aaronland/go-roster
+# github.com/paulmach/orb v0.1.5
 github.com/paulmach/orb/geojson
 github.com/paulmach/orb/planar
 github.com/paulmach/orb
-github.com/paulmach/orb/clip
-github.com/paulmach/orb/encoding/mvt/vectortile
-github.com/paulmach/orb/internal/mercator
-github.com/paulmach/orb/maptile
-github.com/paulmach/orb/project
 github.com/paulmach/orb/internal/length
-github.com/paulmach/orb/encoding/mvt
-github.com/paulmach/orb/simplify
-github.com/paulmach/orb/geo
-github.com/paulmach/orb/quadtree
-github.com/paulmach/orb/resample
-# github.com/pkg/errors v0.8.1
-github.com/pkg/errors
-# github.com/pmezard/go-difflib v1.0.0
-github.com/pmezard/go-difflib/difflib
-# github.com/stretchr/testify v1.3.0
-github.com/stretchr/testify/assert
-# github.com/tidwall/gjson v1.2.1
+# github.com/tidwall/gjson v1.3.5
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.0.1
 github.com/tidwall/match
-# github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65
+# github.com/tidwall/pretty v1.0.0
 github.com/tidwall/pretty
 # github.com/tidwall/sjson v1.0.4
 github.com/tidwall/sjson
+# github.com/tomtaylor/go-whosonfirst-format v0.2.0
+github.com/tomtaylor/go-whosonfirst-format
