@@ -4,4 +4,3 @@ src
 *.bak
 !vendor/src
 bin/wof-*
-*.geojson
