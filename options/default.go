@@ -1,9 +1,10 @@
 package options
 
 import (
+	"context"
 	"github.com/aaronland/go-artisanal-integers"
-	brooklyn_integers "github.com/aaronland/go-brooklynintegers-api"
 	"github.com/whosonfirst/go-whosonfirst-export/uid"
+	"github.com/whosonfirst/go-whosonfirst-id"	
 )
 
 type DefaultOptions struct {
@@ -13,8 +14,13 @@ type DefaultOptions struct {
 
 func NewDefaultOptions() (Options, error) {
 
-	bi_client := brooklyn_integers.NewAPIClient()
-	return NewDefaultOptionsWithArtisanalIntegerClient(bi_client)
+	id_client, err := id.NewIdClient(context.Background())
+
+	if err != nil {
+		return nil, err
+	}
+	
+	return NewDefaultOptionsWithArtisanalIntegerClient(id_client)
 }
 
 func NewDefaultOptionsWithArtisanalIntegerClient(client artisanalinteger.Client) (Options, error) {

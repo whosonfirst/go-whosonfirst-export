@@ -1,9 +1,19 @@
 # github.com/aaronland/go-artisanal-integers v0.1.1
 github.com/aaronland/go-artisanal-integers
+# github.com/aaronland/go-artisanal-integers-proxy v0.2.0
+github.com/aaronland/go-artisanal-integers-proxy/service
 # github.com/aaronland/go-brooklynintegers-api v1.1.0
 github.com/aaronland/go-brooklynintegers-api
+# github.com/aaronland/go-pool v0.0.0-20191128211702-88306299c758
+github.com/aaronland/go-pool
 # github.com/aaronland/go-roster v0.0.1
 github.com/aaronland/go-roster
+# github.com/aaronland/go-string v0.1.1
+github.com/aaronland/go-string/random
+# github.com/aaronland/go-uid v0.0.2
+github.com/aaronland/go-uid
+# github.com/aaronland/go-uid-artisanal v0.0.0-20191128230022-67bc446aa49d
+github.com/aaronland/go-uid-artisanal
 # github.com/paulmach/orb v0.1.5
 github.com/paulmach/orb/geojson
 github.com/paulmach/orb/planar
@@ -19,3 +29,7 @@ github.com/tidwall/pretty
 github.com/tidwall/sjson
 # github.com/tomtaylor/go-whosonfirst-format v0.2.0
 github.com/tomtaylor/go-whosonfirst-format
+# github.com/whosonfirst/go-whosonfirst-id v0.0.1
+github.com/whosonfirst/go-whosonfirst-id
+# github.com/whosonfirst/go-whosonfirst-log v0.1.0
+github.com/whosonfirst/go-whosonfirst-log
