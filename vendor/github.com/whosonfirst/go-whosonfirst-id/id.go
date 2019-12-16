@@ -2,19 +2,22 @@ package id
 
 import (
 	"context"
-	"github.com/aaronland/go-artisanal-integers"
 	_ "github.com/aaronland/go-brooklynintegers-api"
 	"github.com/aaronland/go-uid"
 	"github.com/aaronland/go-uid-artisanal"
 	"strconv"
 )
 
-type IdClient struct {
-	artisanalinteger.Client
-	provider uid.Provider
+type Provider interface {
+	NewID() (int64, error)
 }
 
-func NewIdClient(ctx context.Context) (artisanalinteger.Client, error) {
+type WOFProvider struct {
+	Provider
+	uid_provider uid.Provider
+}
+
+func NewProvider(ctx context.Context) (Provider, error) {
 
 	opts := &artisanal.ArtisanalProviderURIOptions{
 		Pool:    "memory://",
@@ -35,27 +38,27 @@ func NewIdClient(ctx context.Context) (artisanalinteger.Client, error) {
 
 	str_uri := uri.String()
 
-	return NewIdClientWithURI(ctx, str_uri)
+	return NewProviderWithURI(ctx, str_uri)
 }
 
-func NewIdClientWithURI(ctx context.Context, uri string) (artisanalinteger.Client, error) {
+func NewProviderWithURI(ctx context.Context, uri string) (Provider, error) {
 
-	pr, err := uid.NewProvider(ctx, uri)
+	uid_pr, err := uid.NewProvider(ctx, uri)
 
 	if err != nil {
 		return nil, err
 	}
 
-	cl := &IdClient{
-		provider: pr,
+	wof_pr := &WOFProvider{
+		uid_provider: uid_pr,
 	}
 
-	return cl, nil
+	return wof_pr, nil
 }
 
-func (cl *IdClient) NextInt() (int64, error) {
+func (wof_pr *WOFProvider) NewID() (int64, error) {
 
-	uid, err := cl.provider.UID()
+	uid, err := wof_pr.uid_provider.UID()
 
 	if err != nil {
 		return -1, err

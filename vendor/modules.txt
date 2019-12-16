@@ -29,7 +29,7 @@ github.com/tidwall/pretty
 github.com/tidwall/sjson
 # github.com/tomtaylor/go-whosonfirst-format v0.2.0
 github.com/tomtaylor/go-whosonfirst-format
-# github.com/whosonfirst/go-whosonfirst-id v0.0.1
+# github.com/whosonfirst/go-whosonfirst-id v0.0.2
 github.com/whosonfirst/go-whosonfirst-id
 # github.com/whosonfirst/go-whosonfirst-log v0.1.0
 github.com/whosonfirst/go-whosonfirst-log
