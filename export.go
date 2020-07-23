@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
-	format "github.com/tomtaylor/go-whosonfirst-format"
+	format "github.com/whosonfirst/go-whosonfirst-format"
 	"github.com/whosonfirst/go-whosonfirst-export/options"
 	"github.com/whosonfirst/go-whosonfirst-export/properties"
 )
