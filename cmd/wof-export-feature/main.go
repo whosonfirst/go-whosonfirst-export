@@ -3,17 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/whosonfirst/go-whosonfirst-export"
-	"github.com/whosonfirst/go-whosonfirst-export/exporter"
-	"github.com/whosonfirst/go-whosonfirst-export/options"
 	"io/ioutil"
 	"log"
 	"os"
+
+	export "github.com/whosonfirst/go-whosonfirst-export"
+	"github.com/whosonfirst/go-whosonfirst-export/exporter"
+	"github.com/whosonfirst/go-whosonfirst-export/options"
 )
 
 func main() {
-	
-	use_exporter := flag.Bool("exporter", false, "...")
+	useExporter := flag.Bool("exporter", false, "...")
 	flag.Parse()
 
 	opts, err := options.NewDefaultOptions()
@@ -38,8 +38,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		if !*use_exporter {
-
+		if !*useExporter {
 			err = export.Export(body, opts, os.Stdout)
 
 			if err != nil {
@@ -47,7 +46,6 @@ func main() {
 			}
 
 		} else {
-
 			ex, err := exporter.NewWhosOnFirstExporter(opts)
 
 			if err != nil {

@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"io"
 
-	format "github.com/whosonfirst/go-whosonfirst-format"
 	"github.com/whosonfirst/go-whosonfirst-export/options"
 	"github.com/whosonfirst/go-whosonfirst-export/properties"
+	format "github.com/whosonfirst/go-whosonfirst-format"
 )
 
 type Feature struct {
