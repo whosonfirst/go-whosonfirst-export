@@ -1,4 +1,4 @@
-module github.com/tomtaylor/go-whosonfirst-format
+module github.com/whosonfirst/go-whosonfirst-format
 
 go 1.12
 

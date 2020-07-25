@@ -27,7 +27,7 @@ func NewDefaultOptionsWithProvider(provider id.Provider) (Options, error) {
 		id_provider: provider,
 	}
 
-	return &opts, nil	
+	return &opts, nil
 }
 
 func (opts *DefaultOptions) IDProvider() id.Provider {
