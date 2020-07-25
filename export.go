@@ -21,12 +21,12 @@ type Feature struct {
 func Export(feature []byte, opts options.Options, wr io.Writer) error {
 	var err error
 
-	feature, err = prepare(feature, opts)
+	feature, err = prepareWithoutTimestamps(feature, opts)
 	if err != nil {
 		return err
 	}
 
-	feature, err = updateLastModified(feature, opts)
+	feature, err = prepareTimestamps(feature, opts)
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func Export(feature []byte, opts options.Options, wr io.Writer) error {
 func ExportChanged(feature []byte, existingFeature []byte, opts options.Options, wr io.Writer) (changed bool, err error) {
 	changed = false
 
-	feature, err = prepare(feature, opts)
+	feature, err = prepareWithoutTimestamps(feature, opts)
 	if err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func ExportChanged(feature []byte, existingFeature []byte, opts options.Options,
 		return
 	}
 
-	feature, err = updateLastModified(feature, opts)
+	feature, err = prepareTimestamps(feature, opts)
 	if err != nil {
 		return
 	}
@@ -78,12 +78,12 @@ func ExportChanged(feature []byte, existingFeature []byte, opts options.Options,
 func Prepare(feature []byte, opts options.Options) ([]byte, error) {
 	var err error
 
-	feature, err = prepare(feature, opts)
+	feature, err = prepareWithoutTimestamps(feature, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = updateLastModified(feature, opts)
+	feature, err = prepareTimestamps(feature, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func Format(feature []byte, opts options.Options) ([]byte, error) {
 	return format.FormatFeature(&f)
 }
 
-func prepare(feature []byte, opts options.Options) ([]byte, error) {
+func prepareWithoutTimestamps(feature []byte, opts options.Options) ([]byte, error) {
 	var err error
 
 	feature, err = properties.EnsureWOFId(feature, opts.IDProvider())
@@ -145,6 +145,6 @@ func prepare(feature []byte, opts options.Options) ([]byte, error) {
 	return feature, nil
 }
 
-func updateLastModified(feature []byte, opts options.Options) ([]byte, error) {
+func prepareTimestamps(feature []byte, opts options.Options) ([]byte, error) {
 	return properties.EnsureTimestamps(feature)
 }
