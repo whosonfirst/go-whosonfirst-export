@@ -150,6 +150,68 @@ func TestExportWithMissingBelongstoKey(t *testing.T) {
 	}
 }
 
+func TestExportChangedWithUnchangedFile(t *testing.T) {
+	body := readFeature(t, "no-changes.geojson")
+	opts, err := options.NewDefaultOptions()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	changed, err := ExportChanged(body, body, opts, wr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if changed {
+		t.Error("Exported file should not be changed")
+	}
+
+	wr.Flush()
+	updatedBody := buf.Bytes()
+
+	if len(updatedBody) > 0 {
+		t.Error("Writer should not have written to file")
+	}
+}
+
+func TestExportChangedWithChanges(t *testing.T) {
+	body := readFeature(t, "changes-required.geojson")
+	opts, err := options.NewDefaultOptions()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	originalLastModified := gjson.GetBytes(body, "properties.wof:lastmodified").Int()
+
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	changed, err := ExportChanged(body, body, opts, wr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !changed {
+		t.Error("Exported file should have be changed")
+	}
+
+	wr.Flush()
+	updatedBody := buf.Bytes()
+
+	if bytes.Equal(body, updatedBody) {
+		t.Error("Body was identical")
+	}
+
+	newLastModified := gjson.GetBytes(updatedBody, "properties.wof:lastmodified").Int()
+
+	if newLastModified <= originalLastModified {
+		t.Error("Last modified timestamp should have increased")
+	}
+}
+
 func readFeature(t *testing.T, filename string) []byte {
 	cwd, err := os.Getwd()
 
