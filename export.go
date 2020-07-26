@@ -69,6 +69,11 @@ func ExportChanged(feature []byte, existingFeature []byte, opts options.Options,
 		return
 	}
 
+	feature, err = Format(feature, opts)
+	if err != nil {
+		return
+	}
+
 	r := bytes.NewReader(feature)
 	_, err = io.Copy(wr, r)
 
