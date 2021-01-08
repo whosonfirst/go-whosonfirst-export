@@ -3,9 +3,11 @@ package geojson
 import (
 	"encoding/json"
 	"errors"
-
 	"github.com/paulmach/orb"
 )
+
+// ErrInvalidGeometry will be returned if a the json of the geometry is invalid.
+var ErrInvalidGeometry = errors.New("geojson: invalid geometry")
 
 // A Geometry matches the structure of a GeoJSON Geometry.
 type Geometry struct {
@@ -101,10 +103,11 @@ func UnmarshalGeometry(data []byte) (*Geometry, error) {
 // UnmarshalJSON will unmarshal the correct geometry from the json structure.
 func (g *Geometry) UnmarshalJSON(data []byte) error {
 	jg := &jsonGeometry{}
-	err := json.Unmarshal(data, &jg)
+	err := json.Unmarshal(data, jg)
 	if err != nil {
 		return err
 	}
+
 	switch jg.Type {
 	case "Point":
 		p := orb.Point{}
@@ -133,10 +136,12 @@ func (g *Geometry) UnmarshalJSON(data []byte) error {
 	case "GeometryCollection":
 		g.Geometries = jg.Geometries
 	default:
-		return errors.New("geojson: invalid geometry")
+		return ErrInvalidGeometry
 	}
 
-	return err
+	g.Type = g.Geometry().GeoJSONType()
+
+	return nil
 }
 
 // A Point is a helper type that will marshal to/from a GeoJSON Point geometry.

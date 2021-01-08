@@ -14,18 +14,18 @@ github.com/aaronland/go-string/random
 github.com/aaronland/go-uid
 # github.com/aaronland/go-uid-artisanal v0.0.0-20191128230022-67bc446aa49d
 github.com/aaronland/go-uid-artisanal
-# github.com/paulmach/orb v0.1.5
+# github.com/paulmach/orb v0.1.7
 github.com/paulmach/orb
 github.com/paulmach/orb/geojson
 github.com/paulmach/orb/internal/length
 github.com/paulmach/orb/planar
-# github.com/tidwall/gjson v1.3.5
+# github.com/tidwall/gjson v1.6.7
 github.com/tidwall/gjson
-# github.com/tidwall/match v1.0.1
+# github.com/tidwall/match v1.0.3
 github.com/tidwall/match
-# github.com/tidwall/pretty v1.0.0
+# github.com/tidwall/pretty v1.0.2
 github.com/tidwall/pretty
-# github.com/tidwall/sjson v1.0.4
+# github.com/tidwall/sjson v1.1.4
 github.com/tidwall/sjson
 # github.com/whosonfirst/go-whosonfirst-format v0.3.0
 github.com/whosonfirst/go-whosonfirst-format
