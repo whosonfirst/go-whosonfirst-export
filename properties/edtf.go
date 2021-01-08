@@ -1,6 +1,8 @@
 package properties
 
 import (
+	"github.com/sfomuseum/go-edtf"
+	"github.com/sfomuseum/go-edtf/parser"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
@@ -31,10 +33,21 @@ func EnsureInception(feature []byte) ([]byte, error) {
 	rsp := gjson.GetBytes(feature, path)
 
 	if rsp.Exists() {
+
+		edtf_str := rsp.String()
+
+		_, err := parser.ParseString(edtf_str)
+
+		if err != nil {
+			return nil, err
+		}
+
+		// set date:FOO here
+
 		return feature, nil
 	}
 
-	return sjson.SetBytes(feature, path, "uuuu")
+	return sjson.SetBytes(feature, path, edtf.UNKNOWN)
 }
 
 func EnsureCessation(feature []byte) ([]byte, error) {
@@ -44,8 +57,19 @@ func EnsureCessation(feature []byte) ([]byte, error) {
 	rsp := gjson.GetBytes(feature, path)
 
 	if rsp.Exists() {
+
+		edtf_str := rsp.String()
+
+		_, err := parser.ParseString(edtf_str)
+
+		if err != nil {
+			return nil, err
+		}
+
+		// set date:BAR here
+
 		return feature, nil
 	}
 
-	return sjson.SetBytes(feature, path, "uuuu")
+	return sjson.SetBytes(feature, path, edtf.UNKNOWN)
 }
