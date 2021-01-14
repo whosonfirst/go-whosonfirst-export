@@ -36,13 +36,31 @@ func EnsureInception(feature []byte) ([]byte, error) {
 
 		edtf_str := rsp.String()
 
-		_, err := parser.ParseString(edtf_str)
+		d, err := parser.ParseString(edtf_str)
 
 		if err != nil {
 			return nil, err
 		}
 
-		// set date:FOO here
+		lower_ts, err := d.Lower()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if lower_ts != nil {
+			return sjson.SetBytes(feature, "properties.date:inception_lower", lower_ts.Unix())
+		}
+
+		upper_ts, err := d.Upper()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if upper_ts != nil {
+			return sjson.SetBytes(feature, "properties.date:inception_upper", upper_ts.Unix())
+		}
 
 		return feature, nil
 	}
@@ -60,13 +78,31 @@ func EnsureCessation(feature []byte) ([]byte, error) {
 
 		edtf_str := rsp.String()
 
-		_, err := parser.ParseString(edtf_str)
+		d, err := parser.ParseString(edtf_str)
 
 		if err != nil {
 			return nil, err
 		}
 
-		// set date:BAR here
+		lower_ts, err := d.Lower()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if lower_ts != nil {
+			return sjson.SetBytes(feature, "properties.date:cessation_lower", lower_ts.Unix())
+		}
+
+		upper_ts, err := d.Upper()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if upper_ts != nil {
+			return sjson.SetBytes(feature, "properties.date:cessation_upper", upper_ts.Unix())
+		}
 
 		return feature, nil
 	}
