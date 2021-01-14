@@ -36,6 +36,10 @@ func TestExport(t *testing.T) {
 		"properties.wof:id",
 		"properties.geom:bbox",
 		"bbox",
+		"date:inception_lower",
+		"date:inception_upper",
+		"date:cessation_lower",
+		"date:cessation_upper",		
 	}
 
 	for _, prop := range ensureProps {
@@ -54,6 +58,16 @@ func TestExport(t *testing.T) {
 	if bboxStr != "-122.384119,37.615457,-122.384119,37.615457" {
 		t.Fatal("Unexpected geom:bbox")
 	}
+
+	inceptionLowerRsp := gjson.GetBytes(body, "properties.date:inception_lower")
+	cessationUpperRsp := gjson.GetBytes(body, "properties.date:cessation_upper")
+	
+	inceptionLowerStr := inceptionLowerRsp.String()
+	cessationUpperStr := cessationUpperRsp.String()
+
+	fmt.Println("INCEPTION", inceptionLowerStr)
+	fmt.Println("INCEPTION", cessationUpperStr)	
+	
 }
 
 func TestExportWithMissingBelongstoElement(t *testing.T) {
