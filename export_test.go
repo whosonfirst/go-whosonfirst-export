@@ -130,7 +130,7 @@ func TestExportWithMissingDateDerived(t *testing.T) {
 			t.Fatalf("Missing property '%s'", prop)
 		}
 
-		fmt.Printf("%s: %s\n", prop, propRsp.String())
+		// fmt.Printf("%s: %s\n", prop, propRsp.String())
 	}
 
 	inceptionLowerRsp := gjson.GetBytes(updatedBody, "properties.date:inception_lower")
