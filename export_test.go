@@ -13,7 +13,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-export/options"
 )
 
-func TestExport(t *testing.T) {
+func TestExportEDTF(t *testing.T) {
 	body := readFeature(t, "1159159407.geojson")
 
 	opts, err := options.NewDefaultOptions()
@@ -36,10 +36,10 @@ func TestExport(t *testing.T) {
 		"properties.wof:id",
 		"properties.geom:bbox",
 		"bbox",
-		"date:inception_lower",
-		"date:inception_upper",
-		"date:cessation_lower",
-		"date:cessation_upper",		
+		"properties.date:inception_lower",
+		"properties.date:inception_upper",
+		"properties.date:cessation_lower",
+		"properties.date:cessation_upper",
 	}
 
 	for _, prop := range ensureProps {
@@ -59,15 +59,6 @@ func TestExport(t *testing.T) {
 		t.Fatal("Unexpected geom:bbox")
 	}
 
-	inceptionLowerRsp := gjson.GetBytes(body, "properties.date:inception_lower")
-	cessationUpperRsp := gjson.GetBytes(body, "properties.date:cessation_upper")
-	
-	inceptionLowerStr := inceptionLowerRsp.String()
-	cessationUpperStr := cessationUpperRsp.String()
-
-	fmt.Println("INCEPTION", inceptionLowerStr)
-	fmt.Println("INCEPTION", cessationUpperStr)	
-	
 }
 
 func TestExportWithMissingBelongstoElement(t *testing.T) {
@@ -101,6 +92,55 @@ func TestExportWithMissingBelongstoElement(t *testing.T) {
 	if lastBelongsto != 404227469 {
 		t.Error("belongsto has incorrect added element")
 	}
+}
+
+func TestExportWithMissingDateDerived(t *testing.T) {
+	body := readFeature(t, "missing-date-derived.geojson")
+	opts, err := options.NewDefaultOptions()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	err = Export(body, opts, wr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wr.Flush()
+	updatedBody := buf.Bytes()
+
+	if bytes.Equal(body, updatedBody) {
+		t.Error("Body was identical")
+	}
+
+	ensureProps := []string{
+		"properties.date:inception_lower",
+		"properties.date:inception_upper",
+		"properties.date:cessation_lower",
+		"properties.date:cessation_upper",
+	}
+
+	for _, prop := range ensureProps {
+		propRsp := gjson.GetBytes(body, prop)
+
+		if !propRsp.Exists() {
+			t.Fatalf("Missing property '%s'", prop)
+		}
+
+		fmt.Printf("%s: %s\n", prop, propRsp.String())
+	}
+
+	inceptionLowerRsp := gjson.GetBytes(body, "properties.date:inception_lower")
+	cessationUpperRsp := gjson.GetBytes(body, "properties.date:cessation_upper")
+
+	inceptionLowerStr := inceptionLowerRsp.String()
+	cessationUpperStr := cessationUpperRsp.String()
+
+	fmt.Println("INCEPTION", inceptionLowerStr)
+	fmt.Println("CESSATION", cessationUpperStr)
 }
 
 func TestExportWithExtraBelongstoElement(t *testing.T) {

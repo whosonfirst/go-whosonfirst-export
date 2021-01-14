@@ -7,6 +7,8 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+const date_fmt string = "2006-01-02"
+
 func EnsureEDTF(feature []byte) ([]byte, error) {
 
 	var err error
@@ -42,24 +44,24 @@ func EnsureInception(feature []byte) ([]byte, error) {
 			return nil, err
 		}
 
-		lower_ts, err := d.Lower()
+		lower_t, err := d.Lower()
 
 		if err != nil {
 			return nil, err
 		}
 
-		if lower_ts != nil {
-			return sjson.SetBytes(feature, "properties.date:inception_lower", lower_ts.Unix())
+		if lower_t != nil {
+			return sjson.SetBytes(feature, "properties.date:inception_lower", lower_t.Format(date_fmt))
 		}
 
-		upper_ts, err := d.Upper()
+		upper_t, err := d.Upper()
 
 		if err != nil {
 			return nil, err
 		}
 
-		if upper_ts != nil {
-			return sjson.SetBytes(feature, "properties.date:inception_upper", upper_ts.Unix())
+		if upper_t != nil {
+			return sjson.SetBytes(feature, "properties.date:inception_upper", upper_t.Format(date_fmt))
 		}
 
 		return feature, nil
@@ -84,24 +86,24 @@ func EnsureCessation(feature []byte) ([]byte, error) {
 			return nil, err
 		}
 
-		lower_ts, err := d.Lower()
+		lower_t, err := d.Lower()
 
 		if err != nil {
 			return nil, err
 		}
 
-		if lower_ts != nil {
-			return sjson.SetBytes(feature, "properties.date:cessation_lower", lower_ts.Unix())
+		if lower_t != nil {
+			return sjson.SetBytes(feature, "properties.date:cessation_lower", lower_t.Format(date_fmt))
 		}
 
-		upper_ts, err := d.Upper()
+		upper_t, err := d.Upper()
 
 		if err != nil {
 			return nil, err
 		}
 
-		if upper_ts != nil {
-			return sjson.SetBytes(feature, "properties.date:cessation_upper", upper_ts.Unix())
+		if upper_t != nil {
+			return sjson.SetBytes(feature, "properties.date:cessation_upper", upper_t.Format(date_fmt))
 		}
 
 		return feature, nil
