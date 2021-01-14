@@ -3,11 +3,10 @@ package export
 import (
 	"bytes"
 	"encoding/json"
-	"io"
-
 	"github.com/whosonfirst/go-whosonfirst-export/options"
 	"github.com/whosonfirst/go-whosonfirst-export/properties"
 	format "github.com/whosonfirst/go-whosonfirst-format"
+	"io"
 )
 
 type Feature struct {

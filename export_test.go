@@ -124,7 +124,7 @@ func TestExportWithMissingDateDerived(t *testing.T) {
 	}
 
 	for _, prop := range ensureProps {
-		propRsp := gjson.GetBytes(body, prop)
+		propRsp := gjson.GetBytes(updatedBody, prop)
 
 		if !propRsp.Exists() {
 			t.Fatalf("Missing property '%s'", prop)
@@ -133,14 +133,22 @@ func TestExportWithMissingDateDerived(t *testing.T) {
 		fmt.Printf("%s: %s\n", prop, propRsp.String())
 	}
 
-	inceptionLowerRsp := gjson.GetBytes(body, "properties.date:inception_lower")
-	cessationUpperRsp := gjson.GetBytes(body, "properties.date:cessation_upper")
+	inceptionLowerRsp := gjson.GetBytes(updatedBody, "properties.date:inception_lower")
+	cessationUpperRsp := gjson.GetBytes(updatedBody, "properties.date:cessation_upper")
 
 	inceptionLowerStr := inceptionLowerRsp.String()
 	cessationUpperStr := cessationUpperRsp.String()
 
-	fmt.Println("INCEPTION", inceptionLowerStr)
-	fmt.Println("CESSATION", cessationUpperStr)
+	inceptionExpectedStr := "1996-07-01"
+	cessationExpectedStr := "1997-02-10"
+
+	if inceptionLowerStr != inceptionExpectedStr {
+		t.Fatalf("Invalid date:inception_lower. Expected '%s' but got '%s'", inceptionExpectedStr, inceptionLowerStr)
+	}
+
+	if cessationUpperStr != cessationExpectedStr {
+		t.Fatalf("Invalid date:cessation_upper. Expected '%s' but got '%s'", cessationExpectedStr, cessationUpperStr)
+	}
 }
 
 func TestExportWithExtraBelongstoElement(t *testing.T) {
