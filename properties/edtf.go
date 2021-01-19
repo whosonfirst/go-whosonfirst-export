@@ -39,6 +39,13 @@ func EnsureInception(feature []byte) ([]byte, error) {
 
 	edtf_str := rsp.String()
 
+	switch edtf_str {
+	case edtf.UNKNOWN, edtf.OPEN:
+		return feature, nil
+	default:
+		// carry on
+	}
+
 	d, err := parser.ParseString(edtf_str)
 
 	if err != nil {
@@ -88,6 +95,13 @@ func EnsureCessation(feature []byte) ([]byte, error) {
 	}
 
 	edtf_str := rsp.String()
+
+	switch edtf_str {
+	case edtf.UNKNOWN, edtf.OPEN:
+		return feature, nil
+	default:
+		// carry on
+	}
 
 	d, err := parser.ParseString(edtf_str)
 
