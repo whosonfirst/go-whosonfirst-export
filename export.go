@@ -128,6 +128,12 @@ func prepareWithoutTimestamps(feature []byte, opts options.Options) ([]byte, err
 		return nil, err
 	}
 
+	feature, err = properties.EnsureHierarchy(feature)
+
+	if err != nil {
+		return nil, err
+	}
+
 	feature, err = properties.EnsureBelongsTo(feature)
 
 	if err != nil {
