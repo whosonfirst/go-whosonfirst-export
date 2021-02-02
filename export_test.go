@@ -3,20 +3,23 @@ package export
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
+	"github.com/tidwall/gjson"
+	"github.com/whosonfirst/go-whosonfirst-export/v2"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/tidwall/gjson"
-	"github.com/whosonfirst/go-whosonfirst-export/options"
 )
 
 func TestExportEDTF(t *testing.T) {
+
+	ctx := context.Background()
+
 	body := readFeature(t, "1159159407.geojson")
 
-	opts, err := options.NewDefaultOptions()
+	opts, err := export.NewDefaultOptions(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

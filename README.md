@@ -24,13 +24,15 @@ It is also in flux and you should assume anything you see or read now _will_ cha
 
 ```
 import (
-	"github.com/whosonfirst/go-whosonfirst-export"
-	"github.com/whosonfirst/go-whosonfirst-export/options"	
+	"context"
+	"github.com/whosonfirst/go-whosonfirst-export/v2"
 	"io/ioutil"
 	"os
 )
 
 func main() {
+
+	ctx := context.Background()
 
 	path := "some.geojson"     	
 	fh, _ := os.Open(path)
@@ -38,7 +40,7 @@ func main() {
 
 	body, _ := ioutil.ReadAll(fh)
 
-	opts, _ := options.NewDefaultOptions()
+	opts, _ := export.NewDefaultOptions(ctx)
 	export.Export(body, opts, os.Stdout)
 }
 ```
