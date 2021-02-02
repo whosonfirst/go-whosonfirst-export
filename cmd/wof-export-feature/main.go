@@ -1,25 +1,27 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"github.com/whosonfirst/go-whosonfirst-export/v2"
 	"io/ioutil"
 	"log"
 	"os"
-
-	export "github.com/whosonfirst/go-whosonfirst-export"
-	"github.com/whosonfirst/go-whosonfirst-export/exporter"
-	"github.com/whosonfirst/go-whosonfirst-export/options"
 )
 
 func main() {
-	useExporter := flag.Bool("exporter", false, "...")
+
+	exporter_uri := flag.String("exporter-uri", "whosonfirst://", "A valid whosonfirst/go-whosonfirst-export URI")
+
 	flag.Parse()
 
-	opts, err := options.NewDefaultOptions()
+	ctx := context.Background()
+
+	ex, err := export.NewExporter(ctx, *exporter_uri)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create exporter for '%s', %v", *exporter_uri, err)
 	}
 
 	for _, path := range flag.Args() {
@@ -38,28 +40,13 @@ func main() {
 			log.Fatal(err)
 		}
 
-		if !*useExporter {
-			err = export.Export(body, opts, os.Stdout)
+		pretty, err := ex.Export(ctx, body)
 
-			if err != nil {
-				log.Fatal(err)
-			}
-
-		} else {
-			ex, err := exporter.NewWhosOnFirstExporter(opts)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			pretty, err := ex.Export(body)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			fmt.Printf("%s", pretty)
+		if err != nil {
+			log.Fatal(err)
 		}
+
+		fmt.Printf("%s", pretty)
 
 	}
 

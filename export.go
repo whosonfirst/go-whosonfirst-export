@@ -3,34 +3,30 @@ package export
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/whosonfirst/go-whosonfirst-export/options"
-	"github.com/whosonfirst/go-whosonfirst-export/properties"
+	"fmt"
+	"github.com/whosonfirst/go-whosonfirst-export/v2/properties"
 	format "github.com/whosonfirst/go-whosonfirst-format"
 	"io"
 )
 
-type Feature struct {
-	Type       string      `json:"type"`
-	Id         int64       `json:"id"`
-	Properties interface{} `json:"properties"`
-	Bbox       []float64   `json:"bbox,omitempty"`
-	Geometry   interface{} `json:"geometry"`
-}
+func Export(feature []byte, opts *Options, wr io.Writer) error {
 
-func Export(feature []byte, opts options.Options, wr io.Writer) error {
 	var err error
 
 	feature, err = prepareWithoutTimestamps(feature, opts)
+
 	if err != nil {
 		return err
 	}
 
 	feature, err = prepareTimestamps(feature, opts)
+
 	if err != nil {
 		return err
 	}
 
 	feature, err = Format(feature, opts)
+
 	if err != nil {
 		return err
 	}
@@ -45,30 +41,39 @@ func Export(feature []byte, opts options.Options, wr io.Writer) error {
 // by comparing it to the `existingFeature` byte slice, before the lastmodified
 // timestamp is incremented. If the `feature` is identical to `existingFeature`
 // it doesn't write to the `io.Writer`.
-func ExportChanged(feature []byte, existingFeature []byte, opts options.Options, wr io.Writer) (changed bool, err error) {
+
+func ExportChanged(feature []byte, existingFeature []byte, opts *Options, wr io.Writer) (changed bool, err error) {
+
 	changed = false
 
 	feature, err = prepareWithoutTimestamps(feature, opts)
+
 	if err != nil {
 		return
 	}
 
 	feature, err = Format(feature, opts)
+
 	if err != nil {
 		return
 	}
 
 	changed = !bytes.Equal(feature, existingFeature)
+
+	fmt.Println("EQUALS", changed)
+
 	if !changed {
 		return
 	}
 
 	feature, err = prepareTimestamps(feature, opts)
+
 	if err != nil {
 		return
 	}
 
 	feature, err = Format(feature, opts)
+
 	if err != nil {
 		return
 	}
@@ -79,7 +84,7 @@ func ExportChanged(feature []byte, existingFeature []byte, opts options.Options,
 	return
 }
 
-func Prepare(feature []byte, opts options.Options) ([]byte, error) {
+func Prepare(feature []byte, opts *Options) ([]byte, error) {
 	var err error
 
 	feature, err = prepareWithoutTimestamps(feature, opts)
@@ -95,16 +100,17 @@ func Prepare(feature []byte, opts options.Options) ([]byte, error) {
 	return feature, nil
 }
 
-func Format(feature []byte, opts options.Options) ([]byte, error) {
+func Format(feature []byte, opts *Options) ([]byte, error) {
 	var f format.Feature
 	json.Unmarshal(feature, &f)
 	return format.FormatFeature(&f)
 }
 
-func prepareWithoutTimestamps(feature []byte, opts options.Options) ([]byte, error) {
+func prepareWithoutTimestamps(feature []byte, opts *Options) ([]byte, error) {
+
 	var err error
 
-	feature, err = properties.EnsureWOFId(feature, opts.IDProvider())
+	feature, err = properties.EnsureWOFId(feature, opts.IDProvider)
 
 	if err != nil {
 		return nil, err
@@ -155,6 +161,6 @@ func prepareWithoutTimestamps(feature []byte, opts options.Options) ([]byte, err
 	return feature, nil
 }
 
-func prepareTimestamps(feature []byte, opts options.Options) ([]byte, error) {
+func prepareTimestamps(feature []byte, opts *Options) ([]byte, error) {
 	return properties.EnsureTimestamps(feature)
 }

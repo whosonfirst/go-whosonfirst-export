@@ -3,20 +3,23 @@ package export
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
+	"github.com/tidwall/gjson"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/tidwall/gjson"
-	"github.com/whosonfirst/go-whosonfirst-export/options"
 )
 
 func TestExportEDTF(t *testing.T) {
+
+	ctx := context.Background()
+
 	body := readFeature(t, "1159159407.geojson")
 
-	opts, err := options.NewDefaultOptions()
+	opts, err := NewDefaultOptions(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,11 +65,16 @@ func TestExportEDTF(t *testing.T) {
 }
 
 func TestExportWithMissingBelongstoElement(t *testing.T) {
-	body := readFeature(t, "missing-belongsto-element.geojson")
-	opts, err := options.NewDefaultOptions()
+
+	ctx := context.Background()
+
+	opts, err := NewDefaultOptions(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	body := readFeature(t, "missing-belongsto-element.geojson")
 
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
@@ -84,22 +92,31 @@ func TestExportWithMissingBelongstoElement(t *testing.T) {
 	}
 
 	newBelongsto := gjson.GetBytes(updatedBody, "properties.wof:belongsto").Array()
+
 	if len(newBelongsto) != 6 {
 		t.Error("belongsto has incorrect number of elements")
 	}
 
+	fmt.Println(newBelongsto)
+
 	lastBelongsto := newBelongsto[len(newBelongsto)-1].Int()
+
 	if lastBelongsto != 404227469 {
 		t.Error("belongsto has incorrect added element")
 	}
 }
 
 func TestExportWithMissingDateDerived(t *testing.T) {
-	body := readFeature(t, "missing-date-derived.geojson")
-	opts, err := options.NewDefaultOptions()
+
+	ctx := context.Background()
+
+	opts, err := NewDefaultOptions(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	body := readFeature(t, "missing-date-derived.geojson")
 
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
@@ -152,16 +169,22 @@ func TestExportWithMissingDateDerived(t *testing.T) {
 }
 
 func TestExportWithExtraBelongstoElement(t *testing.T) {
-	body := readFeature(t, "extra-belongsto-element.geojson")
-	opts, err := options.NewDefaultOptions()
+
+	ctx := context.Background()
+
+	opts, err := NewDefaultOptions(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	body := readFeature(t, "extra-belongsto-element.geojson")
 
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
 
 	err = Export(body, opts, wr)
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -174,27 +197,35 @@ func TestExportWithExtraBelongstoElement(t *testing.T) {
 	}
 
 	newBelongsto := gjson.GetBytes(updatedBody, "properties.wof:belongsto").Array()
+
 	if len(newBelongsto) != 6 {
 		t.Error("belongsto has incorrect number of elements")
 	}
 
 	lastBelongsto := newBelongsto[len(newBelongsto)-1].Int()
+
 	if lastBelongsto != 1360698877 {
 		t.Error("belongsto has incorrect added element")
 	}
 }
 
 func TestExportWithMissingBelongstoKey(t *testing.T) {
-	body := readFeature(t, "missing-belongsto-key.geojson")
-	opts, err := options.NewDefaultOptions()
+
+	ctx := context.Background()
+
+	opts, err := NewDefaultOptions(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	body := readFeature(t, "missing-belongsto-key.geojson")
 
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
 
 	err = Export(body, opts, wr)
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -207,22 +238,28 @@ func TestExportWithMissingBelongstoKey(t *testing.T) {
 	}
 
 	newBelongsto := gjson.GetBytes(updatedBody, "properties.wof:belongsto").Array()
+
 	if len(newBelongsto) != 6 {
 		t.Error("belongsto has incorrect number of elements")
 	}
 }
 
 func TestExportChangedWithUnchangedFile(t *testing.T) {
-	body := readFeature(t, "no-changes.geojson")
-	opts, err := options.NewDefaultOptions()
+
+	ctx := context.Background()
+	opts, err := NewDefaultOptions(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	body := readFeature(t, "no-changes.geojson")
 
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
 
 	changed, err := ExportChanged(body, body, opts, wr)
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -237,14 +274,20 @@ func TestExportChangedWithUnchangedFile(t *testing.T) {
 	if len(updatedBody) > 0 {
 		t.Error("Writer should not have written to file")
 	}
+
 }
 
 func TestExportChangedWithChanges(t *testing.T) {
-	body := readFeature(t, "changes-required.geojson")
-	opts, err := options.NewDefaultOptions()
+
+	ctx := context.Background()
+
+	opts, err := NewDefaultOptions(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	body := readFeature(t, "changes-required.geojson")
 
 	originalLastModified := gjson.GetBytes(body, "properties.wof:lastmodified").Int()
 
