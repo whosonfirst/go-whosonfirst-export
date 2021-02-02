@@ -3,6 +3,7 @@ package export
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/whosonfirst/go-whosonfirst-export/v2/properties"
 	format "github.com/whosonfirst/go-whosonfirst-format"
 	"io"
@@ -59,6 +60,8 @@ func ExportChanged(feature []byte, existingFeature []byte, opts *Options, wr io.
 
 	changed = !bytes.Equal(feature, existingFeature)
 
+	fmt.Println("EQUALS", changed)
+
 	if !changed {
 		return
 	}
@@ -104,6 +107,7 @@ func Format(feature []byte, opts *Options) ([]byte, error) {
 }
 
 func prepareWithoutTimestamps(feature []byte, opts *Options) ([]byte, error) {
+
 	var err error
 
 	feature, err = properties.EnsureWOFId(feature, opts.IDProvider)
