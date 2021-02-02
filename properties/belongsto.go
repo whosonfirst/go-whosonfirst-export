@@ -1,16 +1,29 @@
 package properties
 
 import (
+	"errors"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
 
 func EnsureBelongsTo(feature []byte) ([]byte, error) {
+
 	belongsto := make([]int64, 0)
 
+	wofid_rsp := gjson.GetBytes(feature, "properties.wof:id")
+
+	if !wofid_rsp.Exists() {
+		return nil, errors.New("Missing properties.wof:id")
+	}
+
+	wofid := wofid_rsp.Int()
+
 	// Load the existing belongsto array, if it exists
+
 	belongsToRsp := gjson.GetBytes(feature, "properties.wof:belongsto")
+
 	if belongsToRsp.Exists() {
+
 		belongsToRsp.ForEach(func(key gjson.Result, value gjson.Result) bool {
 			if value.Type == gjson.Number {
 				id := value.Int()
@@ -24,13 +37,17 @@ func EnsureBelongsTo(feature []byte) ([]byte, error) {
 	rsp := gjson.GetBytes(feature, "properties.wof:hierarchy")
 
 	if rsp.Exists() {
+
 		ids := make([]int64, 0)
 
 		for _, h := range rsp.Array() {
 			h.ForEach(func(key gjson.Result, value gjson.Result) bool {
+
 				if value.Type == gjson.Number {
+
 					id := value.Int()
-					if id > 0 {
+
+					if id > 0 && id != wofid {
 						ids = append(ids, id)
 					}
 				}
