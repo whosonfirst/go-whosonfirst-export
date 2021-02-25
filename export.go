@@ -3,7 +3,7 @@ package export
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	_ "fmt"
 	"github.com/whosonfirst/go-whosonfirst-export/v2/properties"
 	format "github.com/whosonfirst/go-whosonfirst-format"
 	"io"
@@ -59,8 +59,6 @@ func ExportChanged(feature []byte, existingFeature []byte, opts *Options, wr io.
 	}
 
 	changed = !bytes.Equal(feature, existingFeature)
-
-	fmt.Println("EQUALS", changed)
 
 	if !changed {
 		return

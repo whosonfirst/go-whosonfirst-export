@@ -43,7 +43,7 @@ func SupersedeRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 
 	// Update the new record
 
-	new_body, err = sjson.SetBytes(new_body, "properties.wof:supsersedes", []int64{old_id})
+	new_body, err = sjson.SetBytes(new_body, "properties.wof:supersedes", []int64{old_id})
 
 	if err != nil {
 		return nil, nil, err
@@ -53,7 +53,7 @@ func SupersedeRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 
 	to_update := map[string]interface{}{
 		"properties.mz:is_current":      0,
-		"properties.wof:supserseded_by": []int64{new_id},
+		"properties.wof:superseded_by": []int64{new_id},
 	}
 
 	old_body, err = AssignProperties(ctx, old_body, to_update)
