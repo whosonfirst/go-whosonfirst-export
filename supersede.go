@@ -52,7 +52,7 @@ func SupersedeRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 	// Update the old record
 
 	to_update := map[string]interface{}{
-		"properties.mz:is_current":      0,
+		"properties.mz:is_current":     0,
 		"properties.wof:superseded_by": []int64{new_id},
 	}
 
@@ -63,4 +63,83 @@ func SupersedeRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 	}
 
 	return old_body, new_body, nil
+}
+
+func SupersedeRecordWithParent(ctx context.Context, ex Exporter, to_supersede_f []byte, parent_f []byte) ([]byte, []byte, error) {
+
+	id_rsp := gjson.GetBytes(parent_f, "properties.wof:id")
+
+	if !id_rsp.Exists() {
+		return nil, nil, fmt.Errorf("Parent feature is missing properties.wof:id")
+	}
+
+	parent_id := id_rsp.Int()
+
+	hier_rsp := gjson.GetBytes(parent_f, "properties.wof:hierarchy")
+
+	if !hier_rsp.Exists() {
+		return nil, nil, fmt.Errorf("Parent feature is missing properties.wof:hierarchy")
+	}
+
+	parent_hierarchy := hier_rsp.Value()
+
+	inception_rsp := gjson.GetBytes(parent_f, "properties.edtf:inception")
+
+	if !inception_rsp.Exists() {
+		return nil, nil, fmt.Errorf("Parent record is missing properties.edtf:inception")
+	}
+
+	cessation_rsp := gjson.GetBytes(parent_f, "properties.edtf:cessation")
+
+	if !cessation_rsp.Exists() {
+		return nil, nil, fmt.Errorf("Parent record is missing properties.edtf:cessation")
+	}
+
+	inception := inception_rsp.String()
+	cessation := cessation_rsp.String()
+
+	to_update_old := map[string]interface{}{
+		"properties.edtf:cessation": inception,
+	}
+
+	to_update_new := map[string]interface{}{
+		"properties.wof:parent_id":  parent_id,
+		"properties.wof:hierarchy":  parent_hierarchy,
+		"properties.edtf:inception": inception,
+		"properties.edtf:cessation": cessation,
+	}
+
+	//
+
+	superseded_f, superseding_f, err := SupersedeRecord(ctx, ex, to_supersede_f)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("Failed to supersede record %v", err)
+	}
+
+	superseded_f, err = AssignProperties(ctx, superseded_f, to_update_old)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("Failed to assign properties for new record, ")
+	}
+
+	name_rsp := gjson.GetBytes(superseding_f, "properties.wof:name")
+
+	if !name_rsp.Exists() {
+		return nil, nil, fmt.Errorf("Failed to retrieve wof:name for new record")
+	}
+
+	name := name_rsp.String()
+	label := fmt.Sprintf("%s (%s)", name, inception)
+
+	to_update_new["properties.wof:label"] = label
+
+	superseding_f, err = AssignProperties(ctx, superseding_f, to_update_new)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("Failed to assign updated properties for new record, ")
+	}
+
+	return superseded_f, superseding_f, nil
+
 }
