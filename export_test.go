@@ -43,7 +43,13 @@ func TestCustomPlacetype (t *testing.T) {
 		t.Fatal("Unable to find properties.wof:hierarchy.0.runway_id property")
 	}
 
-	fmt.Println(rsp.Int())
+	has_id := rsp.Int()
+	expected_id := int64(1730008747)
+
+	
+	if has_id != expected_id {
+		t.Fatalf("Result has unexpected ID. Expected '%d' but got '%d'", expected_id, has_id)
+	}
 }
 
 func TestExportEDTF(t *testing.T) {
