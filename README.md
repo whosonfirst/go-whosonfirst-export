@@ -4,11 +4,15 @@ Go package for exporting Who's On First documents.
 
 ## What is this?
 
-This is an experimental-cum-evolving package to format Who's On First documents in Go. It is meant to be a port of the [py-mapzen-whosonfirst-geojson](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package and _mmmmmmmaybe_ some or all of the [py-mapzen-whosonfirst-export](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package.
+go-whosonfirst-export is a Go package for exporting Who's On First documents in Go. It is a port of the [py-mapzen-whosonfirst-geojson](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package and _mmmmmmmaybe_ some or all of the [py-mapzen-whosonfirst-export](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package.
 
 ## Important
 
 This package is still in flux. It is starting to settle down with the `v2` release but it might still change.
+
+## Documentation
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/whosonfirst/go-whosonfirst-export.svg)](https://pkg.go.dev/github.com/whosonfirst/go-whosonfirst-export)
 
 ## Example
 
