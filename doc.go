@@ -8,19 +8,19 @@
 //		"io/ioutil"
 //		"os
 //	)
-//	
+//
 //	func main() {
-//	
+//
 //		ctx := context.Background()
-//	
+//
 //		ex, _ := export.NewExporter(ctx, "whosonfirst://")
-//		
-//		path := "some.geojson"     	
+//
+//		path := "some.geojson"
 //		fh, _ := os.Open(path)
 //		defer fh.Close()
-//	
+//
 //		body, _ := ioutil.ReadAll(fh)
-//	
+//
 //		body, _ = ex.Export(ctx, body)
 //		os.Stdout.Write(body)
 //	}
