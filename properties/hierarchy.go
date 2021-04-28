@@ -33,12 +33,12 @@ func EnsureHierarchy(feature []byte) ([]byte, error) {
 	if pt == "custom" {
 
 		alt_rsp := gjson.GetBytes(feature, "properties.wof:placetype_alt")
-		
+
 		if alt_rsp.Exists() {
 			key = fmt.Sprintf("%s_id", alt_rsp.String())
 		}
 	}
-	
+
 	hierarchies := make([]Hierarchy, 0)
 
 	hier_rsp := gjson.GetBytes(feature, "properties.wof:hierarchy")
@@ -50,7 +50,7 @@ func EnsureHierarchy(feature []byte) ([]byte, error) {
 			h := make(map[string]int64)
 
 			for k, r := range possible.Map() {
-				
+
 				if k == "custom_id" {
 
 					alt_rsp := gjson.GetBytes(feature, "properties.wof:placetype_alt")

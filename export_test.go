@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func TestCustomPlacetype (t *testing.T) {
+func TestCustomPlacetype(t *testing.T) {
 
 	ctx := context.Background()
 
@@ -28,7 +28,7 @@ func TestCustomPlacetype (t *testing.T) {
 	wr := bufio.NewWriter(&buf)
 
 	err = Export(body, opts, wr)
-	
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,17 +36,16 @@ func TestCustomPlacetype (t *testing.T) {
 	wr.Flush()
 
 	// fmt.Println(string(buf.Bytes()))
-		
+
 	rsp := gjson.GetBytes(buf.Bytes(), "properties.wof:hierarchy.0.runway_id")
 
-	if !rsp.Exists(){
+	if !rsp.Exists() {
 		t.Fatal("Unable to find properties.wof:hierarchy.0.runway_id property")
 	}
 
 	has_id := rsp.Int()
 	expected_id := int64(1730008747)
 
-	
 	if has_id != expected_id {
 		t.Fatalf("Result has unexpected ID. Expected '%d' but got '%d'", expected_id, has_id)
 	}
@@ -68,7 +67,7 @@ func TestExportEDTF(t *testing.T) {
 	wr := bufio.NewWriter(&buf)
 
 	err = Export(body, opts, wr)
-	
+
 	if err != nil {
 		t.Fatal(err)
 	}
