@@ -6,11 +6,45 @@ import (
 	"context"
 	"fmt"
 	"github.com/tidwall/gjson"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func TestCustomPlacetype (t *testing.T) {
+
+	ctx := context.Background()
+
+	body := readFeature(t, "custom-placetype.geojson")
+
+	opts, err := NewDefaultOptions(ctx)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	err = Export(body, opts, wr)
+	
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wr.Flush()
+
+	// fmt.Println(string(buf.Bytes()))
+		
+	rsp := gjson.GetBytes(buf.Bytes(), "properties.wof:hierarchy.0.runway_id")
+
+	if !rsp.Exists(){
+		t.Fatal("Unable to find properties.wof:hierarchy.0.runway_id property")
+	}
+
+	fmt.Println(rsp.Int())
+}
 
 func TestExportEDTF(t *testing.T) {
 
@@ -28,6 +62,7 @@ func TestExportEDTF(t *testing.T) {
 	wr := bufio.NewWriter(&buf)
 
 	err = Export(body, opts, wr)
+	
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -334,7 +369,7 @@ func readFeature(t *testing.T, filename string) []byte {
 		t.Fatal(err)
 	}
 
-	body, err := ioutil.ReadAll(fh)
+	body, err := io.ReadAll(fh)
 
 	if err != nil {
 		t.Fatal(err)

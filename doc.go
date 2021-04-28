@@ -5,7 +5,7 @@
 //	import (
 //		"context"
 //		"github.com/whosonfirst/go-whosonfirst-export/v2"
-//		"io/ioutil"
+//		"io"
 //		"os
 //	)
 //
@@ -19,7 +19,7 @@
 //		fh, _ := os.Open(path)
 //		defer fh.Close()
 //
-//		body, _ := ioutil.ReadAll(fh)
+//		body, _ := io.ReadAll(fh)
 //
 //		body, _ = ex.Export(ctx, body)
 //		os.Stdout.Write(body)

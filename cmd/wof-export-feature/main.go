@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/whosonfirst/go-whosonfirst-export/v2"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 )
@@ -34,7 +34,7 @@ func main() {
 
 		defer fh.Close()
 
-		body, err := ioutil.ReadAll(fh)
+		body, err := io.ReadAll(fh)
 
 		if err != nil {
 			log.Fatal(err)
