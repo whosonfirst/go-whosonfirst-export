@@ -1,7 +1,9 @@
 package export
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
@@ -38,6 +40,47 @@ func AssignProperties(ctx context.Context, body []byte, to_assign map[string]int
 	}
 
 	return body, nil
+}
+
+func AssignPropertiesIfChanged(ctx context.Context, body []byte, to_assign map[string]interface{}) (bool, []byte, error) {
+
+	var err error
+
+	changed := false
+
+	for path, v := range to_assign {
+
+		rsp := gjson.GetBytes(body, path)
+
+		if rsp.Exists() {
+
+			old, err := json.Marshal(rsp.Value())
+
+			if err != nil {
+				return changed, nil, err
+			}
+
+			new, err := json.Marshal(rsp.Value())
+
+			if bytes.Compare(old, new) == 0 {
+				continue
+			}
+
+			if err != nil {
+				return changed, nil, err
+			}
+		}
+
+		body, err = sjson.SetBytes(body, path, v)
+
+		if err != nil {
+			return changed, nil, err
+		}
+
+		changed = true
+	}
+
+	return changed, body, nil
 }
 
 func RemoveProperties(ctx context.Context, body []byte, to_remove []string) ([]byte, error) {
