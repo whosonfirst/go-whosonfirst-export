@@ -60,7 +60,7 @@ func AssignPropertiesIfChanged(ctx context.Context, body []byte, to_assign map[s
 				return changed, nil, err
 			}
 
-			new, err := json.Marshal(rsp.Value())
+			new, err := json.Marshal(v)
 
 			if bytes.Compare(old, new) == 0 {
 				continue
