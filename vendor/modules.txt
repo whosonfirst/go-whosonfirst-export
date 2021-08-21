@@ -37,12 +37,12 @@ github.com/sfomuseum/go-edtf/tests
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.0.3
 github.com/tidwall/match
-# github.com/tidwall/pretty v1.1.0
+# github.com/tidwall/pretty v1.2.0
 github.com/tidwall/pretty
 # github.com/tidwall/sjson v1.1.7
 ## explicit
 github.com/tidwall/sjson
-# github.com/whosonfirst/go-whosonfirst-format v0.3.0
+# github.com/whosonfirst/go-whosonfirst-format v0.3.1
 ## explicit
 github.com/whosonfirst/go-whosonfirst-format
 # github.com/whosonfirst/go-whosonfirst-id v0.0.2
