@@ -21,7 +21,7 @@ github.com/paulmach/orb
 github.com/paulmach/orb/geojson
 github.com/paulmach/orb/internal/length
 github.com/paulmach/orb/planar
-# github.com/sfomuseum/go-edtf v0.2.3
+# github.com/sfomuseum/go-edtf v0.3.1
 ## explicit
 github.com/sfomuseum/go-edtf
 github.com/sfomuseum/go-edtf/calendar
@@ -32,17 +32,17 @@ github.com/sfomuseum/go-edtf/level2
 github.com/sfomuseum/go-edtf/parser
 github.com/sfomuseum/go-edtf/re
 github.com/sfomuseum/go-edtf/tests
-# github.com/tidwall/gjson v1.8.1
+# github.com/tidwall/gjson v1.9.4
 ## explicit
 github.com/tidwall/gjson
-# github.com/tidwall/match v1.0.3
+# github.com/tidwall/match v1.1.1
 github.com/tidwall/match
 # github.com/tidwall/pretty v1.2.0
 github.com/tidwall/pretty
-# github.com/tidwall/sjson v1.1.7
+# github.com/tidwall/sjson v1.2.2
 ## explicit
 github.com/tidwall/sjson
-# github.com/whosonfirst/go-whosonfirst-format v0.3.3
+# github.com/whosonfirst/go-whosonfirst-format v0.3.7
 ## explicit
 github.com/whosonfirst/go-whosonfirst-format
 # github.com/whosonfirst/go-whosonfirst-id v0.0.2
