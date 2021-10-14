@@ -74,6 +74,19 @@ func EnsureBelongsTo(feature []byte) ([]byte, error) {
 		}
 	}
 
+	tz_rsp := gjson.GetBytes(feature, "properties.wof:timezones")
+
+	if tz_rsp.Exists() {
+
+		for _, i := range tz_rsp.Array() {
+
+			id := i.Int()
+			if !sliceContains(belongsto, id) {
+				belongsto = append(belongsto, id)
+			}
+		}
+	}
+
 	return sjson.SetBytes(feature, "properties.wof:belongsto", belongsto)
 }
 
