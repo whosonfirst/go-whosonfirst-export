@@ -36,7 +36,7 @@ github.com/sfomuseum/go-edtf/level2
 github.com/sfomuseum/go-edtf/parser
 github.com/sfomuseum/go-edtf/re
 github.com/sfomuseum/go-edtf/tests
-# github.com/tidwall/gjson v1.13.0
+# github.com/tidwall/gjson v1.14.0
 ## explicit
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.1.1
