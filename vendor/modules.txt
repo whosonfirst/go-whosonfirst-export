@@ -1,25 +1,25 @@
 # github.com/aaronland/go-artisanal-integers v0.1.1
 github.com/aaronland/go-artisanal-integers
-# github.com/aaronland/go-artisanal-integers-proxy v0.2.0
+# github.com/aaronland/go-artisanal-integers-proxy v0.2.5
 github.com/aaronland/go-artisanal-integers-proxy/service
 # github.com/aaronland/go-brooklynintegers-api v1.2.4
 github.com/aaronland/go-brooklynintegers-api
-# github.com/aaronland/go-pool v0.0.0-20191128211702-88306299c758
+# github.com/aaronland/go-pool v1.0.0
 github.com/aaronland/go-pool
 # github.com/aaronland/go-roster v0.0.2
 ## explicit
 github.com/aaronland/go-roster
-# github.com/aaronland/go-string v0.1.1
+# github.com/aaronland/go-string v0.1.2
 github.com/aaronland/go-string/random
-# github.com/aaronland/go-uid v0.0.2
+# github.com/aaronland/go-uid v0.0.3
 github.com/aaronland/go-uid
-# github.com/aaronland/go-uid-artisanal v0.0.0-20191128230022-67bc446aa49d
+# github.com/aaronland/go-uid-artisanal v0.0.1
 github.com/aaronland/go-uid-artisanal
 # github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129
 github.com/andres-erbsen/clock
 # github.com/cenkalti/backoff/v4 v4.1.2
 github.com/cenkalti/backoff/v4
-# github.com/paulmach/orb v0.4.0
+# github.com/paulmach/orb v0.5.0
 ## explicit
 github.com/paulmach/orb
 github.com/paulmach/orb/geojson
@@ -36,7 +36,7 @@ github.com/sfomuseum/go-edtf/level2
 github.com/sfomuseum/go-edtf/parser
 github.com/sfomuseum/go-edtf/re
 github.com/sfomuseum/go-edtf/tests
-# github.com/tidwall/gjson v1.14.0
+# github.com/tidwall/gjson v1.14.1
 ## explicit
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.1.1
@@ -49,7 +49,7 @@ github.com/tidwall/sjson
 # github.com/whosonfirst/go-whosonfirst-format v0.3.7
 ## explicit
 github.com/whosonfirst/go-whosonfirst-format
-# github.com/whosonfirst/go-whosonfirst-id v0.0.3
+# github.com/whosonfirst/go-whosonfirst-id v0.0.4
 ## explicit
 github.com/whosonfirst/go-whosonfirst-id
 # github.com/whosonfirst/go-whosonfirst-log v0.1.0
