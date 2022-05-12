@@ -6,7 +6,7 @@ github.com/aaronland/go-artisanal-integers-proxy/service
 github.com/aaronland/go-brooklynintegers-api
 # github.com/aaronland/go-pool v1.0.0
 github.com/aaronland/go-pool
-# github.com/aaronland/go-roster v0.0.2
+# github.com/aaronland/go-roster v1.0.0
 ## explicit
 github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2

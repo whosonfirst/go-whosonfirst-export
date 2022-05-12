@@ -11,8 +11,9 @@ github.com/aaronland/go-missionintegers-api v0.1.1/go.mod h1:CvByrizvklOxK6QD+Z4
 github.com/aaronland/go-pool v1.0.0 h1:RupGLoRO5EHzPZ08zZgiLeDXPhErUAtPonzVLM2D6yM=
 github.com/aaronland/go-pool v1.0.0/go.mod h1:5EzZAfp1v2N+EyyGQ3868fxNxBL5+b4OUmVgnJZpMFo=
 github.com/aaronland/go-roster v0.0.1/go.mod h1:AcovpxlG1XxJxX2Fjqlm63fEIBhCjEIBV4lP87FZDmI=
-github.com/aaronland/go-roster v0.0.2 h1:2Fu7v4VQLRLRL/Zgr6R9S5JxsW75Ab/K88QtMVX532s=
 github.com/aaronland/go-roster v0.0.2/go.mod h1:AcovpxlG1XxJxX2Fjqlm63fEIBhCjEIBV4lP87FZDmI=
+github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUmyQtI=
+github.com/aaronland/go-roster v1.0.0/go.mod h1:KIsYZgrJlAsyb9LsXSCvlqvbcCBVjCSqcQiZx42i9ro=
 github.com/aaronland/go-string v0.1.2 h1:RSr/mQNbLgF37H0RV+nF7j2kILRRFkCmr8Jwq4lw92k=
 github.com/aaronland/go-string v0.1.2/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
 github.com/aaronland/go-uid v0.0.3 h1:MIcdw+Jp8tVx+m9wrExxl2y8l5KbzsTTOUCDNOnNRnk=
