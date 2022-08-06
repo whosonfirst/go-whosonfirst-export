@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -35,8 +34,6 @@ func TestCustomPlacetype(t *testing.T) {
 	}
 
 	wr.Flush()
-
-	// fmt.Println(string(buf.Bytes()))
 
 	rsp := gjson.GetBytes(buf.Bytes(), "properties.wof:hierarchy.0.runway_id")
 
@@ -91,8 +88,6 @@ func TestExportEDTF(t *testing.T) {
 		if !propRsp.Exists() {
 			t.Fatalf("Missing property '%s'", prop)
 		}
-
-		fmt.Printf("%s: %s\n", prop, propRsp.String())
 	}
 
 	bboxRsp := gjson.GetBytes(body, "properties.geom:bbox")
@@ -236,8 +231,6 @@ func TestExportWithMissingBelongstoElement(t *testing.T) {
 		t.Error("belongsto has incorrect number of elements")
 	}
 
-	fmt.Println(newBelongsto)
-
 	lastBelongsto := newBelongsto[len(newBelongsto)-1].Int()
 
 	if lastBelongsto != 404227469 {
@@ -285,8 +278,6 @@ func TestExportWithMissingDateDerived(t *testing.T) {
 		if !propRsp.Exists() {
 			t.Fatalf("Missing property '%s'", prop)
 		}
-
-		// fmt.Printf("%s: %s\n", prop, propRsp.String())
 	}
 
 	inceptionLowerRsp := gjson.GetBytes(updatedBody, "properties.date:inception_lower")
