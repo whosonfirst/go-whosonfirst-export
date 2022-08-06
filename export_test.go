@@ -5,11 +5,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/tidwall/gjson"
 	"io"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/tidwall/gjson"
 )
 
 func TestCustomPlacetype(t *testing.T) {
@@ -138,6 +139,67 @@ func TestExportWithOldStyleEDTFUnknownDates(t *testing.T) {
 
 	if inceptionProp.String() != "" {
 		t.Fatalf("edtf:inception not set to new style format")
+	}
+
+	rejectProps := []string{
+		"properties.date:inception_lower",
+		"properties.date:inception_upper",
+		"properties.date:cessation_lower",
+		"properties.date:cessation_upper",
+	}
+
+	for _, prop := range rejectProps {
+		propRsp := gjson.GetBytes(body, prop)
+
+		if propRsp.Exists() {
+			t.Fatalf("unexpected property '%s'", prop)
+		}
+	}
+}
+
+func TestMissingUpperLowerDates(t *testing.T) {
+	ctx := context.Background()
+	body := readFeature(t, "missing-upper-lower-dates.geojson")
+
+	opts, err := NewDefaultOptions(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	err = Export(body, opts, wr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wr.Flush()
+	body = buf.Bytes()
+
+	cessationProp := gjson.GetBytes(body, "properties.edtf:cessation")
+	if !cessationProp.Exists() {
+		t.Fatalf("missing edtf:cessation property")
+	}
+
+	inceptionProp := gjson.GetBytes(body, "properties.edtf:inception")
+	if !inceptionProp.Exists() {
+		t.Fatalf("missing edtf:inception property")
+	}
+
+	requiredProps := []string{
+		"properties.date:inception_lower",
+		"properties.date:inception_upper",
+		"properties.date:cessation_lower",
+		"properties.date:cessation_upper",
+	}
+
+	for _, prop := range requiredProps {
+		propRsp := gjson.GetBytes(body, prop)
+
+		if !propRsp.Exists() {
+			t.Fatalf("missing property '%s'", prop)
+		}
 	}
 }
 
