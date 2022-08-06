@@ -467,11 +467,11 @@ func readFeature(t *testing.T, filename string) []byte {
 	featurePath := filepath.Join(fixtures, filename)
 
 	fh, err := os.Open(featurePath)
-	defer fh.Close()
-
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	defer fh.Close()
 
 	body, err := io.ReadAll(fh)
 

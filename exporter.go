@@ -2,8 +2,9 @@ package export
 
 import (
 	"context"
-	"github.com/aaronland/go-roster"
 	"net/url"
+
+	"github.com/aaronland/go-roster"
 )
 
 type Exporter interface {
