@@ -52,7 +52,6 @@ func TestCustomPlacetype(t *testing.T) {
 }
 
 func TestExportEDTF(t *testing.T) {
-
 	ctx := context.Background()
 
 	body := readFeature(t, "1159159407.geojson")
@@ -101,7 +100,45 @@ func TestExportEDTF(t *testing.T) {
 	if bboxStr != "-122.384119,37.615457,-122.384119,37.615457" {
 		t.Fatal("Unexpected geom:bbox")
 	}
+}
 
+func TestExportWithOldStyleEDTFUnknownDates(t *testing.T) {
+	ctx := context.Background()
+	body := readFeature(t, "old-edtf-uuuu-dates.geojson")
+
+	opts, err := NewDefaultOptions(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	err = Export(body, opts, wr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wr.Flush()
+	body = buf.Bytes()
+
+	cessationProp := gjson.GetBytes(body, "properties.edtf:cessation")
+	if !cessationProp.Exists() {
+		t.Fatalf("missing edtf:cessation property")
+	}
+
+	if cessationProp.String() != "" {
+		t.Fatalf("edtf:cessation not set to new style format")
+	}
+
+	inceptionProp := gjson.GetBytes(body, "properties.edtf:inception")
+	if !inceptionProp.Exists() {
+		t.Fatalf("missing edtf:inception property")
+	}
+
+	if inceptionProp.String() != "" {
+		t.Fatalf("edtf:inception not set to new style format")
+	}
 }
 
 func TestExportWithMissingBelongstoElement(t *testing.T) {

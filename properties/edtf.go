@@ -42,6 +42,8 @@ func EnsureInception(feature []byte) ([]byte, error) {
 	switch edtf_str {
 	case edtf.UNKNOWN, edtf.OPEN:
 		return feature, nil
+	case edtf.UNKNOWN_2012:
+		return sjson.SetBytes(feature, path, edtf.UNKNOWN)
 	default:
 		// carry on
 	}
@@ -99,6 +101,8 @@ func EnsureCessation(feature []byte) ([]byte, error) {
 	switch edtf_str {
 	case edtf.UNKNOWN, edtf.OPEN:
 		return feature, nil
+	case edtf.UNKNOWN_2012:
+		return sjson.SetBytes(feature, path, edtf.UNKNOWN)
 	default:
 		// carry on
 	}
