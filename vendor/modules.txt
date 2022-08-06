@@ -19,13 +19,13 @@ github.com/aaronland/go-uid-artisanal
 github.com/andres-erbsen/clock
 # github.com/cenkalti/backoff/v4 v4.1.2
 github.com/cenkalti/backoff/v4
-# github.com/paulmach/orb v0.7.0
+# github.com/paulmach/orb v0.7.1
 ## explicit
 github.com/paulmach/orb
 github.com/paulmach/orb/geojson
 github.com/paulmach/orb/internal/length
 github.com/paulmach/orb/planar
-# github.com/sfomuseum/go-edtf v1.0.0
+# github.com/sfomuseum/go-edtf v1.1.1
 ## explicit
 github.com/sfomuseum/go-edtf
 github.com/sfomuseum/go-edtf/calendar
@@ -36,14 +36,14 @@ github.com/sfomuseum/go-edtf/level2
 github.com/sfomuseum/go-edtf/parser
 github.com/sfomuseum/go-edtf/re
 github.com/sfomuseum/go-edtf/tests
-# github.com/tidwall/gjson v1.14.1
+# github.com/tidwall/gjson v1.14.2
 ## explicit
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.1.1
 github.com/tidwall/match
 # github.com/tidwall/pretty v1.2.0
 github.com/tidwall/pretty
-# github.com/tidwall/sjson v1.2.4
+# github.com/tidwall/sjson v1.2.5
 ## explicit
 github.com/tidwall/sjson
 # github.com/whosonfirst/go-whosonfirst-format v0.3.7

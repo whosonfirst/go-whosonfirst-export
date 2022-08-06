@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	_ "fmt"
+	"io"
+
 	"github.com/whosonfirst/go-whosonfirst-export/v2/properties"
 	format "github.com/whosonfirst/go-whosonfirst-format"
-	"io"
 )
 
 func Export(feature []byte, opts *Options, wr io.Writer) error {

@@ -4,10 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/whosonfirst/go-whosonfirst-export/v2"
 	"io"
 	"log"
 	"os"
+
+	export "github.com/whosonfirst/go-whosonfirst-export/v2"
 )
 
 func main() {

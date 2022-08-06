@@ -3,7 +3,7 @@ package properties
 import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"github.com/whosonfirst/go-whosonfirst-id"
+	id "github.com/whosonfirst/go-whosonfirst-id"
 )
 
 func EnsureWOFId(feature []byte, provider id.Provider) ([]byte, error) {

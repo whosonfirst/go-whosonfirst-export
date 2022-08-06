@@ -1,9 +1,10 @@
 package properties
 
 import (
+	"time"
+
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"time"
 )
 
 func EnsureCreated(feature []byte) ([]byte, error) {

@@ -3,6 +3,7 @@ package export
 import (
 	"context"
 	"fmt"
+
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
@@ -12,7 +13,7 @@ func SupersedeRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 	id_rsp := gjson.GetBytes(old_body, "properties.wof:id")
 
 	if !id_rsp.Exists() {
-		return nil, nil, fmt.Errorf("Failed to derive old properties.wof:id property for record being superseded")
+		return nil, nil, fmt.Errorf("failed to derive old properties.wof:id property for record being superseded")
 	}
 
 	old_id := id_rsp.Int()
@@ -36,7 +37,7 @@ func SupersedeRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 	id_rsp = gjson.GetBytes(new_body, "properties.wof:id")
 
 	if !id_rsp.Exists() {
-		return nil, nil, fmt.Errorf("Failed to derive new properties.wof:id property for record superseding '%d'", old_id)
+		return nil, nil, fmt.Errorf("failed to derive new properties.wof:id property for record superseding '%d'", old_id)
 	}
 
 	new_id := id_rsp.Int()
@@ -70,7 +71,7 @@ func SupersedeRecordWithParent(ctx context.Context, ex Exporter, to_supersede_f 
 	id_rsp := gjson.GetBytes(parent_f, "properties.wof:id")
 
 	if !id_rsp.Exists() {
-		return nil, nil, fmt.Errorf("Parent feature is missing properties.wof:id")
+		return nil, nil, fmt.Errorf("parent feature is missing properties.wof:id")
 	}
 
 	parent_id := id_rsp.Int()
@@ -78,7 +79,7 @@ func SupersedeRecordWithParent(ctx context.Context, ex Exporter, to_supersede_f 
 	hier_rsp := gjson.GetBytes(parent_f, "properties.wof:hierarchy")
 
 	if !hier_rsp.Exists() {
-		return nil, nil, fmt.Errorf("Parent feature is missing properties.wof:hierarchy")
+		return nil, nil, fmt.Errorf("parent feature is missing properties.wof:hierarchy")
 	}
 
 	parent_hierarchy := hier_rsp.Value()
@@ -86,13 +87,13 @@ func SupersedeRecordWithParent(ctx context.Context, ex Exporter, to_supersede_f 
 	inception_rsp := gjson.GetBytes(parent_f, "properties.edtf:inception")
 
 	if !inception_rsp.Exists() {
-		return nil, nil, fmt.Errorf("Parent record is missing properties.edtf:inception")
+		return nil, nil, fmt.Errorf("parent record is missing properties.edtf:inception")
 	}
 
 	cessation_rsp := gjson.GetBytes(parent_f, "properties.edtf:cessation")
 
 	if !cessation_rsp.Exists() {
-		return nil, nil, fmt.Errorf("Parent record is missing properties.edtf:cessation")
+		return nil, nil, fmt.Errorf("parent record is missing properties.edtf:cessation")
 	}
 
 	inception := inception_rsp.String()
@@ -114,19 +115,19 @@ func SupersedeRecordWithParent(ctx context.Context, ex Exporter, to_supersede_f 
 	superseded_f, superseding_f, err := SupersedeRecord(ctx, ex, to_supersede_f)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to supersede record %v", err)
+		return nil, nil, fmt.Errorf("failed to supersede record: %v", err)
 	}
 
 	superseded_f, err = AssignProperties(ctx, superseded_f, to_update_old)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to assign properties for new record, ")
+		return nil, nil, fmt.Errorf("failed to assign properties for new record: %v", err)
 	}
 
 	name_rsp := gjson.GetBytes(superseding_f, "properties.wof:name")
 
 	if !name_rsp.Exists() {
-		return nil, nil, fmt.Errorf("Failed to retrieve wof:name for new record")
+		return nil, nil, fmt.Errorf("failed to retrieve wof:name for new record")
 	}
 
 	name := name_rsp.String()
@@ -137,7 +138,7 @@ func SupersedeRecordWithParent(ctx context.Context, ex Exporter, to_supersede_f 
 	superseding_f, err = AssignProperties(ctx, superseding_f, to_update_new)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to assign updated properties for new record, ")
+		return nil, nil, fmt.Errorf("failed to assign updated properties for new record %v", err)
 	}
 
 	return superseded_f, superseding_f, nil

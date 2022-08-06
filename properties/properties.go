@@ -1,7 +1,5 @@
 package properties
 
-import ()
-
 func EnsureRequired(feature []byte) ([]byte, error) {
 
 	var err error

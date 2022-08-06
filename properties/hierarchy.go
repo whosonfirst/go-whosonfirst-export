@@ -3,6 +3,7 @@ package properties
 import (
 	"errors"
 	"fmt"
+
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )

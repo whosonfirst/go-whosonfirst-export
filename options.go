@@ -2,7 +2,8 @@ package export
 
 import (
 	"context"
-	"github.com/whosonfirst/go-whosonfirst-id"
+
+	id "github.com/whosonfirst/go-whosonfirst-id"
 )
 
 type Options struct {

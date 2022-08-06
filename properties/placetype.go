@@ -2,6 +2,7 @@ package properties
 
 import (
 	"errors"
+
 	"github.com/tidwall/gjson"
 	_ "github.com/tidwall/sjson"
 )

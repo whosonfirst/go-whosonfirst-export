@@ -6,11 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	_ "log"
+
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/planar"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	_ "log"
 )
 
 func EnsureSrcGeom(feature []byte) ([]byte, error) {
@@ -31,7 +32,7 @@ func EnsureGeomHash(feature []byte) ([]byte, error) {
 	rsp := gjson.GetBytes(feature, "geometry")
 
 	if !rsp.Exists() {
-		return nil, errors.New("missing geometry!")
+		return nil, errors.New("missing geometry")
 	}
 
 	enc, err := json.Marshal(rsp.Value())
