@@ -11,7 +11,7 @@ builds:
       - linux
       - windows
       - darwin
-    main: ./cmd
+    main: ./cmd/wof-export-feature
 archives:
   -
     id: wof-export-feature
