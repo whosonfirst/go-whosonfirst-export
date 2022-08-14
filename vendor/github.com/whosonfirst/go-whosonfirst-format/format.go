@@ -22,12 +22,11 @@ const indent = "  "
 
 // FormatFeature transforms a byte array `b` into a correctly formatted WOF file
 func FormatBytes(b []byte) ([]byte, error) {
-	
 	var f *Feature
 	err := json.Unmarshal(b, &f)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal bytes in to Feature, %w", err)
+		return nil, fmt.Errorf("failed to unmarshal bytes in to Feature, %w", err)
 	}
 
 	return FormatFeature(f)
