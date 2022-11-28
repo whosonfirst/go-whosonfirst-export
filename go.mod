@@ -6,10 +6,10 @@ require (
 	github.com/aaronland/go-roster v1.0.0
 	github.com/paulmach/orb v0.7.1
 	github.com/sfomuseum/go-edtf v1.1.1
-	github.com/tidwall/gjson v1.14.2
+	github.com/tidwall/gjson v1.14.4
 	github.com/tidwall/sjson v1.2.5
 	github.com/whosonfirst/go-whosonfirst-format v0.4.1
-	github.com/whosonfirst/go-whosonfirst-id v1.0.0
+	github.com/whosonfirst/go-whosonfirst-id v1.2.0
 )
 
 require (
