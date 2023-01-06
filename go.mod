@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/aaronland/go-roster v1.0.0
-	github.com/paulmach/orb v0.7.1
+	github.com/paulmach/orb v0.8.0
 	github.com/sfomuseum/go-edtf v1.1.1
 	github.com/tidwall/gjson v1.14.4
 	github.com/tidwall/sjson v1.2.5
