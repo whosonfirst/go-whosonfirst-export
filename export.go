@@ -5,45 +5,43 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	_ "log"
 
 	"github.com/whosonfirst/go-whosonfirst-export/v2/properties"
+	"github.com/whosonfirst/go-whosonfirst-feature/alt"
 	format "github.com/whosonfirst/go-whosonfirst-format"
-	"github.com/whosonfirst/go-whosonfirst-feature/alt"	
 )
 
 func Export(feature []byte, opts *Options, wr io.Writer) error {
 
 	var err error
 
-	feature, err = prepareWithoutTimestamps(feature, opts)
+	feature, err = Prepare(feature, opts)
 
 	if err != nil {
-		return err
-	}
-
-	feature, err = prepareTimestamps(feature, opts)
-
-	if err != nil {
-		return err
+		return fmt.Errorf("Failed to prepare feature, %w", err)
 	}
 
 	feature, err = Format(feature, opts)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to format feature, %w", err)
 	}
 
 	r := bytes.NewReader(feature)
 	_, err = io.Copy(wr, r)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("Failed to copy feature to writer, %w", err)
+	}
+
+	return nil
 }
 
 // ExportChanged returns a boolean which indicates whether the file was changed
 // by comparing it to the `existingFeature` byte slice, before the lastmodified
 // timestamp is incremented. If the `feature` is identical to `existingFeature`
 // it doesn't write to the `io.Writer`.
-
 func ExportChanged(feature []byte, existingFeature []byte, opts *Options, wr io.Writer) (changed bool, err error) {
 
 	changed = false
@@ -88,21 +86,10 @@ func Prepare(feature []byte, opts *Options) ([]byte, error) {
 
 	var err error
 
-	if alt.IsAlt(feature) {
+	feature, err = prepareWithoutTimestamps(feature, opts)
 
-		feature, err = prepareWithoutTimestampsAsAlternateGeometry(feature, opts)
-
-		if err != nil {
-			return nil, fmt.Errorf("Failed to prepare without timestamps, %w", err)
-		}
-
-	} else {
-
-		feature, err = prepareWithoutTimestamps(feature, opts)
-
-		if err != nil {
-			return nil, fmt.Errorf("Failed to prepare without timestamps, %w", err)
-		}
+	if err != nil {
+		return nil, fmt.Errorf("Failed to prepare without timestamps, %w", err)
 	}
 
 	feature, err = prepareTimestamps(feature, opts)
@@ -121,6 +108,10 @@ func Format(feature []byte, opts *Options) ([]byte, error) {
 }
 
 func prepareWithoutTimestamps(feature []byte, opts *Options) ([]byte, error) {
+
+	if alt.IsAlt(feature) {
+		return prepareWithoutTimestampsAsAlternateGeometry(feature, opts)
+	}
 
 	var err error
 
