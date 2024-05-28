@@ -65,7 +65,7 @@ func EnsureHierarchy(feature []byte) ([]byte, error) {
 
 				v, exists := h[k]
 
-				if exists {
+				if exists && v != r.Int(){
 					return nil, fmt.Errorf("Hierarchy key '%s' already set with value '%d' (trying to set '%d')", k, v, r.Int())
 				}
 
