@@ -72,16 +72,9 @@ func EnsureHierarchy(feature []byte) ([]byte, error) {
 		hierarchies = append(hierarchies, h)
 	}
 
-	for idx, h := range hierarchies {
+	for _, h := range hierarchies {
 
 		for _, k := range pt_keys {
-
-			v, exists := h[k]
-
-			if exists && v != id {
-				return nil, fmt.Errorf("Failed to assign alt placetype hierarchy key. Hierarchy key '%s' (index: %d) already exists with value %d (trying to set (%d)", k, idx, v, id)
-			}
-
 			h[k] = id
 		}
 	}
