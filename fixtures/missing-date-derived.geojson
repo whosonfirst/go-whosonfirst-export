@@ -52,7 +52,6 @@
                 "country_id": 85633793,
                 "county_id": 102087579,
                 "enclosure_id": 1360516215,
-                "installation_id": 1159159407,
                 "locality_id": 85922583,
                 "neighbourhood_id": -1,
                 "region_id": 85688637,
@@ -65,7 +64,9 @@
         "wof:name": "About Time",
         "wof:parent_id": 1360516215,
         "wof:placetype": "installation",
-        "wof:placetype_alt": "exhibition",
+        "wof:placetype_alt": [
+	     "exhibition"
+	],			     
         "wof:repo": "sfomuseum-data-exhibition",
         "wof:superseded_by": [],
         "wof:supersedes": [],
