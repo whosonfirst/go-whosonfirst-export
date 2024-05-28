@@ -51,7 +51,9 @@
     "wof:name": "RUNWAY 10L/28R",
     "wof:parent_id": 102527513,
     "wof:placetype": "custom",
-    "wof:placetype_alt": "runway",    
+    "wof:placetype_alt": [
+        "runway"
+    ],    
     "wof:repo": "sfomuseum-data-architecture",
     "wof:superseded_by": [],
     "wof:supersedes": []
