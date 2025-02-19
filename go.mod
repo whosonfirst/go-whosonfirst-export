@@ -6,11 +6,11 @@ require (
 	github.com/aaronland/go-roster v1.0.0
 	github.com/paulmach/orb v0.11.1
 	github.com/sfomuseum/go-edtf v1.2.1
-	github.com/tidwall/gjson v1.17.3
+	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.28
 	github.com/whosonfirst/go-whosonfirst-format v0.4.1
-	github.com/whosonfirst/go-whosonfirst-id v1.2.5
+	github.com/whosonfirst/go-whosonfirst-id v1.2.6
 )
 
 require (
@@ -20,7 +20,7 @@ require (
 	github.com/aaronland/go-string v1.0.0 // indirect
 	github.com/aaronland/go-uid v0.4.0 // indirect
 	github.com/aaronland/go-uid-artisanal v0.0.4 // indirect
-	github.com/aaronland/go-uid-proxy v0.3.0 // indirect
+	github.com/aaronland/go-uid-proxy v0.3.1 // indirect
 	github.com/aaronland/go-uid-whosonfirst v0.0.5 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect

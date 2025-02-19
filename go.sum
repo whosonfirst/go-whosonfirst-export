@@ -12,8 +12,8 @@ github.com/aaronland/go-uid v0.4.0 h1:2qQ2yRQarrUCEU9ApvBpaC9osAcqTCCvD77rOkDp7m
 github.com/aaronland/go-uid v0.4.0/go.mod h1:HwQ09mooJ8j684z3W5lPKO6Odf557O6h3P3o1PquqXE=
 github.com/aaronland/go-uid-artisanal v0.0.4 h1:I/29nzNnj32gax6rkBLeNtnwtXLqLAIE0mOlMq6KWWY=
 github.com/aaronland/go-uid-artisanal v0.0.4/go.mod h1:fNtTeUssikRxhttmzQeR3yDLJpSchzwTVqvsOIlglks=
-github.com/aaronland/go-uid-proxy v0.3.0 h1:GxAgpLdtHuHW/cTyx+FhWLQxKIiDasCgLu+QTlWseZo=
-github.com/aaronland/go-uid-proxy v0.3.0/go.mod h1:LFZBtJBMR7HNOv2Qvd1C2uCsOsHeL6xpXEVrqiC+6tM=
+github.com/aaronland/go-uid-proxy v0.3.1 h1:I74/csTaEC94ja8yxdwdNHss3ClzHXT7CVTAEFOAqTU=
+github.com/aaronland/go-uid-proxy v0.3.1/go.mod h1:LFZBtJBMR7HNOv2Qvd1C2uCsOsHeL6xpXEVrqiC+6tM=
 github.com/aaronland/go-uid-whosonfirst v0.0.5 h1:j5/vWjq/im3YPcx43R/8sJDJ4F2e7LlnQSK9/MMfsWw=
 github.com/aaronland/go-uid-whosonfirst v0.0.5/go.mod h1:Z/VSvb6IzCBnSNjDzgiuiJyptUbKSWhwexrjLEO4+24=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=
@@ -52,8 +52,8 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.6.1 h1:hDPOHmpOpP40lSULcqw7IrRb/u7w6RpDC9399XyoNd0=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/tidwall/gjson v1.14.2/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
-github.com/tidwall/gjson v1.17.3 h1:bwWLZU7icoKRG+C+0PNwIKC6FCJO/Q3p2pZvuP0jN94=
-github.com/tidwall/gjson v1.17.3/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
+github.com/tidwall/gjson v1.18.0 h1:FIDeeyB800efLX89e5a8Y0BNH+LOngJyGrIWxG2FKQY=
+github.com/tidwall/gjson v1.18.0/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
 github.com/tidwall/match v1.1.1 h1:+Ho715JplO36QYgwN9PGYNhgZvoUSc9X2c80KVTi+GA=
 github.com/tidwall/match v1.1.1/go.mod h1:eRSPERbgtNPcGhD8UCthc6PmLEQXEWd3PRB5JTxsfmM=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
@@ -67,8 +67,8 @@ github.com/whosonfirst/go-whosonfirst-flags v0.5.1 h1:kRzXK7WZlEK1hNw+CECEdnWNtE
 github.com/whosonfirst/go-whosonfirst-flags v0.5.1/go.mod h1:VgXcWNtsCZGy/Xnt9bpSUTKJ3nYeqXqvLD3NrE6kzZg=
 github.com/whosonfirst/go-whosonfirst-format v0.4.1 h1:TVSrbbB/sXhAgyaTenaS93lERRITGQHBKIDwoEgxoqA=
 github.com/whosonfirst/go-whosonfirst-format v0.4.1/go.mod h1:lMBIXCnD9ZA+wCNtu6XFYoq5DTfnEALO8k6OkEn11MM=
-github.com/whosonfirst/go-whosonfirst-id v1.2.5 h1:WEQafWDflwiHG9zA4XKvo7+k/Tjvb/yf0+6lpXqdRyk=
-github.com/whosonfirst/go-whosonfirst-id v1.2.5/go.mod h1:V0xr7Bs7Uuo+JJMRRoALlME6/R2K5CDm0BRp5NNThxc=
+github.com/whosonfirst/go-whosonfirst-id v1.2.6 h1:bqr/2kMEjRxmugHZBjzcC1BloB+XYD8G/5CWj2zh6XY=
+github.com/whosonfirst/go-whosonfirst-id v1.2.6/go.mod h1:G8q9zdoX8gSna8fwI2Xlc9EPZMUmBw1Nf75eGWHrHyc=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1/go.mod h1:RaEWvsqvNKKvBPvcKeFjrG2cJqOkHTiyTpzz23ni57g=
 github.com/xdg-go/stringprep v1.0.3/go.mod h1:W3f5j4i+9rC0kuIEJL0ky1VpHXQU3ocBgklLGvcBnW8=
