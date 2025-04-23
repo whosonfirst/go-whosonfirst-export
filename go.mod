@@ -10,7 +10,7 @@ require (
 	github.com/tidwall/sjson v1.2.5
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.28
 	github.com/whosonfirst/go-whosonfirst-format v0.4.1
-	github.com/whosonfirst/go-whosonfirst-id v1.2.6
+	github.com/whosonfirst/go-whosonfirst-id v1.3.0
 )
 
 require (
