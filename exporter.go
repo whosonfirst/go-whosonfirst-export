@@ -62,7 +62,7 @@ func NewExporter(ctx context.Context, uri string) (Exporter, error) {
 	return init_func(ctx, uri)
 }
 
-func Exporters() []string {
+func ExporterSchemes() []string {
 	ctx := context.Background()
 	return exporter_roster.Drivers(ctx)
 }
