@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	export "github.com/whosonfirst/go-whosonfirst-export/v2"
+	"github.com/whosonfirst/go-whosonfirst-export/v3"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/whosonfirst/go-whosonfirst-export/v2
+module github.com/whosonfirst/go-whosonfirst-export/v3
 
 go 1.22
 

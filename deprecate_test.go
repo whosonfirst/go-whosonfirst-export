@@ -2,12 +2,13 @@ package export
 
 import (
 	"context"
-	"github.com/tidwall/gjson"
 	"io"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/tidwall/gjson"
 )
 
 func TestDeprecateRecord(t *testing.T) {

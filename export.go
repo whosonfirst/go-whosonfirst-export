@@ -7,9 +7,9 @@ import (
 	"io"
 	_ "log"
 
-	"github.com/whosonfirst/go-whosonfirst-export/v2/properties"
+	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 	"github.com/whosonfirst/go-whosonfirst-feature/alt"
-	format "github.com/whosonfirst/go-whosonfirst-format"
+	"github.com/whosonfirst/go-whosonfirst-format"
 )
 
 func Export(feature []byte, opts *Options, wr io.Writer) error {
