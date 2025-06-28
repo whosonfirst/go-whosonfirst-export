@@ -2,76 +2,40 @@ package export
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 )
 
-func Export(feature []byte, opts *Options, wr io.Writer) error {
+func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 
-	var err error
-
-	feature, err = Prepare(feature, opts)
+	ex, err := NewExporter(ctx, "whosonfirst://")
 
 	if err != nil {
-		return fmt.Errorf("Failed to prepare feature, %w", err)
+		return false, nil, fmt.Errorf("Failed to create exporter, %w", err)
 	}
 
-	feature, err = Format(feature, opts)
-
-	if err != nil {
-		return fmt.Errorf("Failed to format feature, %w", err)
-	}
-
-	r := bytes.NewReader(feature)
-	_, err = io.Copy(wr, r)
-
-	if err != nil {
-		return fmt.Errorf("Failed to copy feature to writer, %w", err)
-	}
-
-	return nil
+	return ex.Export(ctx, feature)
 }
 
-// ExportChanged returns a boolean which indicates whether the file was changed
-// by comparing it to the `existingFeature` byte slice, before the lastmodified
-// timestamp is incremented. If the `feature` is identical to `existingFeature`
-// it doesn't write to the `io.Writer`.
-func ExportChanged(feature []byte, existingFeature []byte, opts *Options, wr io.Writer) (changed bool, err error) {
+func WriteExportIfChanged(ctx context.Context, feature []byte, wr io.Writer) (bool, error) {
 
-	changed = false
-
-	feature, err = prepareWithoutTimestamps(feature, opts)
+	has_changed, body, err := Export(ctx, feature)
 
 	if err != nil {
-		return
+		return has_changed, fmt.Errorf("Failed to export feature, %w", err)
 	}
 
-	feature, err = Format(feature, opts)
-
-	if err != nil {
-		return
+	if !has_changed {
+		return false, nil
 	}
 
-	changed = !bytes.Equal(feature, existingFeature)
-
-	if !changed {
-		return
-	}
-
-	feature, err = prepareTimestamps(feature, opts)
-
-	if err != nil {
-		return
-	}
-
-	feature, err = Format(feature, opts)
-
-	if err != nil {
-		return
-	}
-
-	r := bytes.NewReader(feature)
+	r := bytes.NewReader(body)
 	_, err = io.Copy(wr, r)
 
-	return
+	if err != nil {
+		return true, fmt.Errorf("Failed to copy feature to writer, %w", err)
+	}
+
+	return true, nil
 }

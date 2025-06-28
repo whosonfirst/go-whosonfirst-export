@@ -28,7 +28,7 @@ func SupersedeRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 		return nil, nil, err
 	}
 
-	new_body, err = ex.Export(ctx, new_body)
+	_, new_body, err = ex.Export(ctx, new_body)
 
 	if err != nil {
 		return nil, nil, err

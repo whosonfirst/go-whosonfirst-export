@@ -1,15 +1,18 @@
 package export
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 	"github.com/whosonfirst/go-whosonfirst-feature/alt"
-	"github.com/whosonfirst/go-whosonfirst-format"
+	"github.com/whosonfirst/go-whosonfirst-id"
 )
 
-func Prepare(feature []byte, opts *Options) ([]byte, error) {
+type PrepareOptions struct {
+	IdProvider id.Provider
+}
+
+func Prepare(feature []byte, opts *PrepareOptions) ([]byte, error) {
 
 	var err error
 
@@ -28,13 +31,7 @@ func Prepare(feature []byte, opts *Options) ([]byte, error) {
 	return feature, nil
 }
 
-func Format(feature []byte, opts *Options) ([]byte, error) {
-	var f format.Feature
-	json.Unmarshal(feature, &f)
-	return format.FormatFeature(&f)
-}
-
-func prepareWithoutTimestamps(feature []byte, opts *Options) ([]byte, error) {
+func prepareWithoutTimestamps(feature []byte, opts *PrepareOptions) ([]byte, error) {
 
 	if alt.IsAlt(feature) {
 		return prepareWithoutTimestampsAsAlternateGeometry(feature, opts)
@@ -93,7 +90,7 @@ func prepareWithoutTimestamps(feature []byte, opts *Options) ([]byte, error) {
 	return feature, nil
 }
 
-func prepareWithoutTimestampsAsAlternateGeometry(feature []byte, opts *Options) ([]byte, error) {
+func prepareWithoutTimestampsAsAlternateGeometry(feature []byte, opts *PrepareOptions) ([]byte, error) {
 
 	var err error
 
@@ -118,6 +115,6 @@ func prepareWithoutTimestampsAsAlternateGeometry(feature []byte, opts *Options) 
 	return feature, nil
 }
 
-func prepareTimestamps(feature []byte, opts *Options) ([]byte, error) {
+func prepareTimestamps(feature []byte, opts *PrepareOptions) ([]byte, error) {
 	return properties.EnsureTimestamps(feature)
 }

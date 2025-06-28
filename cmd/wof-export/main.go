@@ -41,7 +41,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		pretty, err := ex.Export(ctx, body)
+		_, pretty, err := ex.Export(ctx, body)
 
 		if err != nil {
 			log.Fatal(err)

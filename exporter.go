@@ -8,7 +8,7 @@ import (
 )
 
 type Exporter interface {
-	Export(context.Context, []byte) ([]byte, error)
+	Export(context.Context, []byte) (bool, []byte, error)
 }
 
 var exporter_roster roster.Roster

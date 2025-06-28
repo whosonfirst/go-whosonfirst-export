@@ -28,7 +28,7 @@ func DeprecateRecordWithTime(ctx context.Context, ex Exporter, t time.Time, old_
 		return nil, fmt.Errorf("Failed to assign properties, %w", err)
 	}
 
-	new_body, err = ex.Export(ctx, new_body)
+	_, new_body, err = ex.Export(ctx, new_body)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to export body, %w", err)
