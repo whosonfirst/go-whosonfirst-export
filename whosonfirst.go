@@ -2,7 +2,6 @@ package export
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 )
 
@@ -30,28 +29,13 @@ func NewWhosOnFirstExporter(ctx context.Context, uri string) (Exporter, error) {
 		return nil, err
 	}
 
-	opts, err := NewDefaultOptions(ctx)
-
-	if err != nil {
-		return nil, err
-	}
+	opts, err := DefaultOptions(ctx)
 
 	ex := WhosOnFirstExporter{
 		options: opts,
 	}
 
 	return &ex, nil
-}
-
-func (ex *WhosOnFirstExporter) ExportFeature(ctx context.Context, feature interface{}) ([]byte, error) {
-
-	body, err := json.Marshal(feature)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ex.Export(ctx, body)
 }
 
 func (ex *WhosOnFirstExporter) Export(ctx context.Context, feature []byte) ([]byte, error) {

@@ -9,7 +9,6 @@ import (
 
 type Exporter interface {
 	Export(context.Context, []byte) ([]byte, error)
-	ExportFeature(context.Context, interface{}) ([]byte, error)
 }
 
 var exporter_roster roster.Roster
