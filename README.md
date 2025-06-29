@@ -2,16 +2,13 @@
 
 Go package for exporting Who's On First documents.
 
-## What is this?
-
-go-whosonfirst-export is a Go package for exporting Who's On First documents in Go. It is a port of the [py-mapzen-whosonfirst-geojson](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package and _mmmmmmmaybe_ some or all of the [py-mapzen-whosonfirst-export](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package.
-
-
 ## Documentation
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/whosonfirst/go-whosonfirst-export.svg)](https://pkg.go.dev/github.com/whosonfirst/go-whosonfirst-export)
 
 ## Example
+
+Version 3.x of this package introduce major, backward-incompatible changes from earlier releases. That said, migragting from version 2.x to 3.x should be relatively straightforward as a the _basic_ concepts are still the same but (hopefully) simplified. There are some important changes "under the hood" but the user-facing changes, while important, should be easy to update.
 
 _All error handling removed for the sake of brevity._
 
@@ -31,6 +28,10 @@ func main() {
 	body, _ := os.ReadFile(path)
 
 	has_changed, new_body, _ := export.Export(ctx, body)
+
+	if has_changes {
+		os.Stdout.Write(new_body)
+	}
 }
 ```
 
@@ -57,6 +58,8 @@ func main() {
 
 ### Exporter
 
+The `export.Export` method is really just a convenience around the default Who's On First exporter package which implements the `export.Exporter` interface (described below). The goal behind the interface it to allow for custom exporters which can supplement the default export functionality with application-specific needs. To use the exporter package directly you would do this:
+
 ```
 import (
 	"context"
@@ -73,12 +76,15 @@ func main() {
 	path := "some.geojson"     	
 	body, _ := os.ReadFile(path)
 
-	has_changed, body, _ = ex.Export(ctx, body)
-	os.Stdout.Write(body)
+	has_changes, body, _ = ex.Export(ctx, body)
+
+	if has_changes {
+		os.Stdout.Write(body)
+	}
 }
 ```
 
-...
+This is how you would have done the same thing using the `/v2` release:
 
 ```
 import (
@@ -117,8 +123,7 @@ This package needs to hold hands with the `go-whosonfirst-validate` package.
 
 ## See also
 
-* https://github.com/tidwall/pretty
-* https://github.com/tidwall/gjson
-* https://github.com/tidwall/pretty/issues/2
-* https://gist.github.com/tidwall/ca6ca1dd0cb780f0be4d134f8e4eb7bc
+* https://github.com/whosonfirst/go-whosonfirst-format
 * https://github.com/whosonfirst/go-whosonfirst-validate
+* https://github.com/tidwall/gjson
+* https://github.com/tidwall/sjson
