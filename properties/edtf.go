@@ -33,7 +33,7 @@ func EnsureInception(ctx context.Context, feature []byte) ([]byte, error) {
 }
 
 func EnsureCessation(ctx context.Context, feature []byte) ([]byte, error) {
-	return updatePath(feature, PATH_DATE_INCEPTION_LOWER, PATH_DATE_CESSATION_UPPER, PATH_DATE_CESSATION_LOWER)
+	return updatePath(feature, PATH_EDTF_CESSATION, PATH_DATE_CESSATION_UPPER, PATH_DATE_CESSATION_LOWER)
 }
 
 func updatePath(feature []byte, path string, upperPath string, lowerPath string) ([]byte, error) {
@@ -51,6 +51,13 @@ func updatePath(feature []byte, path string, upperPath string, lowerPath string)
 
 func setProperties(feature []byte, edtfStr string, path string, upperPath, lowerPath string) ([]byte, error) {
 
+	switch edtfStr {
+	case edtf.OPEN_2012:
+		edtfStr = edtf.OPEN
+	case edtf.UNKNOWN_2012:
+		edtfStr = edtf.UNKNOWN
+	}
+
 	feature, err := sjson.SetBytes(feature, path, edtfStr)
 
 	if err != nil {
@@ -60,8 +67,6 @@ func setProperties(feature []byte, edtfStr string, path string, upperPath, lower
 	switch edtfStr {
 	case edtf.UNKNOWN, edtf.OPEN:
 		return removeUpperLower(feature, upperPath, lowerPath)
-	case edtf.UNKNOWN_2012:
-		return setProperties(feature, edtf.UNKNOWN, path, upperPath, lowerPath)
 	default:
 		return setUpperLower(feature, edtfStr, upperPath, lowerPath)
 	}
