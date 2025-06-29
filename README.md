@@ -6,9 +6,6 @@ Go package for exporting Who's On First documents.
 
 go-whosonfirst-export is a Go package for exporting Who's On First documents in Go. It is a port of the [py-mapzen-whosonfirst-geojson](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package and _mmmmmmmaybe_ some or all of the [py-mapzen-whosonfirst-export](https://github.com/whosonfirst/py-mapzen-whosonfirst-geojson) package.
 
-## Important
-
-This package is still in flux. It is starting to settle down with the `v2` release but it might still change.
 
 ## Documentation
 
@@ -16,29 +13,44 @@ This package is still in flux. It is starting to settle down with the `v2` relea
 
 ## Example
 
-### Simple
+_All error handling removed for the sake of brevity._
 
-_Error handling removed for the sake of brevity._
+### Simple
 
 ```
 import (
 	"context"
-	"github.com/whosonfirst/go-whosonfirst-export/v2"
-	"io/ioutil"
 	"os
+
+	"github.com/whosonfirst/go-whosonfirst-export/v3"
+)
+
+func main() {
+
+	ctx := context.Background()
+	body, _ := os.ReadFile(path)
+
+	has_changed, new_body, _ := export.Export(ctx, body)
+}
+```
+
+This is how you would have done the same thing using the `/v2` release:
+
+```
+import (
+	"context"
+	"os
+
+	"github.com/whosonfirst/go-whosonfirst-export/v2"
 )
 
 func main() {
 
 	ctx := context.Background()
 
-	path := "some.geojson"     	
-	fh, _ := os.Open(path)
-	defer fh.Close()
-
-	body, _ := ioutil.ReadAll(fh)
-
+	body, _ := os.ReadFile(path)
 	opts, _ := export.NewDefaultOptions(ctx)
+	
 	export.Export(body, opts, os.Stdout)
 }
 ```
@@ -48,22 +60,41 @@ func main() {
 ```
 import (
 	"context"
-	"github.com/whosonfirst/go-whosonfirst-export/v2"
-	"io/ioutil"
 	"os
+
+	"github.com/whosonfirst/go-whosonfirst-export/v3"
 )
 
 func main() {
 
 	ctx := context.Background()
-
 	ex, _ := export.NewExporter(ctx, "whosonfirst://")
 	
 	path := "some.geojson"     	
-	fh, _ := os.Open(path)
-	defer fh.Close()
+	body, _ := os.ReadFile(path)
 
-	body, _ := ioutil.ReadAll(fh)
+	has_changed, body, _ = ex.Export(ctx, body)
+	os.Stdout.Write(body)
+}
+```
+
+...
+
+```
+import (
+	"context"
+	"os
+
+	"github.com/whosonfirst/go-whosonfirst-export/v2"
+)
+
+func main() {
+
+	ctx := context.Background()
+	ex, _ := export.NewExporter(ctx, "whosonfirst://")
+	
+	path := "some.geojson"     	
+	body, _ := os.ReadFile(path)
 
 	body, _ = ex.Export(ctx, body)
 	os.Stdout.Write(body)
@@ -76,8 +107,7 @@ func main() {
 
 ```
 type Exporter interface {
-	Export(context.Context, []byte) ([]byte, error)
-	ExportFeature(context.Context, interface{}) ([]byte, error)
+	Export(context.Context, []byte) (bool, []byte, error)
 }
 ```
 
