@@ -7,6 +7,7 @@ import (
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 )
 
 func EnsureProperties(ctx context.Context, body []byte, to_ensure map[string]interface{}) ([]byte, error) {
@@ -36,7 +37,7 @@ func AssignProperties(ctx context.Context, body []byte, to_assign map[string]int
 		body, err = sjson.SetBytes(body, path, v)
 
 		if err != nil {
-			return nil, err
+			return nil, properties.SetPropertyFailed(path, err)
 		}
 	}
 
@@ -46,7 +47,6 @@ func AssignProperties(ctx context.Context, body []byte, to_assign map[string]int
 func AssignPropertiesIfChanged(ctx context.Context, body []byte, to_assign map[string]interface{}) (bool, []byte, error) {
 
 	var err error
-
 	changed := false
 
 	for path, v := range to_assign {
@@ -75,7 +75,7 @@ func AssignPropertiesIfChanged(ctx context.Context, body []byte, to_assign map[s
 		body, err = sjson.SetBytes(body, path, v)
 
 		if err != nil {
-			return changed, nil, err
+			return changed, nil, properties.SetPropertyFailed(path, err)
 		}
 
 		changed = true
@@ -93,7 +93,7 @@ func RemoveProperties(ctx context.Context, body []byte, to_remove []string) ([]b
 		body, err = sjson.DeleteBytes(body, path)
 
 		if err != nil {
-			return nil, err
+			return nil, properties.RemovePropertyFailed(path, err)
 		}
 	}
 

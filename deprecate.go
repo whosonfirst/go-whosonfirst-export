@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 )
 
 // DeprecateRecord will assign the relevant properties to make 'old_body' as deprecated using the current time.
@@ -18,8 +20,8 @@ func DeprecateRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte,
 func DeprecateRecordWithTime(ctx context.Context, ex Exporter, t time.Time, old_body []byte) ([]byte, error) {
 
 	to_update := map[string]interface{}{
-		"properties.edtf:deprecated": t.Format("2006-01-02"),
-		"properties.mz:is_current":   0,
+		properties.PATH_EDTF_DEPRECATED: t.Format("2006-01-02"),
+		properties.PATH_MZ_ISCURRENT:    0,
 	}
 
 	new_body, err := AssignProperties(ctx, old_body, to_update)

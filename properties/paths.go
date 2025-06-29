@@ -16,6 +16,8 @@ const PATH_DATE_INCEPTION_UPPER string = "properties.date:inception_upper"
 
 const PATH_EDTF_CESSATION string = "properties.edtf:cessation"
 
+const PATH_EDTF_DEPRECATED string = "properties.edtf:deprecated"
+
 const PATH_EDTF_INCEPTION string = "properties.edtf:inception"
 
 const PATH_GEOM_AREA string = "properties.geom:area"
@@ -25,6 +27,8 @@ const PATH_GEOM_BBOX string = "properties.geom:bbox"
 const PATH_GEOM_LATITUDE string = "properties.geom:latitude"
 
 const PATH_GEOM_LONGITUDE string = "properties.geom:longitude"
+
+const PATH_MZ_ISCURRENT string = "properties.mz:is_current"
 
 const PATH_SRC_GEOM string = "properties.src:geom"
 
@@ -37,6 +41,8 @@ const PATH_WOF_CREATED string = "properties.wof:created"
 const PATH_WOF_GEOMHASH string = "properties.wof:geomhash"
 
 const PATH_WOF_HIERARCHY string = "properties.wof:hierarchy"
+
+const PATH_WOF_LABEL string = "properties.wof:label"
 
 const PATH_WOF_LASTMODIFIED string = "properties.wof:lastmodified"
 
