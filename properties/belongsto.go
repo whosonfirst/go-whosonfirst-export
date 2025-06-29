@@ -2,7 +2,7 @@ package properties
 
 import (
 	"context"
-	"errors"
+	"slices"
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
@@ -12,17 +12,17 @@ func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 
 	belongsto := make([]int64, 0)
 
-	wofid_rsp := gjson.GetBytes(feature, "properties.wof:id")
+	wofid_rsp := gjson.GetBytes(feature, PATH_WOF_ID)
 
 	if !wofid_rsp.Exists() {
-		return nil, errors.New("missing properties.wof:id")
+		return nil, MissingProperty(PATH_WOF_ID)
 	}
 
 	wofid := wofid_rsp.Int()
 
 	// Load the existing belongsto array, if it exists
 
-	belongsToRsp := gjson.GetBytes(feature, "properties.wof:belongsto")
+	belongsToRsp := gjson.GetBytes(feature, PATH_WOF_BELONGSTO)
 
 	if belongsToRsp.Exists() {
 
@@ -36,7 +36,7 @@ func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 		})
 	}
 
-	rsp := gjson.GetBytes(feature, "properties.wof:hierarchy")
+	rsp := gjson.GetBytes(feature, PATH_WOF_HIERARCHY)
 
 	if rsp.Exists() {
 
@@ -60,7 +60,7 @@ func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 
 		// Add all the IDs we've not seen before
 		for _, id := range ids {
-			if !sliceContains(belongsto, id) {
+			if !slices.Contains(belongsto, id) {
 				belongsto = append(belongsto, id)
 			}
 		}
@@ -70,33 +70,30 @@ func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 		for i := len(belongsto) - 1; i >= 0; i-- {
 			id := belongsto[i]
 
-			if !sliceContains(ids, id) {
+			if !slices.Contains(ids, id) {
 				belongsto = append(belongsto[:i], belongsto[i+1:]...)
 			}
 		}
 	}
 
-	tz_rsp := gjson.GetBytes(feature, "properties.wof:timezones")
+	tz_rsp := gjson.GetBytes(feature, PATH_WOF_TIMEZONES)
 
 	if tz_rsp.Exists() {
 
 		for _, i := range tz_rsp.Array() {
 
 			id := i.Int()
-			if !sliceContains(belongsto, id) {
+			if !slices.Contains(belongsto, id) {
 				belongsto = append(belongsto, id)
 			}
 		}
 	}
 
-	return sjson.SetBytes(feature, "properties.wof:belongsto", belongsto)
-}
+	feature, err := sjson.SetBytes(feature, PATH_WOF_BELONGSTO, belongsto)
 
-func sliceContains(s []int64, e int64) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
+	if err != nil {
+		return nil, SetPropertyFailed(PATH_WOF_BELONGSTO, err)
 	}
-	return false
+
+	return feature, nil
 }

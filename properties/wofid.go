@@ -34,10 +34,10 @@ func idProvider(ctx context.Context) (id.Provider, error) {
 
 func EnsureWOFIdAlt(ctx context.Context, feature []byte) ([]byte, error) {
 
-	rsp := gjson.GetBytes(feature, PATH_WOFID)
+	rsp := gjson.GetBytes(feature, PATH_WOF_ID)
 
 	if !rsp.Exists() {
-		return nil, IsMissingProperty
+		return nil, MissingProperty(PATH_WOF_ID)
 	}
 
 	return feature, nil
@@ -53,7 +53,7 @@ func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
 
 	var wof_id int64
 
-	rsp := gjson.GetBytes(feature, PATH_WOFID)
+	rsp := gjson.GetBytes(feature, PATH_WOF_ID)
 
 	if rsp.Exists() {
 
@@ -69,7 +69,7 @@ func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
 
 		wof_id = i
 
-		feature, err = sjson.SetBytes(feature, PATH_WOFID, wof_id)
+		feature, err = sjson.SetBytes(feature, PATH_WOF_ID, wof_id)
 
 		if err != nil {
 			return nil, err

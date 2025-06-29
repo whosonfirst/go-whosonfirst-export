@@ -12,14 +12,15 @@ import (
 const dateFmt string = "2006-01-02"
 
 func EnsureEDTF(ctx context.Context, feature []byte) ([]byte, error) {
-	var err error
 
-	feature, err = EnsureInception(ctx, feature)
+	feature, err := EnsureInception(ctx, feature)
+
 	if err != nil {
 		return nil, err
 	}
 
 	feature, err = EnsureCessation(ctx, feature)
+
 	if err != nil {
 		return nil, err
 	}
@@ -28,22 +29,15 @@ func EnsureEDTF(ctx context.Context, feature []byte) ([]byte, error) {
 }
 
 func EnsureInception(ctx context.Context, feature []byte) ([]byte, error) {
-	path := "properties.edtf:inception"
-	lowerPath := "properties.date:inception_lower"
-	upperPath := "properties.date:inception_upper"
-
-	return updatePath(feature, path, upperPath, lowerPath)
+	return updatePath(feature, PATH_EDTF_INCEPTION, PATH_DATE_INCEPTION_UPPER, PATH_DATE_INCEPTION_LOWER)
 }
 
 func EnsureCessation(ctx context.Context, feature []byte) ([]byte, error) {
-	path := "properties.edtf:cessation"
-	lowerPath := "properties.date:cessation_lower"
-	upperPath := "properties.date:cessation_upper"
-
-	return updatePath(feature, path, upperPath, lowerPath)
+	return updatePath(feature, PATH_DATE_INCEPTION_LOWER, PATH_DATE_CESSATION_UPPER, PATH_DATE_CESSATION_LOWER)
 }
 
 func updatePath(feature []byte, path string, upperPath string, lowerPath string) ([]byte, error) {
+
 	property := gjson.GetBytes(feature, path)
 
 	if !property.Exists() {
@@ -56,9 +50,11 @@ func updatePath(feature []byte, path string, upperPath string, lowerPath string)
 }
 
 func setProperties(feature []byte, edtfStr string, path string, upperPath, lowerPath string) ([]byte, error) {
+
 	feature, err := sjson.SetBytes(feature, path, edtfStr)
+
 	if err != nil {
-		return nil, err
+		return nil, SetPropertyFailed(path, err)
 	}
 
 	switch edtfStr {
@@ -72,43 +68,52 @@ func setProperties(feature []byte, edtfStr string, path string, upperPath, lower
 }
 
 func setUpperLower(feature []byte, edtfStr string, upperPath string, lowerPath string) ([]byte, error) {
+
 	dt, err := parser.ParseString(edtfStr)
+
 	if err != nil {
 		return nil, err
 	}
 
 	lowerTime, err := dt.Lower()
+
 	if err != nil {
 		return nil, err
 	}
 
 	feature, err = sjson.SetBytes(feature, lowerPath, lowerTime.Format(dateFmt))
+
 	if err != nil {
-		return nil, err
+		return nil, SetPropertyFailed(lowerPath, err)
 	}
 
 	upperTime, err := dt.Upper()
+
 	if err != nil {
 		return nil, err
 	}
 
 	feature, err = sjson.SetBytes(feature, upperPath, upperTime.Format(dateFmt))
+
 	if err != nil {
-		return nil, err
+		return nil, SetPropertyFailed(upperPath, err)
 	}
 
 	return feature, nil
 }
 
 func removeUpperLower(feature []byte, upperPath string, lowerPath string) ([]byte, error) {
+
 	feature, err := sjson.DeleteBytes(feature, upperPath)
+
 	if err != nil {
-		return nil, err
+		return nil, RemovePropertyFailed(upperPath, err)
 	}
 
 	feature, err = sjson.DeleteBytes(feature, lowerPath)
+
 	if err != nil {
-		return nil, err
+		return nil, RemovePropertyFailed(lowerPath, err)
 	}
 
 	return feature, nil

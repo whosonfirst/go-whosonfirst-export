@@ -14,14 +14,14 @@ func EnsureCreated(ctx context.Context, feature []byte) ([]byte, error) {
 
 	now := int32(time.Now().Unix())
 
-	created := gjson.GetBytes(feature, "properties.wof:created")
+	created := gjson.GetBytes(feature, PATH_WOF_CREATED)
 
 	if !created.Exists() {
 
-		feature, err = sjson.SetBytes(feature, "properties.wof:created", now)
+		feature, err = sjson.SetBytes(feature, PATH_WOF_CREATED, now)
 
 		if err != nil {
-			return nil, err
+			return nil, SetPropertyFailed(PATH_WOF_CREATED, err)
 		}
 	}
 
