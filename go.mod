@@ -1,6 +1,6 @@
 module github.com/whosonfirst/go-whosonfirst-export/v3
 
-go 1.24
+go 1.22
 
 toolchain go1.24.4
 
