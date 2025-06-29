@@ -1,13 +1,14 @@
 package properties
 
 import (
+	"context"
 	"time"
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
 
-func EnsureCreated(feature []byte) ([]byte, error) {
+func EnsureCreated(ctx context.Context, feature []byte) ([]byte, error) {
 
 	var err error
 

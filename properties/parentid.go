@@ -1,11 +1,13 @@
 package properties
 
 import (
+	"context"
+
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
 
-func EnsureParentId(feature []byte) ([]byte, error) {
+func EnsureParentId(ctx context.Context, feature []byte) ([]byte, error) {
 
 	rsp := gjson.GetBytes(feature, "properties.wof:parent_id")
 

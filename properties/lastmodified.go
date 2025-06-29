@@ -1,12 +1,13 @@
 package properties
 
 import (
+	"context"
 	"time"
 
 	"github.com/tidwall/sjson"
 )
 
-func EnsureLastModified(feature []byte) ([]byte, error) {
+func EnsureLastModified(ctx context.Context, feature []byte) ([]byte, error) {
 
 	var err error
 

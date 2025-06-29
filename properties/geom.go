@@ -1,6 +1,7 @@
 package properties
 
 import (
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -14,7 +15,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
-func EnsureSrcGeom(feature []byte) ([]byte, error) {
+func EnsureSrcGeom(ctx context.Context, feature []byte) ([]byte, error) {
 
 	path := "properties.src:geom"
 
@@ -27,7 +28,7 @@ func EnsureSrcGeom(feature []byte) ([]byte, error) {
 	return sjson.SetBytes(feature, path, "unknown")
 }
 
-func EnsureGeomHash(feature []byte) ([]byte, error) {
+func EnsureGeomHash(ctx context.Context, feature []byte) ([]byte, error) {
 
 	rsp := gjson.GetBytes(feature, "geometry")
 
@@ -47,7 +48,7 @@ func EnsureGeomHash(feature []byte) ([]byte, error) {
 	return sjson.SetBytes(feature, "properties.wof:geomhash", geom_hash)
 }
 
-func EnsureGeomCoords(feature []byte) ([]byte, error) {
+func EnsureGeomCoords(ctx context.Context, feature []byte) ([]byte, error) {
 
 	// https://github.com/paulmach/orb/blob/master/geojson/feature.go
 	// https://github.com/paulmach/orb/blob/master/planar/area.go

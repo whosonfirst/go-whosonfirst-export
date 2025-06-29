@@ -1,26 +1,27 @@
 package properties
 
 import (
+	"context"
 	"fmt"
 )
 
-func EnsureRequired(feature []byte) ([]byte, error) {
+func EnsureRequired(ctx context.Context, feature []byte) ([]byte, error) {
 
 	var err error
 
-	feature, err = EnsureName(feature)
+	feature, err = EnsureName(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure wof:name, %w", err)
 	}
 
-	feature, err = EnsurePlacetype(feature)
+	feature, err = EnsurePlacetype(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure placetype, %w", err)
 	}
 
-	feature, err = EnsureGeom(feature)
+	feature, err = EnsureGeom(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure geometry, %w", err)
@@ -29,23 +30,23 @@ func EnsureRequired(feature []byte) ([]byte, error) {
 	return feature, nil
 }
 
-func EnsureGeom(feature []byte) ([]byte, error) {
+func EnsureGeom(ctx context.Context, feature []byte) ([]byte, error) {
 
 	var err error
 
-	feature, err = EnsureSrcGeom(feature)
+	feature, err = EnsureSrcGeom(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure src:geom, %w", err)
 	}
 
-	feature, err = EnsureGeomHash(feature)
+	feature, err = EnsureGeomHash(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure geom:hash, %w", err)
 	}
 
-	feature, err = EnsureGeomCoords(feature)
+	feature, err = EnsureGeomCoords(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure geometry coordinates, %w", err)
@@ -54,17 +55,17 @@ func EnsureGeom(feature []byte) ([]byte, error) {
 	return feature, nil
 }
 
-func EnsureTimestamps(feature []byte) ([]byte, error) {
+func EnsureTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
 
 	var err error
 
-	feature, err = EnsureCreated(feature)
+	feature, err = EnsureCreated(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure wof:created, %w", err)
 	}
 
-	feature, err = EnsureLastModified(feature)
+	feature, err = EnsureLastModified(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure wof:lastmodified, %w", err)

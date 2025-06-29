@@ -1,6 +1,7 @@
 package properties
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -11,7 +12,7 @@ import (
 type Hierarchy map[string]int64
 type Hierarchies []Hierarchy
 
-func EnsureHierarchy(feature []byte) ([]byte, error) {
+func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 
 	pt_rsp := gjson.GetBytes(feature, "properties.wof:placetype")
 

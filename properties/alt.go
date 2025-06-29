@@ -1,12 +1,13 @@
 package properties
 
 import (
+	"context"
 	"fmt"
 
 	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
-func EnsureSourceAltLabel(feature []byte) ([]byte, error) {
+func EnsureSourceAltLabel(ctx context.Context, feature []byte) ([]byte, error) {
 
 	label, err := wof_properties.AltLabel(feature)
 

@@ -1,13 +1,14 @@
 package properties
 
 import (
+	"context"
 	"errors"
 
 	"github.com/tidwall/gjson"
 	_ "github.com/tidwall/sjson"
 )
 
-func EnsurePlacetype(feature []byte) ([]byte, error) {
+func EnsurePlacetype(ctx context.Context, feature []byte) ([]byte, error) {
 
 	rsp := gjson.GetBytes(feature, "properties.wof:placetype")
 

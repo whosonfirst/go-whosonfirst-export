@@ -1,13 +1,14 @@
 package properties
 
 import (
+	"context"
 	"errors"
 
 	"github.com/tidwall/gjson"
 	_ "github.com/tidwall/sjson"
 )
 
-func EnsureName(feature []byte) ([]byte, error) {
+func EnsureName(ctx context.Context, feature []byte) ([]byte, error) {
 
 	rsp := gjson.GetBytes(feature, "properties.wof:name")
 

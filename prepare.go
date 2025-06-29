@@ -1,28 +1,21 @@
 package export
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
-	"github.com/whosonfirst/go-whosonfirst-feature/alt"
-	"github.com/whosonfirst/go-whosonfirst-id"
 )
 
-type PrepareOptions struct {
-	IdProvider id.Provider
-}
+func Prepare(ctx context.Context, feature []byte) ([]byte, error) {
 
-func Prepare(feature []byte, opts *PrepareOptions) ([]byte, error) {
-
-	var err error
-
-	feature, err = prepareWithoutTimestamps(feature, opts)
+	feature, err := prepareWithoutTimestamps(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to prepare without timestamps, %w", err)
 	}
 
-	feature, err = prepareTimestamps(feature, opts)
+	feature, err = prepareTimestamps(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to prepare with timestamps, %w", err)
@@ -31,57 +24,51 @@ func Prepare(feature []byte, opts *PrepareOptions) ([]byte, error) {
 	return feature, nil
 }
 
-func prepareWithoutTimestamps(feature []byte, opts *PrepareOptions) ([]byte, error) {
+func prepareWithoutTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
 
-	if alt.IsAlt(feature) {
-		return prepareWithoutTimestampsAsAlternateGeometry(feature, opts)
-	}
-
-	var err error
-
-	feature, err = properties.EnsureWOFId(feature, opts.IdProvider)
+	feature, err := properties.EnsureWOFId(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure wof:id, %w", err)
 	}
 
-	feature, err = properties.EnsureRequired(feature)
+	feature, err = properties.EnsureRequired(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure required properties, %w", err)
 	}
 
-	feature, err = properties.EnsureEDTF(feature)
+	feature, err = properties.EnsureEDTF(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure EDTF properties, %w", err)
 	}
 
-	feature, err = properties.EnsureParentId(feature)
+	feature, err = properties.EnsureParentId(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure parent ID, %w", err)
 	}
 
-	feature, err = properties.EnsureHierarchy(feature)
+	feature, err = properties.EnsureHierarchy(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure hierarchy, %w", err)
 	}
 
-	feature, err = properties.EnsureBelongsTo(feature)
+	feature, err = properties.EnsureBelongsTo(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure belongs to, %w", err)
 	}
 
-	feature, err = properties.EnsureSupersedes(feature)
+	feature, err = properties.EnsureSupersedes(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure supersedes, %w", err)
 	}
 
-	feature, err = properties.EnsureSupersededBy(feature)
+	feature, err = properties.EnsureSupersededBy(ctx, feature)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure superseded by, %w", err)
@@ -90,31 +77,6 @@ func prepareWithoutTimestamps(feature []byte, opts *PrepareOptions) ([]byte, err
 	return feature, nil
 }
 
-func prepareWithoutTimestampsAsAlternateGeometry(feature []byte, opts *PrepareOptions) ([]byte, error) {
-
-	var err error
-
-	feature, err = properties.EnsureWOFId(feature, opts.IdProvider)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure wof:id, %w", err)
-	}
-
-	feature, err = properties.EnsureRequired(feature)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure required properties, %w", err)
-	}
-
-	feature, err = properties.EnsureSourceAltLabel(feature)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure src:alt_label, %w", err)
-	}
-
-	return feature, nil
-}
-
-func prepareTimestamps(feature []byte, opts *PrepareOptions) ([]byte, error) {
-	return properties.EnsureTimestamps(feature)
+func prepareTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
+	return properties.EnsureTimestamps(ctx, feature)
 }

@@ -2,20 +2,44 @@ package properties
 
 import (
 	"context"
+	"fmt"
+	"sync"
+
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	id "github.com/whosonfirst/go-whosonfirst-id"
+	"github.com/whosonfirst/go-whosonfirst-id"
 )
 
-func EnsureWOFId(feature []byte, provider id.Provider) ([]byte, error) {
+const ID_PROVIDER string = "org.whosonfirst.id.provider"
 
-	// Eventually `ctx` should be part of the method signature but
-	// should happen go-whosonfirst-export wide and will be a backwards
-	// incompatible change
+var provider_once = sync.OnceValues(func() (id.Provider, error) {
+	return id.NewProvider(context.Background())
+})
 
-	ctx := context.Background()
+func idProvider(ctx context.Context) (id.Provider, error) {
 
-	var err error
+	v := ctx.Value(ID_PROVIDER)
+
+	if v != nil {
+
+		switch v.(type) {
+		case id.Provider:
+			return v.(id.Provider), nil
+		default:
+			return nil, fmt.Errorf("Invalid Id provider")
+		}
+	}
+
+	return provider_once()
+}
+
+func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
+
+	provider, err := idProvider(ctx)
+
+	if err != nil {
+		return nil, err
+	}
 
 	var wof_id int64
 

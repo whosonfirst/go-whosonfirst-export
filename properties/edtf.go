@@ -1,6 +1,8 @@
 package properties
 
 import (
+	"context"
+
 	"github.com/sfomuseum/go-edtf"
 	"github.com/sfomuseum/go-edtf/parser"
 	"github.com/tidwall/gjson"
@@ -9,15 +11,15 @@ import (
 
 const dateFmt string = "2006-01-02"
 
-func EnsureEDTF(feature []byte) ([]byte, error) {
+func EnsureEDTF(ctx context.Context, feature []byte) ([]byte, error) {
 	var err error
 
-	feature, err = EnsureInception(feature)
+	feature, err = EnsureInception(ctx, feature)
 	if err != nil {
 		return nil, err
 	}
 
-	feature, err = EnsureCessation(feature)
+	feature, err = EnsureCessation(ctx, feature)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +27,7 @@ func EnsureEDTF(feature []byte) ([]byte, error) {
 	return feature, nil
 }
 
-func EnsureInception(feature []byte) ([]byte, error) {
+func EnsureInception(ctx context.Context, feature []byte) ([]byte, error) {
 	path := "properties.edtf:inception"
 	lowerPath := "properties.date:inception_lower"
 	upperPath := "properties.date:inception_upper"
@@ -33,7 +35,7 @@ func EnsureInception(feature []byte) ([]byte, error) {
 	return updatePath(feature, path, upperPath, lowerPath)
 }
 
-func EnsureCessation(feature []byte) ([]byte, error) {
+func EnsureCessation(ctx context.Context, feature []byte) ([]byte, error) {
 	path := "properties.edtf:cessation"
 	lowerPath := "properties.date:cessation_lower"
 	upperPath := "properties.date:cessation_upper"

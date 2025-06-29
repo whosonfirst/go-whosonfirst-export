@@ -1,13 +1,14 @@
 package properties
 
 import (
+	"context"
 	"errors"
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
 
-func EnsureBelongsTo(feature []byte) ([]byte, error) {
+func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 
 	belongsto := make([]int64, 0)
 

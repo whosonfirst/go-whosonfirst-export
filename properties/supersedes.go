@@ -1,11 +1,13 @@
 package properties
 
 import (
+	"context"
+
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
 
-func EnsureSupersedes(feature []byte) ([]byte, error) {
+func EnsureSupersedes(ctx context.Context, feature []byte) ([]byte, error) {
 
 	supersedes := make([]int64, 0)
 
@@ -18,7 +20,7 @@ func EnsureSupersedes(feature []byte) ([]byte, error) {
 	return sjson.SetBytes(feature, "properties.wof:supersedes", supersedes)
 }
 
-func EnsureSupersededBy(feature []byte) ([]byte, error) {
+func EnsureSupersededBy(ctx context.Context, feature []byte) ([]byte, error) {
 
 	superseded_by := make([]int64, 0)
 

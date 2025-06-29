@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/whosonfirst/go-whosonfirst-id"
-	"github.com/whosonfirst/go-whosonfirst-validate"	
+	"github.com/whosonfirst/go-whosonfirst-feature/alt"
+	"github.com/whosonfirst/go-whosonfirst-validate"
 )
 
 type WhosOnFirstExporter struct {
 	Exporter
-	id_provider id.Provider
 }
 
 func init() {
@@ -34,32 +33,29 @@ func NewWhosOnFirstExporter(ctx context.Context, uri string) (Exporter, error) {
 		return nil, fmt.Errorf("Failed to parse URI, %w", err)
 	}
 
-	provider, err := id.NewProvider(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to create new Id provider, %w", err)
-	}
-
-	ex := WhosOnFirstExporter{
-		id_provider: provider,
-	}
+	ex := WhosOnFirstExporter{}
 
 	return &ex, nil
 }
 
 func (ex *WhosOnFirstExporter) Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 
-	prepare_opts := &PrepareOptions{
-		IdProvider: ex.id_provider,
+	if alt.IsAlt(feature) {
+		return ex.exportAlt(ctx, feature)
 	}
 
-	tmp_feature, err := prepareWithoutTimestamps(feature, prepare_opts)
+	return ex.export(ctx, feature)
+}
+
+func (ex *WhosOnFirstExporter) export(ctx context.Context, feature []byte) (bool, []byte, error) {
+
+	tmp_feature, err := prepareWithoutTimestamps(ctx, feature)
 
 	if err != nil {
 		return false, nil, fmt.Errorf("Failed to prepare record (without timestamps), %w", err)
 	}
 
-	tmp_feature, err = Format(tmp_feature)
+	tmp_feature, err = Format(ctx, tmp_feature)
 
 	if err != nil {
 		return false, nil, fmt.Errorf("Failed to format tmp record, %w", err)
@@ -71,7 +67,7 @@ func (ex *WhosOnFirstExporter) Export(ctx context.Context, feature []byte) (bool
 		return false, nil, nil
 	}
 
-	new_feature, err := prepareTimestamps(feature, prepare_opts)
+	new_feature, err := prepareTimestamps(ctx, feature)
 
 	if err != nil {
 		return true, nil, fmt.Errorf("Failed to prepare record, %w", err)
@@ -80,10 +76,53 @@ func (ex *WhosOnFirstExporter) Export(ctx context.Context, feature []byte) (bool
 	err = validate.Validate(new_feature)
 
 	if err != nil {
-	   return true, nil, fmt.Errorf("Failed to validate record, %w", err)
+		return true, nil, fmt.Errorf("Failed to validate record, %w", err)
 	}
-	
-	new_feature, err = Format(new_feature)
+
+	new_feature, err = Format(ctx, new_feature)
+
+	if err != nil {
+		return true, nil, fmt.Errorf("Failed to format record, %w", err)
+	}
+
+	return true, new_feature, nil
+}
+
+func (ex *WhosOnFirstExporter) exportAlt(ctx context.Context, feature []byte) (bool, []byte, error) {
+
+	tmp_feature, err := prepareWithoutTimestampsAlt(ctx, feature)
+
+	if err != nil {
+		return false, nil, fmt.Errorf("Failed to prepare record (without timestamps), %w", err)
+	}
+
+	tmp_feature, err = Format(ctx, tmp_feature)
+
+	if err != nil {
+		return false, nil, fmt.Errorf("Failed to format tmp record, %w", err)
+	}
+
+	changed := !bytes.Equal(tmp_feature, feature)
+
+	if !changed {
+		return false, nil, nil
+	}
+
+	new_feature, err := prepareTimestamps(ctx, feature)
+
+	if err != nil {
+		return true, nil, fmt.Errorf("Failed to prepare record, %w", err)
+	}
+
+	/*
+		err = validate.Validate(new_feature)
+
+		if err != nil {
+		   return true, nil, fmt.Errorf("Failed to validate record, %w", err)
+		}
+	*/
+
+	new_feature, err = Format(ctx, new_feature)
 
 	if err != nil {
 		return true, nil, fmt.Errorf("Failed to format record, %w", err)
