@@ -2,18 +2,21 @@ package properties
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/tidwall/gjson"
-	_ "github.com/tidwall/sjson"
 )
 
 func EnsureName(ctx context.Context, feature []byte) ([]byte, error) {
 
-	rsp := gjson.GetBytes(feature, "properties.wof:name")
+	rsp := gjson.GetBytes(feature, PATH_WOF_NAME)
 
 	if !rsp.Exists() {
-		return feature, errors.New("missing wof:name")
+		return nil, MissingProperty(PATH_WOF_NAME)
+	}
+
+	if rsp.String() == "" {
+		return nil, fmt.Errorf("%s property is empty", PATH_WOF_NAME)
 	}
 
 	return feature, nil

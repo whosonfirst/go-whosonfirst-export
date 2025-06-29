@@ -9,14 +9,12 @@ import (
 
 func EnsureLastModified(ctx context.Context, feature []byte) ([]byte, error) {
 
-	var err error
-
 	now := int32(time.Now().Unix())
 
-	feature, err = sjson.SetBytes(feature, "properties.wof:lastmodified", now)
+	feature, err := sjson.SetBytes(feature, PATH_WOF_LASTMODIFIED, now)
 
 	if err != nil {
-		return nil, err
+		return nil, SetPropertyFailed(PATH_WOF_LASTMODIFIED, err)
 	}
 
 	return feature, nil

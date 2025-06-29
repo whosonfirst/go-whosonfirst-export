@@ -9,11 +9,17 @@ import (
 
 func EnsureParentId(ctx context.Context, feature []byte) ([]byte, error) {
 
-	rsp := gjson.GetBytes(feature, "properties.wof:parent_id")
+	rsp := gjson.GetBytes(feature, PATH_WOF_PARENTID)
 
 	if rsp.Exists() {
 		return feature, nil
 	}
 
-	return sjson.SetBytes(feature, "properties.wof:parent_id", -1)
+	feature, err := sjson.SetBytes(feature, PATH_WOF_PARENTID, -1)
+
+	if err != nil {
+		return nil, SetPropertyFailed(PATH_WOF_PARENTID, err)
+	}
+
+	return feature, nil
 }

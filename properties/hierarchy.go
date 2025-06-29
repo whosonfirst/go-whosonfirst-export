@@ -2,7 +2,6 @@ package properties
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/tidwall/gjson"
@@ -14,18 +13,18 @@ type Hierarchies []Hierarchy
 
 func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 
-	pt_rsp := gjson.GetBytes(feature, "properties.wof:placetype")
+	pt_rsp := gjson.GetBytes(feature, PATH_WOF_PLACETYPE)
 
 	if !pt_rsp.Exists() {
-		return feature, errors.New("missing wof:placetype")
+		return feature, MissingProperty(PATH_WOF_PLACETYPE)
 	}
 
 	pt := pt_rsp.String()
 
-	id_rsp := gjson.GetBytes(feature, "properties.wof:id")
+	id_rsp := gjson.GetBytes(feature, PATH_WOF_ID)
 
 	if !id_rsp.Exists() {
-		return feature, errors.New("missing wof:id")
+		return feature, MissingProperty(PATH_WOF_ID)
 	}
 
 	id := id_rsp.Int()
@@ -36,7 +35,7 @@ func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 
 	if pt == "custom" {
 
-		alt_rsp := gjson.GetBytes(feature, "properties.wof:placetype_alt")
+		alt_rsp := gjson.GetBytes(feature, PATH_WOF_PLACETYPE_ALT)
 
 		for _, r := range alt_rsp.Array() {
 			pt_keys = append(pt_keys, fmt.Sprintf("%s_id", r.String()))
@@ -45,7 +44,7 @@ func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 
 	hierarchies := make([]Hierarchy, 0)
 
-	hier_rsp := gjson.GetBytes(feature, "properties.wof:hierarchy")
+	hier_rsp := gjson.GetBytes(feature, PATH_WOF_HIERARCHY)
 
 	if hier_rsp.Exists() {
 
@@ -80,5 +79,11 @@ func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 		}
 	}
 
-	return sjson.SetBytes(feature, "properties.wof:hierarchy", hierarchies)
+	feature, err := sjson.SetBytes(feature, PATH_WOF_HIERARCHY, hierarchies)
+
+	if err != nil {
+		return nil, SetPropertyFailed(PATH_WOF_HIERARCHY, err)
+	}
+
+	return feature, nil
 }
