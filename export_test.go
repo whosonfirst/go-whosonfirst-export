@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	_ "log/slog"
+	
 	"github.com/tidwall/gjson"
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 )

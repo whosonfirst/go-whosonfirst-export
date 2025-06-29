@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
-
+	
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 	"github.com/whosonfirst/go-whosonfirst-id"
@@ -72,14 +72,14 @@ func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
 		feature, err = sjson.SetBytes(feature, PATH_WOF_ID, wof_id)
 
 		if err != nil {
-			return nil, err
+			return nil, SetPropertyFailed(PATH_WOF_ID, err)
 		}
 	}
 
 	feature, err = sjson.SetBytes(feature, PATH_ID, wof_id)
 
 	if err != nil {
-		return nil, err
+		return nil, SetPropertyFailed(PATH_ID, err)
 	}
 
 	return feature, nil

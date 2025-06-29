@@ -67,7 +67,7 @@ func (ex *WhosOnFirstExporter) export(ctx context.Context, feature []byte) (bool
 		return false, nil, nil
 	}
 
-	new_feature, err := prepareTimestamps(ctx, feature)
+	new_feature, err := prepareTimestamps(ctx, tmp_feature)
 
 	if err != nil {
 		return true, nil, fmt.Errorf("Failed to prepare record, %w", err)
