@@ -44,6 +44,12 @@ func prepareWithoutTimestamps(ctx context.Context, feature []byte) ([]byte, erro
 		return nil, fmt.Errorf("Failed to ensure placetype, %w", err)
 	}
 
+	feature, err = properties.EnsureRepo(ctx, feature)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to ensure repo, %w", err)
+	}
+
 	feature, err = properties.EnsureGeom(ctx, feature)
 
 	if err != nil {

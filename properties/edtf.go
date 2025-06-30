@@ -7,6 +7,7 @@ import (
 	"github.com/sfomuseum/go-edtf/parser"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
 const dateFmt string = "2006-01-02"
@@ -29,11 +30,11 @@ func EnsureEDTF(ctx context.Context, feature []byte) ([]byte, error) {
 }
 
 func EnsureInception(ctx context.Context, feature []byte) ([]byte, error) {
-	return updatePath(feature, PATH_EDTF_INCEPTION, PATH_DATE_INCEPTION_UPPER, PATH_DATE_INCEPTION_LOWER)
+	return updatePath(feature, wof_properties.PATH_EDTF_INCEPTION, wof_properties.PATH_DATE_INCEPTION_UPPER, wof_properties.PATH_DATE_INCEPTION_LOWER)
 }
 
 func EnsureCessation(ctx context.Context, feature []byte) ([]byte, error) {
-	return updatePath(feature, PATH_EDTF_CESSATION, PATH_DATE_CESSATION_UPPER, PATH_DATE_CESSATION_LOWER)
+	return updatePath(feature, wof_properties.PATH_EDTF_CESSATION, wof_properties.PATH_DATE_CESSATION_UPPER, wof_properties.PATH_DATE_CESSATION_LOWER)
 }
 
 func updatePath(feature []byte, path string, upperPath string, lowerPath string) ([]byte, error) {

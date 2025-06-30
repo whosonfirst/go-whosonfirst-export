@@ -6,9 +6,9 @@ import (
 	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
-func EnsurePlacetype(ctx context.Context, feature []byte) ([]byte, error) {
+func EnsureRepo(ctx context.Context, feature []byte) ([]byte, error) {
 
-	_, err := wof_properties.Placetype(feature)
+	_, err := wof_properties.Repo(feature)
 
 	if err != nil {
 		return nil, err

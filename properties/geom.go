@@ -11,20 +11,21 @@ import (
 	"github.com/paulmach/orb/planar"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
 func EnsureSrcGeom(ctx context.Context, feature []byte) ([]byte, error) {
 
-	rsp := gjson.GetBytes(feature, PATH_SRC_GEOM)
+	rsp := gjson.GetBytes(feature, wof_properties.PATH_SRC_GEOM)
 
 	if rsp.Exists() {
 		return feature, nil
 	}
 
-	feature, err := sjson.SetBytes(feature, PATH_SRC_GEOM, "unknown")
+	feature, err := sjson.SetBytes(feature, wof_properties.PATH_SRC_GEOM, "unknown")
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_SRC_GEOM, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_SRC_GEOM, err)
 	}
 
 	return feature, nil
@@ -32,25 +33,25 @@ func EnsureSrcGeom(ctx context.Context, feature []byte) ([]byte, error) {
 
 func EnsureGeomHash(ctx context.Context, feature []byte) ([]byte, error) {
 
-	rsp := gjson.GetBytes(feature, PATH_GEOMETRY)
+	rsp := gjson.GetBytes(feature, wof_properties.PATH_GEOMETRY)
 
 	if !rsp.Exists() {
-		return nil, MissingProperty(PATH_GEOMETRY)
+		return nil, wof_properties.MissingProperty(wof_properties.PATH_GEOMETRY)
 	}
 
 	enc, err := json.Marshal(rsp.Value())
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal %s property, %w", PATH_GEOMETRY, err)
+		return nil, fmt.Errorf("Failed to marshal %s property, %w", wof_properties.PATH_GEOMETRY, err)
 	}
 
 	hash := md5.Sum(enc)
 	geom_hash := hex.EncodeToString(hash[:])
 
-	feature, err = sjson.SetBytes(feature, PATH_WOF_GEOMHASH, geom_hash)
+	feature, err = sjson.SetBytes(feature, wof_properties.PATH_WOF_GEOMHASH, geom_hash)
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_WOF_GEOMHASH, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_WOF_GEOMHASH, err)
 	}
 
 	return feature, nil
@@ -69,22 +70,22 @@ func EnsureGeomCoords(ctx context.Context, feature []byte) ([]byte, error) {
 
 	centroid, area := planar.CentroidArea(f.Geometry)
 
-	feature, err = sjson.SetBytes(feature, PATH_GEOM_LATITUDE, centroid.Y())
+	feature, err = sjson.SetBytes(feature, wof_properties.PATH_GEOM_LATITUDE, centroid.Y())
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_GEOM_LATITUDE, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_GEOM_LATITUDE, err)
 	}
 
-	feature, err = sjson.SetBytes(feature, PATH_GEOM_LONGITUDE, centroid.X())
+	feature, err = sjson.SetBytes(feature, wof_properties.PATH_GEOM_LONGITUDE, centroid.X())
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_GEOM_LONGITUDE, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_GEOM_LONGITUDE, err)
 	}
 
-	feature, err = sjson.SetBytes(feature, PATH_GEOM_AREA, area)
+	feature, err = sjson.SetBytes(feature, wof_properties.PATH_GEOM_AREA, area)
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_GEOM_AREA, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_GEOM_AREA, err)
 	}
 
 	bounds := f.Geometry.Bound()
@@ -106,16 +107,16 @@ func EnsureGeomCoords(ctx context.Context, feature []byte) ([]byte, error) {
 
 	str_bbox := fmt.Sprintf("%.06f,%.06f,%.06f,%.06f", minx, miny, maxx, maxy)
 
-	feature, err = sjson.SetBytes(feature, PATH_GEOM_BBOX, str_bbox)
+	feature, err = sjson.SetBytes(feature, wof_properties.PATH_GEOM_BBOX, str_bbox)
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_GEOM_BBOX, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_GEOM_BBOX, err)
 	}
 
-	feature, err = sjson.SetBytes(feature, PATH_BBOX, bbox)
+	feature, err = sjson.SetBytes(feature, wof_properties.PATH_BBOX, bbox)
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_BBOX, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_BBOX, err)
 	}
 
 	return feature, nil

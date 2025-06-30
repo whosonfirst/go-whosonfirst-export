@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
 // CessateRecord will assign the relevant properties to make 'old_body' as cessated (ceased) using the current time.
@@ -18,8 +18,8 @@ func CessateRecord(ctx context.Context, ex Exporter, old_body []byte) ([]byte, e
 func CessateRecordWithTime(ctx context.Context, ex Exporter, t time.Time, old_body []byte) ([]byte, error) {
 
 	to_update := map[string]interface{}{
-		properties.PATH_EDTF_CESSATION: t.Format("2006-01-02"),
-		properties.PATH_MZ_ISCURRENT:   0,
+		wof_properties.PATH_EDTF_CESSATION: t.Format("2006-01-02"),
+		wof_properties.PATH_MZ_ISCURRENT:   0,
 	}
 
 	new_body, err := AssignProperties(ctx, old_body, to_update)

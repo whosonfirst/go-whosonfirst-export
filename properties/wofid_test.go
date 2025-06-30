@@ -56,15 +56,20 @@ func TestEnsureWOFId(t *testing.T) {
 	ctx := context.Background()
 
 	with_id := []byte(`{ "id": 1234, "properties": { "wof:id": 1234 }}`)
-	without_id := []byte(`{}`)
 
 	_, err := EnsureWOFId(ctx, with_id)
 
 	if err != nil {
 		t.Fatalf("Failed to ensure ID (with ID), %v", err)
 	}
+}
 
-	_, err = EnsureWOFId(ctx, without_id)
+func TestEnsureWOFIdWithout(t *testing.T) {
+
+	without_id := []byte(`{}`)
+	ctx := context.Background()
+
+	_, err := EnsureWOFId(ctx, without_id)
 
 	if err != nil {
 		t.Fatalf("Failed to ensure ID (without ID), %v", err)

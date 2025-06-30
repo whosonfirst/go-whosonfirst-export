@@ -2,16 +2,14 @@ package export
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
 func PrepareAlt(ctx context.Context, feature []byte) ([]byte, error) {
-
-	slog.Info("YO")
 
 	feature, err := prepareWithoutTimestampsAlt(ctx, feature)
 
@@ -25,7 +23,6 @@ func PrepareAlt(ctx context.Context, feature []byte) ([]byte, error) {
 		return nil, fmt.Errorf("Failed to prepare with timestamps, %w", err)
 	}
 
-	slog.Info("PEW PEW")
 	return feature, nil
 }
 
@@ -37,23 +34,23 @@ func prepareWithoutTimestampsAlt(ctx context.Context, feature []byte) ([]byte, e
 		return nil, fmt.Errorf("Failed to ensure wof:id, %w", err)
 	}
 
-	feature, err = properties.EnsureName(ctx, feature)
+	_, err = wof_properties.Name(feature)
 
 	if err != nil {
-
-		var missing *properties.MissingPropertyError
-
-		if !errors.As(err, &missing) {
-			return nil, fmt.Errorf("Failed to ensure name, %w", err)
-		}
-
-		slog.Warn("Alt geometry feature is missing wof:name property")
+		slog.Warn("Failed to derive name for alternate geometry", "error", err)
 	}
 
 	feature, err = properties.EnsurePlacetype(ctx, feature)
 
 	if err != nil {
+
 		return nil, fmt.Errorf("Failed to ensure placetype, %w", err)
+	}
+
+	feature, err = properties.EnsureRepo(ctx, feature)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to ensure repo, %w", err)
 	}
 
 	feature, err = properties.EnsureGeom(ctx, feature)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
 type Hierarchy map[string]int64
@@ -13,18 +14,18 @@ type Hierarchies []Hierarchy
 
 func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 
-	pt_rsp := gjson.GetBytes(feature, PATH_WOF_PLACETYPE)
+	pt_rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_PLACETYPE)
 
 	if !pt_rsp.Exists() {
-		return feature, MissingProperty(PATH_WOF_PLACETYPE)
+		return feature, wof_properties.MissingProperty(wof_properties.PATH_WOF_PLACETYPE)
 	}
 
 	pt := pt_rsp.String()
 
-	id_rsp := gjson.GetBytes(feature, PATH_WOF_ID)
+	id_rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_ID)
 
 	if !id_rsp.Exists() {
-		return feature, MissingProperty(PATH_WOF_ID)
+		return feature, wof_properties.MissingProperty(wof_properties.PATH_WOF_ID)
 	}
 
 	id := id_rsp.Int()
@@ -35,7 +36,7 @@ func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 
 	if pt == "custom" {
 
-		alt_rsp := gjson.GetBytes(feature, PATH_WOF_PLACETYPE_ALT)
+		alt_rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_PLACETYPE_ALT)
 
 		for _, r := range alt_rsp.Array() {
 			pt_keys = append(pt_keys, fmt.Sprintf("%s_id", r.String()))
@@ -44,7 +45,7 @@ func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 
 	hierarchies := make([]Hierarchy, 0)
 
-	hier_rsp := gjson.GetBytes(feature, PATH_WOF_HIERARCHY)
+	hier_rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_HIERARCHY)
 
 	if hier_rsp.Exists() {
 
@@ -79,10 +80,10 @@ func EnsureHierarchy(ctx context.Context, feature []byte) ([]byte, error) {
 		}
 	}
 
-	feature, err := sjson.SetBytes(feature, PATH_WOF_HIERARCHY, hierarchies)
+	feature, err := sjson.SetBytes(feature, wof_properties.PATH_WOF_HIERARCHY, hierarchies)
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_WOF_HIERARCHY, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_WOF_HIERARCHY, err)
 	}
 
 	return feature, nil

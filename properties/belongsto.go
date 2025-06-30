@@ -6,23 +6,24 @@ import (
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
 func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 
 	belongsto := make([]int64, 0)
 
-	wofid_rsp := gjson.GetBytes(feature, PATH_WOF_ID)
+	wofid_rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_ID)
 
 	if !wofid_rsp.Exists() {
-		return nil, MissingProperty(PATH_WOF_ID)
+		return nil, wof_properties.MissingProperty(wof_properties.PATH_WOF_ID)
 	}
 
 	wofid := wofid_rsp.Int()
 
 	// Load the existing belongsto array, if it exists
 
-	belongsToRsp := gjson.GetBytes(feature, PATH_WOF_BELONGSTO)
+	belongsToRsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_BELONGSTO)
 
 	if belongsToRsp.Exists() {
 
@@ -36,7 +37,7 @@ func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 		})
 	}
 
-	rsp := gjson.GetBytes(feature, PATH_WOF_HIERARCHY)
+	rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_HIERARCHY)
 
 	if rsp.Exists() {
 
@@ -76,7 +77,7 @@ func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 		}
 	}
 
-	tz_rsp := gjson.GetBytes(feature, PATH_WOF_TIMEZONES)
+	tz_rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_TIMEZONES)
 
 	if tz_rsp.Exists() {
 
@@ -89,10 +90,10 @@ func EnsureBelongsTo(ctx context.Context, feature []byte) ([]byte, error) {
 		}
 	}
 
-	feature, err := sjson.SetBytes(feature, PATH_WOF_BELONGSTO, belongsto)
+	feature, err := sjson.SetBytes(feature, wof_properties.PATH_WOF_BELONGSTO, belongsto)
 
 	if err != nil {
-		return nil, SetPropertyFailed(PATH_WOF_BELONGSTO, err)
+		return nil, SetPropertyFailed(wof_properties.PATH_WOF_BELONGSTO, err)
 	}
 
 	return feature, nil

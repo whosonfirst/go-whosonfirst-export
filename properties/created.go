@@ -6,6 +6,7 @@ import (
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
 func EnsureCreated(ctx context.Context, feature []byte) ([]byte, error) {
@@ -14,14 +15,14 @@ func EnsureCreated(ctx context.Context, feature []byte) ([]byte, error) {
 
 	now := int32(time.Now().Unix())
 
-	created := gjson.GetBytes(feature, PATH_WOF_CREATED)
+	created := gjson.GetBytes(feature, wof_properties.PATH_WOF_CREATED)
 
 	if !created.Exists() {
 
-		feature, err = sjson.SetBytes(feature, PATH_WOF_CREATED, now)
+		feature, err = sjson.SetBytes(feature, wof_properties.PATH_WOF_CREATED, now)
 
 		if err != nil {
-			return nil, SetPropertyFailed(PATH_WOF_CREATED, err)
+			return nil, SetPropertyFailed(wof_properties.PATH_WOF_CREATED, err)
 		}
 	}
 
