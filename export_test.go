@@ -15,6 +15,23 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 )
 
+func TestExportAlt(t *testing.T) {
+
+	ctx := context.Background()
+
+	body := readFeature(t, "101736545-alt-quattroshapes.geojson")
+
+	has_changed, _, err := Export(ctx, body)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if has_changed {
+		t.Fatal("Did not expect alt file to change")
+	}
+}
+
 func TestCustomPlacetype(t *testing.T) {
 
 	ctx := context.Background()

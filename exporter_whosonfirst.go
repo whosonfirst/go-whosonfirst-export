@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/url"
 
+	_ "log/slog"
+
 	"github.com/whosonfirst/go-whosonfirst-feature/alt"
 	"github.com/whosonfirst/go-whosonfirst-validate"
 )

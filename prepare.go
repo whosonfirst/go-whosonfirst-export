@@ -32,10 +32,22 @@ func prepareWithoutTimestamps(ctx context.Context, feature []byte) ([]byte, erro
 		return nil, fmt.Errorf("Failed to ensure wof:id, %w", err)
 	}
 
-	feature, err = properties.EnsureRequired(ctx, feature)
+	feature, err = properties.EnsureName(ctx, feature)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure required properties, %w", err)
+		return nil, fmt.Errorf("Failed to ensure wof:name, %w", err)
+	}
+
+	feature, err = properties.EnsurePlacetype(ctx, feature)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to ensure placetype, %w", err)
+	}
+
+	feature, err = properties.EnsureGeom(ctx, feature)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to ensure geometry, %w", err)
 	}
 
 	feature, err = properties.EnsureEDTF(ctx, feature)
