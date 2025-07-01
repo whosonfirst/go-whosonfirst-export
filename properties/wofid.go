@@ -52,6 +52,7 @@ func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
 	slog.Debug("Verbose logging enabled")
 
 	slog.Info("PR 1")
+
 	provider, err := idProvider(ctx)
 
 	if err != nil {
