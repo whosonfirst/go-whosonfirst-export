@@ -1,6 +1,6 @@
 module github.com/whosonfirst/go-whosonfirst-export/v3
 
-go 1.24
+go 1.22
 
 require (
 	github.com/aaronland/go-roster v1.0.0
