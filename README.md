@@ -6,6 +6,12 @@ Go package for exporting Who's On First documents.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/whosonfirst/go-whosonfirst-export.svg)](https://pkg.go.dev/github.com/whosonfirst/go-whosonfirst-export)
 
+## Motivation
+
+This package is designed to perform all the steps necessary to "export" (as in create or update) a Who's On First record taking care to ensure correct formatting, default values and validation.
+
+_Note: As of this writing comprehensive validation is still a work in progress._
+
 ## Example
 
 Version 3.x of this package introduce major, backward-incompatible changes from earlier releases. That said, migragting from version 2.x to 3.x should be relatively straightforward as a the _basic_ concepts are still the same but (hopefully) simplified. There are some important changes "under the hood" but the user-facing changes, while important, should be easy to update.
@@ -58,7 +64,17 @@ func main() {
 
 ### Exporter
 
-The `export.Export` method is really just a convenience around the default Who's On First exporter package which implements the `export.Exporter` interface (described below). The goal behind the interface it to allow for custom exporters which can supplement the default export functionality with application-specific needs. To use the exporter package directly you would do this:
+The `Exporter` interface provides a common interface to allow for customized export functionality in your code which can supplement the default export functionality with application-specific needs. The interface consists of a single method whose signature matches the standard `Export` method:
+
+```
+type Exporter interface {
+	Export(context.Context, []byte) (bool, []byte, error)
+}
+```
+
+#### whosonfirst://
+
+This package provides a default `whosonfirst://` exporter implementation (which is really just a thin wrapper around the `Export` method) which can be used like this:
 
 ```
 import (
@@ -106,20 +122,6 @@ func main() {
 	os.Stdout.Write(body)
 }
 ```
-
-## Interfaces
-
-### Exporter
-
-```
-type Exporter interface {
-	Export(context.Context, []byte) (bool, []byte, error)
-}
-```
-
-## To do
-
-This package needs to hold hands with the `go-whosonfirst-validate` package.
 
 ## See also
 
