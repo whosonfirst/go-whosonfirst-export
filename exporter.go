@@ -10,11 +10,10 @@ import (
 	"github.com/aaronland/go-roster"
 )
 
-
 // The `Exporter` interface provides a common interface to allow for customized export functionality in your code which can supplement the default export functionality with application-specific needs.
 type Exporter interface {
-     // Export will perform all the steps necessary to "export" (as in create or update) a Who's On First feature record taking care to ensure correct formatting, default values and validation. It returns a boolean value indicating whether the feature was changed during the export process.
-     	Export(context.Context, []byte) (bool, []byte, error)
+	// Export will perform all the steps necessary to "export" (as in create or update) a Who's On First feature record taking care to ensure correct formatting, default values and validation. It returns a boolean value indicating whether the feature was changed during the export process.
+	Export(context.Context, []byte) (bool, []byte, error)
 }
 
 var exporter_roster roster.Roster

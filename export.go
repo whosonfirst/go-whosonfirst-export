@@ -8,6 +8,7 @@ import (
 
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 	"github.com/whosonfirst/go-whosonfirst-feature/alt"
+	"github.com/whosonfirst/go-whosonfirst-format"
 	"github.com/whosonfirst/go-whosonfirst-validate"
 )
 
@@ -32,7 +33,7 @@ func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 		return false, nil, fmt.Errorf("Failed to prepare input record, %w", err)
 	}
 
-	new_feature, err = Format(ctx, new_feature)
+	new_feature, err = format.FormatBytes(new_feature)
 
 	if err != nil {
 		return false, nil, fmt.Errorf("Failed to format tmp record, %w", err)
@@ -54,7 +55,7 @@ func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 		return true, nil, fmt.Errorf("Failed to validate record, %w", err)
 	}
 
-	new_feature, err = Format(ctx, new_feature)
+	new_feature, err = format.FormatBytes(new_feature)
 
 	if err != nil {
 		return true, nil, fmt.Errorf("Failed to format record, %w", err)

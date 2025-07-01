@@ -1,9 +1,9 @@
 package export
 
 import (
-       "testing"
+	"testing"
 )
 
 func TestPrepareFeatureWithoutTimestamps(t *testing.T) {
-     t.Skip()
-}     
+	t.Skip()
+}
