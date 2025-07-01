@@ -11,6 +11,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-validate"
 )
 
+// Export will perform all the steps necessary to "export" (as in create or update) 'feature' taking care to ensure correct formatting, default values and validation. It returns a boolean value indicating whether the feature was changed during the export process.
 func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 
 	var new_feature []byte
@@ -62,6 +63,7 @@ func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 	return true, new_feature, nil
 }
 
+// Export will perform all the steps necessary to "export" (as in create or update) 'feature' taking care to ensure correct formatting, default values and validation writing data to 'wr' if the feature has been updated. It returns a boolean value indicating whether the feature was changed during the export process.
 func WriteExportIfChanged(ctx context.Context, feature []byte, wr io.Writer) (bool, error) {
 
 	has_changed, body, err := Export(ctx, feature)

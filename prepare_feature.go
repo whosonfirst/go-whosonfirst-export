@@ -7,6 +7,8 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 )
 
+// PrepareFeatureWithoutTimestamps ensures the presence of necessary field and/or default values for a Who's On First feature record
+// absent the `wof:lastmodified` property. This is to enable checking whether a feature record being exported has been changed.
 func PrepareFeatureWithoutTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
 
 	feature, err := properties.EnsureWOFId(ctx, feature)

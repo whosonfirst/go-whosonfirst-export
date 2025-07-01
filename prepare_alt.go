@@ -9,6 +9,8 @@ import (
 	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
+// PrepareAltFeatureWithoutTimestamps ensures the presence of necessary field and/or default values for a Who's On First "alternate geometry"
+// feature record absent the `wof:lastmodified` property. This is to enable checking whether a feature record being exported has been changed.
 func PrepareAltFeatureWithoutTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
 
 	feature, err := properties.EnsureWOFIdAlt(ctx, feature)

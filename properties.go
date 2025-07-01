@@ -10,6 +10,8 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 )
 
+// EnsureProperties ensure that all the properties in 'to_ensure' are present in 'body', assigning them
+// if necessary.
 func EnsureProperties(ctx context.Context, body []byte, to_ensure map[string]interface{}) ([]byte, error) {
 
 	to_assign := make(map[string]interface{})
@@ -28,6 +30,7 @@ func EnsureProperties(ctx context.Context, body []byte, to_ensure map[string]int
 	return AssignProperties(ctx, body, to_assign)
 }
 
+// EnsureProperties writes all the properties in 'to_assign' to 'body'.
 func AssignProperties(ctx context.Context, body []byte, to_assign map[string]interface{}) ([]byte, error) {
 
 	var err error
@@ -44,6 +47,7 @@ func AssignProperties(ctx context.Context, body []byte, to_assign map[string]int
 	return body, nil
 }
 
+// EnsureProperties writes all the properties in 'to_assign' to 'body' if they are absent or contain a new value.
 func AssignPropertiesIfChanged(ctx context.Context, body []byte, to_assign map[string]interface{}) (bool, []byte, error) {
 
 	var err error
@@ -84,6 +88,7 @@ func AssignPropertiesIfChanged(ctx context.Context, body []byte, to_assign map[s
 	return changed, body, nil
 }
 
+// RemoveProperties removes all the properties in 'to_remove' from 'body'.
 func RemoveProperties(ctx context.Context, body []byte, to_remove []string) ([]byte, error) {
 
 	var err error

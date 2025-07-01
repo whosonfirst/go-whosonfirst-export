@@ -72,6 +72,25 @@ type Exporter interface {
 }
 ```
 
+Custom `Exporter` implementations are "registered" at runtime with the `export.RegisterExporter` method. For example:
+
+```
+type CustomExporter struct {
+	export.Exporter
+}
+
+func init() {
+	ctx := context.Background()
+	export.RegisterExporter(ctx, "custom", NewCustomExporter)
+}
+
+func NewWhosOnFirstExporter(ctx context.Context, uri string) (export.Exporter, error) {
+	// Your code here...
+}
+```
+
+For a complete implementation consult [exporter_whosonfirst.go](exporter_whosonfirst.go)._
+
 #### whosonfirst://
 
 This package provides a default `whosonfirst://` exporter implementation (which is really just a thin wrapper around the `Export` method) which can be used like this:
@@ -127,5 +146,7 @@ func main() {
 
 * https://github.com/whosonfirst/go-whosonfirst-format
 * https://github.com/whosonfirst/go-whosonfirst-validate
+* https://github.com/whosonfirst/go-whosonfirst-feature
+* https://github.com/whosonfirst/go-whosonfirst-id
 * https://github.com/tidwall/gjson
 * https://github.com/tidwall/sjson
