@@ -1,18 +1,17 @@
 package properties
 
 import (
-	"errors"
+	"context"
 
-	"github.com/tidwall/gjson"
-	_ "github.com/tidwall/sjson"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
-func EnsurePlacetype(feature []byte) ([]byte, error) {
+func EnsurePlacetype(ctx context.Context, feature []byte) ([]byte, error) {
 
-	rsp := gjson.GetBytes(feature, "properties.wof:placetype")
+	_, err := wof_properties.Placetype(feature)
 
-	if !rsp.Exists() {
-		return feature, errors.New("missing wof:placetype")
+	if err != nil {
+		return nil, err
 	}
 
 	return feature, nil

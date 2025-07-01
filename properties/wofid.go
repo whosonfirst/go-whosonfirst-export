@@ -2,24 +2,64 @@ package properties
 
 import (
 	"context"
+	"fmt"
+	"sync"
+
+	"log/slog"
+
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	id "github.com/whosonfirst/go-whosonfirst-id"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
+	"github.com/whosonfirst/go-whosonfirst-id"
 )
 
-func EnsureWOFId(feature []byte, provider id.Provider) ([]byte, error) {
+const ID_PROVIDER string = "org.whosonfirst.id.provider"
 
-	// Eventually `ctx` should be part of the method signature but
-	// should happen go-whosonfirst-export wide and will be a backwards
-	// incompatible change
+var provider_once = sync.OnceValues(func() (id.Provider, error) {
+	return id.NewProvider(context.Background())
+})
 
-	ctx := context.Background()
+func idProvider(ctx context.Context) (id.Provider, error) {
 
-	var err error
+	v := ctx.Value(ID_PROVIDER)
+
+	if v != nil {
+
+		if _, ok := v.(id.Provider); ok {
+			return v.(id.Provider), nil
+		} else {
+			return nil, fmt.Errorf("Invalid Id provider %T", v)
+		}
+	}
+
+	return provider_once()
+}
+
+func EnsureWOFIdAlt(ctx context.Context, feature []byte) ([]byte, error) {
+
+	rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_ID)
+
+	if !rsp.Exists() {
+		return nil, wof_properties.MissingProperty(wof_properties.PATH_WOF_ID)
+	}
+
+	return feature, nil
+}
+
+func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
+
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+	slog.Debug("Verbose logging enabled")
+
+	provider, err := idProvider(ctx)
+
+	if err != nil {
+		return nil, err
+	}
 
 	var wof_id int64
 
-	rsp := gjson.GetBytes(feature, "properties.wof:id")
+	rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_ID)
 
 	if rsp.Exists() {
 
@@ -35,23 +75,17 @@ func EnsureWOFId(feature []byte, provider id.Provider) ([]byte, error) {
 
 		wof_id = i
 
-		feature, err = sjson.SetBytes(feature, "properties.wof:id", wof_id)
+		feature, err = sjson.SetBytes(feature, wof_properties.PATH_WOF_ID, wof_id)
 
 		if err != nil {
-			return nil, err
+			return nil, SetPropertyFailed(wof_properties.PATH_WOF_ID, err)
 		}
 	}
 
-	id := gjson.GetBytes(feature, "id")
+	feature, err = sjson.SetBytes(feature, wof_properties.PATH_ID, wof_id)
 
-	if !id.Exists() {
-
-		feature, err = sjson.SetBytes(feature, "id", wof_id)
-
-		if err != nil {
-			return nil, err
-		}
-
+	if err != nil {
+		return nil, SetPropertyFailed(wof_properties.PATH_ID, err)
 	}
 
 	return feature, nil

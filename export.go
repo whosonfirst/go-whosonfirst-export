@@ -2,195 +2,87 @@ package export
 
 import (
 	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
 	"io"
-	_ "log"
 
-	"github.com/whosonfirst/go-whosonfirst-export/v2/properties"
+	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 	"github.com/whosonfirst/go-whosonfirst-feature/alt"
-	format "github.com/whosonfirst/go-whosonfirst-format"
+	"github.com/whosonfirst/go-whosonfirst-format"
+	"github.com/whosonfirst/go-whosonfirst-validate"
 )
 
-func Export(feature []byte, opts *Options, wr io.Writer) error {
+// Export will perform all the steps necessary to "export" (as in create or update) 'feature' taking care to ensure correct formatting, default values and validation. It returns a boolean value indicating whether the feature was changed during the export process.
+func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 
-	var err error
+	var new_feature []byte
 
-	feature, err = Prepare(feature, opts)
-
-	if err != nil {
-		return fmt.Errorf("Failed to prepare feature, %w", err)
-	}
-
-	feature, err = Format(feature, opts)
+	tmp_feature, err := properties.RemoveTimestamps(ctx, feature)
 
 	if err != nil {
-		return fmt.Errorf("Failed to format feature, %w", err)
+		return false, nil, fmt.Errorf("Failed to remove timestamps from input record, %w", err)
 	}
-
-	r := bytes.NewReader(feature)
-	_, err = io.Copy(wr, r)
-
-	if err != nil {
-		return fmt.Errorf("Failed to copy feature to writer, %w", err)
-	}
-
-	return nil
-}
-
-// ExportChanged returns a boolean which indicates whether the file was changed
-// by comparing it to the `existingFeature` byte slice, before the lastmodified
-// timestamp is incremented. If the `feature` is identical to `existingFeature`
-// it doesn't write to the `io.Writer`.
-func ExportChanged(feature []byte, existingFeature []byte, opts *Options, wr io.Writer) (changed bool, err error) {
-
-	changed = false
-
-	feature, err = prepareWithoutTimestamps(feature, opts)
-
-	if err != nil {
-		return
-	}
-
-	feature, err = Format(feature, opts)
-
-	if err != nil {
-		return
-	}
-
-	changed = !bytes.Equal(feature, existingFeature)
-
-	if !changed {
-		return
-	}
-
-	feature, err = prepareTimestamps(feature, opts)
-
-	if err != nil {
-		return
-	}
-
-	feature, err = Format(feature, opts)
-
-	if err != nil {
-		return
-	}
-
-	r := bytes.NewReader(feature)
-	_, err = io.Copy(wr, r)
-
-	return
-}
-
-func Prepare(feature []byte, opts *Options) ([]byte, error) {
-
-	var err error
-
-	feature, err = prepareWithoutTimestamps(feature, opts)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to prepare without timestamps, %w", err)
-	}
-
-	feature, err = prepareTimestamps(feature, opts)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to prepare with timestamps, %w", err)
-	}
-
-	return feature, nil
-}
-
-func Format(feature []byte, opts *Options) ([]byte, error) {
-	var f format.Feature
-	json.Unmarshal(feature, &f)
-	return format.FormatFeature(&f)
-}
-
-func prepareWithoutTimestamps(feature []byte, opts *Options) ([]byte, error) {
 
 	if alt.IsAlt(feature) {
-		return prepareWithoutTimestampsAsAlternateGeometry(feature, opts)
+		new_feature, err = PrepareAltFeatureWithoutTimestamps(ctx, feature)
+	} else {
+		new_feature, err = PrepareFeatureWithoutTimestamps(ctx, feature)
 	}
-
-	var err error
-
-	feature, err = properties.EnsureWOFId(feature, opts.IDProvider)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure wof:id, %w", err)
+		return false, nil, fmt.Errorf("Failed to prepare input record, %w", err)
 	}
 
-	feature, err = properties.EnsureRequired(feature)
+	new_feature, err = format.FormatBytes(new_feature)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure required properties, %w", err)
+		return false, nil, fmt.Errorf("Failed to format tmp record, %w", err)
 	}
 
-	feature, err = properties.EnsureEDTF(feature)
+	if bytes.Equal(tmp_feature, new_feature) {
+		return false, feature, nil
+	}
+
+	new_feature, err = PrepareTimestamps(ctx, new_feature)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure EDTF properties, %w", err)
+		return true, nil, fmt.Errorf("Failed to prepare record, %w", err)
 	}
 
-	feature, err = properties.EnsureParentId(feature)
+	err = validate.ValidateAlt(new_feature)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure parent ID, %w", err)
+		return true, nil, fmt.Errorf("Failed to validate record, %w", err)
 	}
 
-	feature, err = properties.EnsureHierarchy(feature)
+	new_feature, err = format.FormatBytes(new_feature)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure hierarchy, %w", err)
+		return true, nil, fmt.Errorf("Failed to format record, %w", err)
 	}
 
-	feature, err = properties.EnsureBelongsTo(feature)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure belongs to, %w", err)
-	}
-
-	feature, err = properties.EnsureSupersedes(feature)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure supersedes, %w", err)
-	}
-
-	feature, err = properties.EnsureSupersededBy(feature)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure superseded by, %w", err)
-	}
-
-	return feature, nil
+	return true, new_feature, nil
 }
 
-func prepareWithoutTimestampsAsAlternateGeometry(feature []byte, opts *Options) ([]byte, error) {
+// Export will perform all the steps necessary to "export" (as in create or update) 'feature' taking care to ensure correct formatting, default values and validation writing data to 'wr' if the feature has been updated. It returns a boolean value indicating whether the feature was changed during the export process.
+func WriteExportIfChanged(ctx context.Context, feature []byte, wr io.Writer) (bool, error) {
 
-	var err error
-
-	feature, err = properties.EnsureWOFId(feature, opts.IDProvider)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure wof:id, %w", err)
-	}
-
-	feature, err = properties.EnsureRequired(feature)
+	has_changed, body, err := Export(ctx, feature)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure required properties, %w", err)
+		return has_changed, fmt.Errorf("Failed to export feature, %w", err)
 	}
 
-	feature, err = properties.EnsureSourceAltLabel(feature)
+	if !has_changed {
+		return false, nil
+	}
+
+	r := bytes.NewReader(body)
+	_, err = io.Copy(wr, r)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure src:alt_label, %w", err)
+		return true, fmt.Errorf("Failed to copy feature to writer, %w", err)
 	}
 
-	return feature, nil
-}
-
-func prepareTimestamps(feature []byte, opts *Options) ([]byte, error) {
-	return properties.EnsureTimestamps(feature)
+	return true, nil
 }

@@ -1,16 +1,36 @@
 package export
 
 import (
-	"bufio"
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"testing"
 
+	_ "log/slog"
+
 	"github.com/tidwall/gjson"
+	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
+
+func TestExportAlt(t *testing.T) {
+
+	ctx := context.Background()
+
+	body := readFeature(t, "101736545-alt-quattroshapes.geojson")
+
+	has_changed, _, err := Export(ctx, body)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if has_changed {
+		t.Fatal("Did not expect alt file to change")
+	}
+}
 
 func TestCustomPlacetype(t *testing.T) {
 
@@ -18,27 +38,18 @@ func TestCustomPlacetype(t *testing.T) {
 
 	body := readFeature(t, "custom-placetype.geojson")
 
-	opts, err := NewDefaultOptions(ctx)
+	_, new_body, err := Export(ctx, body)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
+	path := fmt.Sprintf("%s.0.runway_id", wof_properties.PATH_WOF_HIERARCHY)
 
-	err = Export(body, opts, wr)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	wr.Flush()
-
-	rsp := gjson.GetBytes(buf.Bytes(), "properties.wof:hierarchy.0.runway_id")
+	rsp := gjson.GetBytes(new_body, path)
 
 	if !rsp.Exists() {
-		t.Fatal("Unable to find properties.wof:hierarchy.0.runway_id property")
+		t.Fatalf("Unable to find %s property", path)
 	}
 
 	has_id := rsp.Int()
@@ -50,47 +61,36 @@ func TestCustomPlacetype(t *testing.T) {
 }
 
 func TestExportEDTF(t *testing.T) {
+
 	ctx := context.Background()
 
 	body := readFeature(t, "1159159407.geojson")
 
-	opts, err := NewDefaultOptions(ctx)
+	_, new_body, err := Export(ctx, body)
 
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
-
-	err = Export(body, opts, wr)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	wr.Flush()
-	body = buf.Bytes()
 
 	ensureProps := []string{
-		"properties.wof:id",
-		"properties.geom:bbox",
-		"bbox",
-		"properties.date:inception_lower",
-		"properties.date:inception_upper",
-		"properties.date:cessation_lower",
-		"properties.date:cessation_upper",
+		wof_properties.PATH_WOF_ID,
+		wof_properties.PATH_GEOM_BBOX,
+		wof_properties.PATH_BBOX,
+		wof_properties.PATH_DATE_INCEPTION_LOWER,
+		wof_properties.PATH_DATE_INCEPTION_UPPER,
+		wof_properties.PATH_DATE_CESSATION_LOWER,
+		wof_properties.PATH_DATE_CESSATION_UPPER,
 	}
 
 	for _, prop := range ensureProps {
-		propRsp := gjson.GetBytes(body, prop)
+		propRsp := gjson.GetBytes(new_body, prop)
 
 		if !propRsp.Exists() {
 			t.Fatalf("Missing property '%s'", prop)
 		}
 	}
 
-	bboxRsp := gjson.GetBytes(body, "properties.geom:bbox")
+	bboxRsp := gjson.GetBytes(new_body, wof_properties.PATH_GEOM_BBOX)
 	bboxStr := bboxRsp.String()
 
 	if bboxStr != "-122.384119,37.615457,-122.384119,37.615457" {
@@ -99,26 +99,18 @@ func TestExportEDTF(t *testing.T) {
 }
 
 func TestExportWithOldStyleEDTFUnknownDates(t *testing.T) {
+
 	ctx := context.Background()
 	body := readFeature(t, "old-edtf-uuuu-dates.geojson")
 
-	opts, err := NewDefaultOptions(ctx)
+	_, new_body, err := Export(ctx, body)
+
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
+	cessationProp := gjson.GetBytes(new_body, wof_properties.PATH_EDTF_CESSATION)
 
-	err = Export(body, opts, wr)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	wr.Flush()
-	body = buf.Bytes()
-
-	cessationProp := gjson.GetBytes(body, "properties.edtf:cessation")
 	if !cessationProp.Exists() {
 		t.Fatalf("missing edtf:cessation property")
 	}
@@ -127,7 +119,8 @@ func TestExportWithOldStyleEDTFUnknownDates(t *testing.T) {
 		t.Fatalf("edtf:cessation not set to new style format")
 	}
 
-	inceptionProp := gjson.GetBytes(body, "properties.edtf:inception")
+	inceptionProp := gjson.GetBytes(new_body, wof_properties.PATH_EDTF_INCEPTION)
+
 	if !inceptionProp.Exists() {
 		t.Fatalf("missing edtf:inception property")
 	}
@@ -137,14 +130,14 @@ func TestExportWithOldStyleEDTFUnknownDates(t *testing.T) {
 	}
 
 	rejectProps := []string{
-		"properties.date:inception_lower",
-		"properties.date:inception_upper",
-		"properties.date:cessation_lower",
-		"properties.date:cessation_upper",
+		wof_properties.PATH_DATE_INCEPTION_LOWER,
+		wof_properties.PATH_DATE_INCEPTION_UPPER,
+		wof_properties.PATH_DATE_CESSATION_LOWER,
+		wof_properties.PATH_DATE_CESSATION_UPPER,
 	}
 
 	for _, prop := range rejectProps {
-		propRsp := gjson.GetBytes(body, prop)
+		propRsp := gjson.GetBytes(new_body, prop)
 
 		if propRsp.Exists() {
 			t.Fatalf("unexpected property '%s'", prop)
@@ -153,44 +146,37 @@ func TestExportWithOldStyleEDTFUnknownDates(t *testing.T) {
 }
 
 func TestMissingUpperLowerDates(t *testing.T) {
+
 	ctx := context.Background()
 	body := readFeature(t, "missing-upper-lower-dates.geojson")
 
-	opts, err := NewDefaultOptions(ctx)
+	_, new_body, err := Export(ctx, body)
+
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
+	cessationProp := gjson.GetBytes(new_body, wof_properties.PATH_EDTF_CESSATION)
 
-	err = Export(body, opts, wr)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	wr.Flush()
-	body = buf.Bytes()
-
-	cessationProp := gjson.GetBytes(body, "properties.edtf:cessation")
 	if !cessationProp.Exists() {
 		t.Fatalf("missing edtf:cessation property")
 	}
 
-	inceptionProp := gjson.GetBytes(body, "properties.edtf:inception")
+	inceptionProp := gjson.GetBytes(new_body, wof_properties.PATH_EDTF_INCEPTION)
+
 	if !inceptionProp.Exists() {
 		t.Fatalf("missing edtf:inception property")
 	}
 
 	requiredProps := []string{
-		"properties.date:inception_lower",
-		"properties.date:inception_upper",
-		"properties.date:cessation_lower",
-		"properties.date:cessation_upper",
+		wof_properties.PATH_DATE_INCEPTION_LOWER,
+		wof_properties.PATH_DATE_INCEPTION_UPPER,
+		wof_properties.PATH_DATE_CESSATION_LOWER,
+		wof_properties.PATH_DATE_CESSATION_UPPER,
 	}
 
 	for _, prop := range requiredProps {
-		propRsp := gjson.GetBytes(body, prop)
+		propRsp := gjson.GetBytes(new_body, prop)
 
 		if !propRsp.Exists() {
 			t.Fatalf("missing property '%s'", prop)
@@ -202,30 +188,19 @@ func TestExportWithMissingBelongstoElement(t *testing.T) {
 
 	ctx := context.Background()
 
-	opts, err := NewDefaultOptions(ctx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	body := readFeature(t, "missing-belongsto-element.geojson")
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
+	_, new_body, err := Export(ctx, body)
 
-	err = Export(body, opts, wr)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	wr.Flush()
-	updatedBody := buf.Bytes()
-
-	if bytes.Equal(body, updatedBody) {
+	if bytes.Equal(body, new_body) {
 		t.Error("Body was identical")
 	}
 
-	newBelongsto := gjson.GetBytes(updatedBody, "properties.wof:belongsto").Array()
+	newBelongsto := gjson.GetBytes(new_body, wof_properties.PATH_WOF_BELONGSTO).Array()
 
 	if len(newBelongsto) != 6 {
 		t.Error("belongsto has incorrect number of elements")
@@ -242,46 +217,35 @@ func TestExportWithMissingDateDerived(t *testing.T) {
 
 	ctx := context.Background()
 
-	opts, err := NewDefaultOptions(ctx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	body := readFeature(t, "missing-date-derived.geojson")
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
+	_, new_body, err := Export(ctx, body)
 
-	err = Export(body, opts, wr)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	wr.Flush()
-	updatedBody := buf.Bytes()
-
-	if bytes.Equal(body, updatedBody) {
+	if bytes.Equal(body, new_body) {
 		t.Error("Body was identical")
 	}
 
 	ensureProps := []string{
-		"properties.date:inception_lower",
-		"properties.date:inception_upper",
-		"properties.date:cessation_lower",
-		"properties.date:cessation_upper",
+		wof_properties.PATH_DATE_INCEPTION_LOWER,
+		wof_properties.PATH_DATE_INCEPTION_UPPER,
+		wof_properties.PATH_DATE_CESSATION_LOWER,
+		wof_properties.PATH_DATE_CESSATION_UPPER,
 	}
 
 	for _, prop := range ensureProps {
-		propRsp := gjson.GetBytes(updatedBody, prop)
+		propRsp := gjson.GetBytes(new_body, prop)
 
 		if !propRsp.Exists() {
 			t.Fatalf("Missing property '%s'", prop)
 		}
 	}
 
-	inceptionLowerRsp := gjson.GetBytes(updatedBody, "properties.date:inception_lower")
-	cessationUpperRsp := gjson.GetBytes(updatedBody, "properties.date:cessation_upper")
+	inceptionLowerRsp := gjson.GetBytes(new_body, wof_properties.PATH_DATE_INCEPTION_LOWER)
+	cessationUpperRsp := gjson.GetBytes(new_body, wof_properties.PATH_DATE_CESSATION_UPPER)
 
 	inceptionLowerStr := inceptionLowerRsp.String()
 	cessationUpperStr := cessationUpperRsp.String()
@@ -302,31 +266,19 @@ func TestExportWithExtraBelongstoElement(t *testing.T) {
 
 	ctx := context.Background()
 
-	opts, err := NewDefaultOptions(ctx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	body := readFeature(t, "extra-belongsto-element.geojson")
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
-
-	err = Export(body, opts, wr)
+	_, new_body, err := Export(ctx, body)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	wr.Flush()
-	updatedBody := buf.Bytes()
-
-	if bytes.Equal(body, updatedBody) {
+	if bytes.Equal(body, new_body) {
 		t.Error("Body was identical")
 	}
 
-	newBelongsto := gjson.GetBytes(updatedBody, "properties.wof:belongsto").Array()
+	newBelongsto := gjson.GetBytes(new_body, wof_properties.PATH_WOF_BELONGSTO).Array()
 
 	if len(newBelongsto) != 6 {
 		t.Error("belongsto has incorrect number of elements")
@@ -343,31 +295,19 @@ func TestExportWithMissingBelongstoKey(t *testing.T) {
 
 	ctx := context.Background()
 
-	opts, err := NewDefaultOptions(ctx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	body := readFeature(t, "missing-belongsto-key.geojson")
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
-
-	err = Export(body, opts, wr)
+	_, new_body, err := Export(ctx, body)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	wr.Flush()
-	updatedBody := buf.Bytes()
-
-	if bytes.Equal(body, updatedBody) {
+	if bytes.Equal(body, new_body) {
 		t.Error("Body was identical")
 	}
 
-	newBelongsto := gjson.GetBytes(updatedBody, "properties.wof:belongsto").Array()
+	newBelongsto := gjson.GetBytes(new_body, wof_properties.PATH_WOF_BELONGSTO).Array()
 
 	if len(newBelongsto) != 6 {
 		t.Error("belongsto has incorrect number of elements")
@@ -377,18 +317,10 @@ func TestExportWithMissingBelongstoKey(t *testing.T) {
 func TestExportChangedWithUnchangedFile(t *testing.T) {
 
 	ctx := context.Background()
-	opts, err := NewDefaultOptions(ctx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	body := readFeature(t, "no-changes.geojson")
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
-
-	changed, err := ExportChanged(body, body, opts, wr)
+	changed, _, err := Export(ctx, body)
 
 	if err != nil {
 		t.Fatal(err)
@@ -397,34 +329,18 @@ func TestExportChangedWithUnchangedFile(t *testing.T) {
 	if changed {
 		t.Error("Exported file should not be changed")
 	}
-
-	wr.Flush()
-	updatedBody := buf.Bytes()
-
-	if len(updatedBody) > 0 {
-		t.Error("Writer should not have written to file")
-	}
-
 }
 
 func TestExportChangedWithChanges(t *testing.T) {
 
 	ctx := context.Background()
 
-	opts, err := NewDefaultOptions(ctx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	body := readFeature(t, "changes-required.geojson")
 
-	originalLastModified := gjson.GetBytes(body, "properties.wof:lastmodified").Int()
+	originalLastModified := gjson.GetBytes(body, wof_properties.PATH_WOF_LASTMODIFIED).Int()
 
-	var buf bytes.Buffer
-	wr := bufio.NewWriter(&buf)
+	changed, new_body, err := Export(ctx, body)
 
-	changed, err := ExportChanged(body, body, opts, wr)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -433,14 +349,11 @@ func TestExportChangedWithChanges(t *testing.T) {
 		t.Error("Exported file should have be changed")
 	}
 
-	wr.Flush()
-	updatedBody := buf.Bytes()
-
-	if bytes.Equal(body, updatedBody) {
+	if bytes.Equal(body, new_body) {
 		t.Error("Body was identical")
 	}
 
-	newLastModified := gjson.GetBytes(updatedBody, "properties.wof:lastmodified").Int()
+	newLastModified := gjson.GetBytes(new_body, wof_properties.PATH_WOF_LASTMODIFIED).Int()
 
 	if newLastModified <= originalLastModified {
 		t.Error("Last modified timestamp should have increased")
@@ -448,6 +361,7 @@ func TestExportChangedWithChanges(t *testing.T) {
 }
 
 func readFeature(t *testing.T, filename string) []byte {
+
 	cwd, err := os.Getwd()
 
 	if err != nil {
