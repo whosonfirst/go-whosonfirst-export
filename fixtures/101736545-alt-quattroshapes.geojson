@@ -5,9 +5,8 @@
     "src:alt_label": "quattroshapes",
     "src:geom": "quattroshapes",
     "wof:created": -1,
-    "wof:geomhash": "8566a2ca5e867d2bb718a8b1e2efa06e",
+    "wof:geomhash": "83e15ca7275cf883624bb6fa862e15fa",
     "wof:id": 101736545,
-    "wof:lastmodified": 1751376767,
     "wof:placetype": "locality",
     "wof:repo": "whosonfirst-data-admin-ca"
   },
@@ -17,5 +16,5 @@
     -73.47412679299993,
     45.70757798100004
   ],
-  "geometry": {"type": "Point", "coordinates": [0, 0] }
+  "geometry": {"coordinates":[0,0],"type":"Point"}
 }

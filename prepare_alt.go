@@ -36,10 +36,16 @@ func PrepareAltFeatureWithoutTimestamps(ctx context.Context, feature []byte) ([]
 		return nil, fmt.Errorf("Failed to ensure repo, %w", err)
 	}
 
-	feature, err = properties.EnsureGeom(ctx, feature)
+	feature, err = properties.EnsureSrcGeom(ctx, feature)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to ensure geometry, %w", err)
+		return nil, fmt.Errorf("Failed to ensure src:geom, %w", err)
+	}
+
+	feature, err = properties.EnsureGeomHash(ctx, feature)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to ensure geom:hash, %w", err)
 	}
 
 	feature, err = properties.EnsureSourceAltLabel(ctx, feature)
