@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"net/url"
 
-	_ "log/slog"
+	"log/slog"
+	"os"
 
 	"github.com/whosonfirst/go-whosonfirst-feature/alt"
 	"github.com/whosonfirst/go-whosonfirst-validate"
@@ -51,7 +52,7 @@ func (ex *WhosOnFirstExporter) Export(ctx context.Context, feature []byte) (bool
 
 func (ex *WhosOnFirstExporter) export(ctx context.Context, feature []byte) (bool, []byte, error) {
 
-	tmp_feature, err := prepareWithoutTimestamps(ctx, feature)
+	tmp_feature, err := PrepareFeatureWithoutTimestamps(ctx, feature)
 
 	if err != nil {
 		return false, nil, fmt.Errorf("Failed to prepare record (without timestamps), %w", err)
@@ -63,13 +64,11 @@ func (ex *WhosOnFirstExporter) export(ctx context.Context, feature []byte) (bool
 		return false, nil, fmt.Errorf("Failed to format tmp record, %w", err)
 	}
 
-	changed := !bytes.Equal(tmp_feature, feature)
-
-	if !changed {
-		return false, nil, nil
+	if bytes.Equal(tmp_feature, feature) {
+		return false, feature, nil
 	}
 
-	new_feature, err := prepareTimestamps(ctx, tmp_feature)
+	new_feature, err := PrepareTimestamps(ctx, tmp_feature)
 
 	if err != nil {
 		return true, nil, fmt.Errorf("Failed to prepare record, %w", err)
@@ -92,10 +91,12 @@ func (ex *WhosOnFirstExporter) export(ctx context.Context, feature []byte) (bool
 
 func (ex *WhosOnFirstExporter) exportAlt(ctx context.Context, feature []byte) (bool, []byte, error) {
 
-	tmp_feature, err := prepareWithoutTimestampsAlt(ctx, feature)
+	os.Stdout.Write(feature)
+
+	tmp_feature, err := PrepareAltFeatureWithoutTimestamps(ctx, feature)
 
 	if err != nil {
-		return false, nil, fmt.Errorf("Failed to prepare record (without timestamps), %w", err)
+		return false, nil, fmt.Errorf("Failed to prepare input record (without timestamps), %w", err)
 	}
 
 	tmp_feature, err = Format(ctx, tmp_feature)
@@ -104,31 +105,32 @@ func (ex *WhosOnFirstExporter) exportAlt(ctx context.Context, feature []byte) (b
 		return false, nil, fmt.Errorf("Failed to format tmp record, %w", err)
 	}
 
-	changed := !bytes.Equal(tmp_feature, feature)
+	os.Stdout.Write(tmp_feature)
 
-	if !changed {
-		return false, nil, nil
+	if bytes.Equal(feature, tmp_feature) {
+		return false, feature, nil
 	}
 
-	new_feature, err := prepareTimestamps(ctx, feature)
+	new_feature, err := PrepareTimestamps(ctx, tmp_feature)
 
 	if err != nil {
+		slog.Info("NOPE 4")
 		return true, nil, fmt.Errorf("Failed to prepare record, %w", err)
 	}
 
-	/*
-		err = validate.Validate(new_feature)
+	err = validate.ValidateAlt(new_feature)
 
-		if err != nil {
-		   return true, nil, fmt.Errorf("Failed to validate record, %w", err)
-		}
-	*/
+	if err != nil {
+		return true, nil, fmt.Errorf("Failed to validate record, %w", err)
+	}
 
 	new_feature, err = Format(ctx, new_feature)
 
 	if err != nil {
+		slog.Info("NOPE 5")
 		return true, nil, fmt.Errorf("Failed to format record, %w", err)
 	}
 
+	slog.Info("WUT")
 	return true, new_feature, nil
 }

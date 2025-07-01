@@ -44,3 +44,14 @@ func EnsureTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
 
 	return feature, nil
 }
+
+func RemoveTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
+
+	feature, err := RemoveLastModified(ctx, feature)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return feature, nil
+}

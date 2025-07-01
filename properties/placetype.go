@@ -14,7 +14,5 @@ func EnsurePlacetype(ctx context.Context, feature []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	// Validate placetype?
-
 	return feature, nil
 }

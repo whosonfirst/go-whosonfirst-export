@@ -28,7 +28,7 @@ func TestExportAlt(t *testing.T) {
 	}
 
 	if has_changed {
-		// t.Fatal("Did not expect alt file to change")
+		t.Fatal("Did not expect alt file to change")
 	}
 }
 

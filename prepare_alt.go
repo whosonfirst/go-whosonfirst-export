@@ -9,24 +9,7 @@ import (
 	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
 
-func PrepareAlt(ctx context.Context, feature []byte) ([]byte, error) {
-
-	feature, err := prepareWithoutTimestampsAlt(ctx, feature)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to prepare without timestamps, %w", err)
-	}
-
-	feature, err = prepareTimestamps(ctx, feature)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to prepare with timestamps, %w", err)
-	}
-
-	return feature, nil
-}
-
-func prepareWithoutTimestampsAlt(ctx context.Context, feature []byte) ([]byte, error) {
+func PrepareAltFeatureWithoutTimestamps(ctx context.Context, feature []byte) ([]byte, error) {
 
 	feature, err := properties.EnsureWOFIdAlt(ctx, feature)
 
@@ -63,6 +46,12 @@ func prepareWithoutTimestampsAlt(ctx context.Context, feature []byte) ([]byte, e
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to ensure src:alt_label, %w", err)
+	}
+
+	feature, err = properties.RemoveTimestamps(ctx, feature)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to remove timestamps, %w", err)
 	}
 
 	return feature, nil
