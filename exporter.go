@@ -2,7 +2,10 @@ package export
 
 import (
 	"context"
+	"fmt"
 	"net/url"
+	"sort"
+	"strings"
 
 	"github.com/aaronland/go-roster"
 )
@@ -63,6 +66,21 @@ func NewExporter(ctx context.Context, uri string) (Exporter, error) {
 }
 
 func ExporterSchemes() []string {
+
 	ctx := context.Background()
-	return exporter_roster.Drivers(ctx)
+	schemes := []string{}
+
+	err := ensureExporterRoster()
+
+	if err != nil {
+		return schemes
+	}
+
+	for _, dr := range exporter_roster.Drivers(ctx) {
+		scheme := fmt.Sprintf("%s://", strings.ToLower(dr))
+		schemes = append(schemes, scheme)
+	}
+
+	sort.Strings(schemes)
+	return schemes
 }

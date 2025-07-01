@@ -30,7 +30,6 @@ func NewWhosOnFirstExporter(ctx context.Context, uri string) (Exporter, error) {
 	}
 
 	ex := WhosOnFirstExporter{}
-
 	return &ex, nil
 }
 
