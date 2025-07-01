@@ -51,37 +51,28 @@ func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
 	slog.SetLogLoggerLevel(slog.LevelDebug)
 	slog.Debug("Verbose logging enabled")
 
-	slog.Info("PR 1")
-
 	provider, err := idProvider(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	slog.Info("PR 2")
-
 	var wof_id int64
 
 	rsp := gjson.GetBytes(feature, wof_properties.PATH_WOF_ID)
 
-	slog.Info("PR 3")
 	if rsp.Exists() {
 
-		slog.Info("PR 4")
 		wof_id = rsp.Int()
 
 	} else {
 
-		slog.Info("PR 5")
 		i, err := provider.NewID(ctx)
 
-		slog.Info("PR 5a")
 		if err != nil {
 			return nil, err
 		}
 
-		slog.Info("PR 6")
 		wof_id = i
 
 		feature, err = sjson.SetBytes(feature, wof_properties.PATH_WOF_ID, wof_id)
@@ -91,7 +82,6 @@ func EnsureWOFId(ctx context.Context, feature []byte) ([]byte, error) {
 		}
 	}
 
-	slog.Info("PR 7")
 	feature, err = sjson.SetBytes(feature, wof_properties.PATH_ID, wof_id)
 
 	if err != nil {
