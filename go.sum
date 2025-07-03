@@ -49,6 +49,8 @@ github.com/sergi/go-diff v1.2.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNX
 github.com/sfomuseum/go-edtf v1.2.1 h1:vyKvoNa4p6mmwp9AbbEdJoj+A5YK4G7S1QgmSNpXh7s=
 github.com/sfomuseum/go-edtf v1.2.1/go.mod h1:1rP0EJZ/84j3HO80vGcnG2T9MFBDAFyTNtjrr8cv3T4=
 github.com/sfomuseum/go-flags v0.8.3/go.mod h1:VXOnnX1/yxQpX2yiwHaBV6aCmhtszQOL5bL1/nNo3co=
+github.com/sfomuseum/go-flags v0.10.0 h1:1OC1ACxpWMsl3XQ9OeNVMQj7Zi2CzufP3Rym3mPI8HU=
+github.com/sfomuseum/go-flags v0.10.0/go.mod h1:VXOnnX1/yxQpX2yiwHaBV6aCmhtszQOL5bL1/nNo3co=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.6.1 h1:hDPOHmpOpP40lSULcqw7IrRb/u7w6RpDC9399XyoNd0=
@@ -89,8 +91,8 @@ github.com/whosonfirst/go-whosonfirst-names v0.1.0 h1:uXop/DwQqH60uDBZvHCPg1yRSQ
 github.com/whosonfirst/go-whosonfirst-names v0.1.0/go.mod h1:0z86/nedM9T/5C8cAdbCMfRuBrkc33oEQ6vdJ6WybSg=
 github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3 h1:BuKRV3pal5wanOZxWue7hWFZXlsWevmCY3X06bU+J6s=
 github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3/go.mod h1:lRvLpHHUPxfrU3c4xCcdmFbU1dYJLpO2WQ1LJWoqYJ8=
-github.com/whosonfirst/go-whosonfirst-validate v0.5.0 h1:63fHjSA6N809ouKAw0crz3tQedN4sEl+wEWIWstgcnQ=
-github.com/whosonfirst/go-whosonfirst-validate v0.5.0/go.mod h1:F/CDGJwsPevJzcu6yVYChQjV6k9MVUW1YtQPHkUkBEE=
+github.com/whosonfirst/go-whosonfirst-validate v0.6.0 h1:v4l7QMW4rny73o0I649tUdqSRR/rC0y9Qm8AoMT8WQ4=
+github.com/whosonfirst/go-whosonfirst-validate v0.6.0/go.mod h1:F/CDGJwsPevJzcu6yVYChQjV6k9MVUW1YtQPHkUkBEE=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1/go.mod h1:RaEWvsqvNKKvBPvcKeFjrG2cJqOkHTiyTpzz23ni57g=
 github.com/xdg-go/stringprep v1.0.3/go.mod h1:W3f5j4i+9rC0kuIEJL0ky1VpHXQU3ocBgklLGvcBnW8=

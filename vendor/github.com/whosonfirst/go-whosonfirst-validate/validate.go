@@ -63,6 +63,17 @@ func Validate(body []byte) error {
 	return ValidateWithOptions(body, opts)
 }
 
+func ValidateAlt(body []byte) error {
+
+	opts := DefaultValidateOptions()
+	opts.ValidateName = false
+	opts.ValidateNames = false
+	opts.ValidateEDTF = false
+	opts.ValidateIsCurrent = false
+	
+	return ValidateWithOptions(body, opts)
+}
+
 func ValidateWithOptions(body []byte, options *Options) error {
 
 	if options.ValidateId {

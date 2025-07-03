@@ -1,17 +1,20 @@
 module github.com/whosonfirst/go-whosonfirst-export/v3
 
-go 1.22
+go 1.24
+
+toolchain go1.24.4
 
 require (
 	github.com/aaronland/go-roster v1.0.0
 	github.com/paulmach/orb v0.11.1
 	github.com/sfomuseum/go-edtf v1.2.1
+	github.com/sfomuseum/go-flags v0.10.0
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.29
 	github.com/whosonfirst/go-whosonfirst-format v0.4.1
 	github.com/whosonfirst/go-whosonfirst-id v1.3.1
-	github.com/whosonfirst/go-whosonfirst-validate v0.5.0
+	github.com/whosonfirst/go-whosonfirst-validate v0.6.0
 )
 
 require (
