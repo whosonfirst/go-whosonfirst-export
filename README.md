@@ -87,7 +87,7 @@ func NewWhosOnFirstExporter(ctx context.Context, uri string) (export.Exporter, e
 }
 ```
 
-For a complete implementation consult [exporter_whosonfirst.go](exporter_whosonfirst.go)._
+_For a complete implementation consult [exporter_whosonfirst.go](exporter_whosonfirst.go)._
 
 #### whosonfirst://
 
