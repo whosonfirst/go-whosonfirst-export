@@ -89,10 +89,10 @@ github.com/whosonfirst/go-whosonfirst-id v1.3.1 h1:AecFe96MRpu/gLy8D/lyJCrNCLywg
 github.com/whosonfirst/go-whosonfirst-id v1.3.1/go.mod h1:CCW9ym7BVTEhWA7hk8zM09zPCr0VzOBd6hYTPaxmpdQ=
 github.com/whosonfirst/go-whosonfirst-names v0.1.0 h1:uXop/DwQqH60uDBZvHCPg1yRSQLScbm6VZyqcaED2KE=
 github.com/whosonfirst/go-whosonfirst-names v0.1.0/go.mod h1:0z86/nedM9T/5C8cAdbCMfRuBrkc33oEQ6vdJ6WybSg=
-github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3 h1:BuKRV3pal5wanOZxWue7hWFZXlsWevmCY3X06bU+J6s=
-github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3/go.mod h1:lRvLpHHUPxfrU3c4xCcdmFbU1dYJLpO2WQ1LJWoqYJ8=
-github.com/whosonfirst/go-whosonfirst-validate v0.6.0 h1:v4l7QMW4rny73o0I649tUdqSRR/rC0y9Qm8AoMT8WQ4=
-github.com/whosonfirst/go-whosonfirst-validate v0.6.0/go.mod h1:F/CDGJwsPevJzcu6yVYChQjV6k9MVUW1YtQPHkUkBEE=
+github.com/whosonfirst/go-whosonfirst-placetypes v0.8.0 h1:H0scSA+UoglzTdKYFHbx38B0m+FgfYymr7p/rIKKAn4=
+github.com/whosonfirst/go-whosonfirst-placetypes v0.8.0/go.mod h1:q7itHlqaHVt6HwpHj/RFcwAPsSsZy4k1L0uEs4kV/C0=
+github.com/whosonfirst/go-whosonfirst-validate v0.6.1 h1:cizvsgoH+P4g8fl9Cd29TaZFasxNjh2cWE7m3N/c1ik=
+github.com/whosonfirst/go-whosonfirst-validate v0.6.1/go.mod h1:DKiX9vu5J5tBOvi98B6oibVzuKVmr/rC0k6Mb92i24Y=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1/go.mod h1:RaEWvsqvNKKvBPvcKeFjrG2cJqOkHTiyTpzz23ni57g=
 github.com/xdg-go/stringprep v1.0.3/go.mod h1:W3f5j4i+9rC0kuIEJL0ky1VpHXQU3ocBgklLGvcBnW8=

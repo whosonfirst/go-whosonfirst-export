@@ -101,10 +101,10 @@ github.com/whosonfirst/go-whosonfirst-id
 ## explicit; go 1.12
 github.com/whosonfirst/go-whosonfirst-names
 github.com/whosonfirst/go-whosonfirst-names/tags
-# github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3
-## explicit; go 1.18
+# github.com/whosonfirst/go-whosonfirst-placetypes v0.8.0
+## explicit; go 1.23
 github.com/whosonfirst/go-whosonfirst-placetypes
-# github.com/whosonfirst/go-whosonfirst-validate v0.6.0
+# github.com/whosonfirst/go-whosonfirst-validate v0.6.1
 ## explicit; go 1.24
 github.com/whosonfirst/go-whosonfirst-validate
 # go.mongodb.org/mongo-driver v1.11.4
