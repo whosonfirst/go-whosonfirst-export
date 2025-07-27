@@ -3,15 +3,15 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - id: wof-export-feature
-    binary: wof-export-feature
+  - id: wof-export
+    binary: wof-export
     env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
-    main: ./cmd/wof-export-feature
+    main: ./cmd/wof-export
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 checksum:
