@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	_ "log/slog"
-
 	"github.com/tidwall/gjson"
 	wof_properties "github.com/whosonfirst/go-whosonfirst-feature/properties"
 )
@@ -28,7 +26,7 @@ func TestExportAlt(t *testing.T) {
 	}
 
 	if has_changed {
-		t.Fatal("Did not expect alt file to change")
+		t.Fatal("Did not expect alt file to change")		
 	}
 }
 
