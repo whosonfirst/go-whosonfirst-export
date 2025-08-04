@@ -85,8 +85,8 @@ github.com/whosonfirst/go-whosonfirst-feature v0.0.29 h1:Sy5qE+dR3U6CYEJjDuflsjW
 github.com/whosonfirst/go-whosonfirst-feature v0.0.29/go.mod h1:sJl2dhA5l10Maukks4Kx6X6JwqtKD1NKLNJrmRkFOfE=
 github.com/whosonfirst/go-whosonfirst-flags v0.5.2 h1:vSx7fcM04HiSAEF+WOKfuyJawac99skN9HJAeqBXWpI=
 github.com/whosonfirst/go-whosonfirst-flags v0.5.2/go.mod h1:kozBozsyI8cKekUces1m10vJ301sH2EqLZtjX1xCSqQ=
-github.com/whosonfirst/go-whosonfirst-format v1.0.0 h1:mkQ/TtV4DD7MbYxlIgx/L5wJAgzCZypkMN8hRzmhKjg=
-github.com/whosonfirst/go-whosonfirst-format v1.0.0/go.mod h1:8oHpebJhOCDOmudDAeBphtIo7Ti7+o8HZNsYwaiEFXM=
+github.com/whosonfirst/go-whosonfirst-format v1.0.1 h1:tXZBKPDUzYWG5A9Uxm/sbREMTk20hj1lYvOQDMqki2s=
+github.com/whosonfirst/go-whosonfirst-format v1.0.1/go.mod h1:8oHpebJhOCDOmudDAeBphtIo7Ti7+o8HZNsYwaiEFXM=
 github.com/whosonfirst/go-whosonfirst-id v1.3.1 h1:AecFe96MRpu/gLy8D/lyJCrNCLywgYuRDY7yLWlybXk=
 github.com/whosonfirst/go-whosonfirst-id v1.3.1/go.mod h1:CCW9ym7BVTEhWA7hk8zM09zPCr0VzOBd6hYTPaxmpdQ=
 github.com/whosonfirst/go-whosonfirst-names v0.1.0 h1:uXop/DwQqH60uDBZvHCPg1yRSQLScbm6VZyqcaED2KE=

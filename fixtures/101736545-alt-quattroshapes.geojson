@@ -7,6 +7,7 @@
     "wof:created": -1,
     "wof:geomhash": "83e15ca7275cf883624bb6fa862e15fa",
     "wof:id": 101736545,
+    "wof:lastmodified": 1754346880,
     "wof:placetype": "locality",
     "wof:repo": "whosonfirst-data-admin-ca"
   },
@@ -16,5 +17,5 @@
     -73.47412679299993,
     45.70757798100004
   ],
-  "geometry": {"coordinates":[0,0],"type":"Point"}
+  "geometry": {"type":"Point","coordinates":[0,0]}
 }

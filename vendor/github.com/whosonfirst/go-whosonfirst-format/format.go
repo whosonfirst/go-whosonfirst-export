@@ -53,7 +53,10 @@ func FormatFeature(feature *geojson.Feature) ([]byte, error) {
 		return buf.Bytes(), err
 	}
 
-	err = writeKey(&buf, "geometry", feature.Geometry, false, true)
+	// See this? It's important. For whatever reason orb/geojson.Feature.Geometry is of
+	// type orb.Geometry (rather than orb/geojson.Geometry). Computers...
+
+	err = writeKey(&buf, "geometry", geojson.NewGeometry(feature.Geometry), false, true)
 	if err != nil {
 		return buf.Bytes(), err
 	}
