@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	
+
 	"github.com/whosonfirst/go-whosonfirst-export/v3/properties"
 	"github.com/whosonfirst/go-whosonfirst-feature/alt"
 	"github.com/whosonfirst/go-whosonfirst-format"
@@ -41,7 +41,7 @@ func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 
 	// Do we really need to care about leading/trailing whitespace for this comparison?
 	// I don't think we need to.
-	
+
 	if bytes.Equal(bytes.TrimSpace(tmp_feature), bytes.TrimSpace(new_feature)) {
 		return false, feature, nil
 	}
