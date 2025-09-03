@@ -12,7 +12,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.29
 	github.com/whosonfirst/go-whosonfirst-format v1.0.1
 	github.com/whosonfirst/go-whosonfirst-id v1.3.1
-	github.com/whosonfirst/go-whosonfirst-validate v0.6.1
+	github.com/whosonfirst/go-whosonfirst-validate v0.6.2
 )
 
 require (
