@@ -24,7 +24,7 @@ func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 	}
 
 	is_alt := alt.IsAlt(feature)
-	
+
 	if is_alt {
 		new_feature, err = PrepareAltFeatureWithoutTimestamps(ctx, feature)
 	} else {
@@ -59,7 +59,7 @@ func Export(ctx context.Context, feature []byte) (bool, []byte, error) {
 	} else {
 		err = validate.Validate(new_feature)
 	}
-	
+
 	if err != nil {
 		return true, nil, fmt.Errorf("Failed to validate record, %w", err)
 	}
