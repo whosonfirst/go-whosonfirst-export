@@ -30,6 +30,36 @@ func TestExportAlt(t *testing.T) {
 	}
 }
 
+func TestHasChanges(t *testing.T) {
+
+	ctx := context.Background()
+
+	body := readFeature(t, "no-changes.geojson")
+
+	has_changes, err := HasChanges(ctx, body, body)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if has_changes {
+		t.Fatal("Did not expect file to have changes")
+	}
+
+	other_body := readFeature(t, "custom-placetype.geojson")
+
+	has_changes, err = HasChanges(ctx, body, other_body)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !has_changes {
+		t.Fatal("Expected files to have changes")
+	}
+
+}
+
 func TestCustomPlacetype(t *testing.T) {
 
 	ctx := context.Background()
