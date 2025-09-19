@@ -35,7 +35,7 @@ github.com/cenkalti/backoff/v4
 ## explicit; go 1.18
 github.com/dominikbraun/graph
 github.com/dominikbraun/graph/draw
-# github.com/paulmach/orb v0.11.1
+# github.com/paulmach/orb v0.12.0
 ## explicit; go 1.15
 github.com/paulmach/orb
 github.com/paulmach/orb/geojson
@@ -91,7 +91,7 @@ github.com/whosonfirst/go-whosonfirst-feature/properties
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-flags
 github.com/whosonfirst/go-whosonfirst-flags/existential
-# github.com/whosonfirst/go-whosonfirst-format v1.0.1
+# github.com/whosonfirst/go-whosonfirst-format v1.0.2
 ## explicit; go 1.22
 github.com/whosonfirst/go-whosonfirst-format
 # github.com/whosonfirst/go-whosonfirst-id v1.3.1
