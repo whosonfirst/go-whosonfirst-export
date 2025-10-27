@@ -10,9 +10,9 @@ require (
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.29
-	github.com/whosonfirst/go-whosonfirst-format v1.0.2
+	github.com/whosonfirst/go-whosonfirst-format v1.1.0
 	github.com/whosonfirst/go-whosonfirst-id v1.3.1
-	github.com/whosonfirst/go-whosonfirst-validate v0.6.2
+	github.com/whosonfirst/go-whosonfirst-validate v0.7.0
 )
 
 require (
