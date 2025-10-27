@@ -91,7 +91,7 @@ github.com/whosonfirst/go-whosonfirst-feature/properties
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-flags
 github.com/whosonfirst/go-whosonfirst-flags/existential
-# github.com/whosonfirst/go-whosonfirst-format v1.0.2
+# github.com/whosonfirst/go-whosonfirst-format v1.1.0
 ## explicit; go 1.22
 github.com/whosonfirst/go-whosonfirst-format
 # github.com/whosonfirst/go-whosonfirst-id v1.3.1
@@ -104,7 +104,7 @@ github.com/whosonfirst/go-whosonfirst-names/tags
 # github.com/whosonfirst/go-whosonfirst-placetypes v0.8.0
 ## explicit; go 1.23
 github.com/whosonfirst/go-whosonfirst-placetypes
-# github.com/whosonfirst/go-whosonfirst-validate v0.6.2
+# github.com/whosonfirst/go-whosonfirst-validate v0.7.0
 ## explicit; go 1.24
 github.com/whosonfirst/go-whosonfirst-validate
 # go.mongodb.org/mongo-driver v1.11.4
